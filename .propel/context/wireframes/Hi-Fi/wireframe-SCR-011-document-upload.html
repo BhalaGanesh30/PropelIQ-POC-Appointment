@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-011 Document Upload</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><strong>Patient Portal</strong><small>Documents</small></div>
+      <div class="nav-group"><div class="nav-item active">Upload Documents</div><div class="nav-item">My Documents</div></div>
+    </aside>
+    <main class="content">
+      <header class="topbar"><div><div class="eyebrow">SCR-011</div><h2>Upload clinical documents</h2></div><div class="chip-row"><span class="pill">PDF, JPG, PNG, TIFF up to 10 MB</span><span class="pill success">Malware scan required</span></div></header>
+      <section class="drop-card"><div class="dropzone"><h3>Drag files here</h3><p>Or browse from your device. Progress, scan status, and OCR stages appear below each file.</p><button class="button primary">Browse files</button></div></section>
+      <section class="panel"><div class="card span-7"><h3>Upload queue</h3><div class="stack"><div class="mini-card"><strong>referral-letter.pdf</strong><p>Upload 100%, malware scan complete, OCR processing in progress.</p><div class="progress"><span style="width: 72%"></span></div></div><div class="mini-card"><strong>insurance-card-front.jpg</strong><p>Validation passed, ready for extraction.</p><div class="chip-row"><span class="badge success">Completed</span><span class="badge ai">OCR queued</span></div></div></div></div><div class="card span-5"><h3>Failure fallback</h3><div class="banner error"><strong>OCR failed on one file.</strong><p>Show retry button and link to manual entry so the user is never blocked.</p></div></div></section>
+    </main>
+  </div>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

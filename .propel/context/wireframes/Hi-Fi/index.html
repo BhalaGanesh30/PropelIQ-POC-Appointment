@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe Index</title>
+  <style>
+    :root {
+      --primary: #1976d2;
+      --primary-dark: #0d47a1;
+      --secondary: #26a69a;
+      --surface: #ffffff;
+      --surface-soft: #f7fafd;
+      --border: #d9e2ec;
+      --text: #1f2933;
+      --muted: #52606d;
+      --shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Inter, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(25, 118, 210, 0.14), transparent 28%),
+        linear-gradient(180deg, #f4f8fc 0%, #eef3f8 100%);
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      padding: 28px;
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(10px);
+      border-right: 1px solid rgba(217, 226, 236, 0.9);
+      overflow: auto;
+    }
+
+    .content {
+      padding: 24px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero,
+    .group,
+    .preview-shell {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(217, 226, 236, 0.95);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero,
+    .group,
+    .preview-shell {
+      padding: 20px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 30px;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin-bottom: 14px;
+    }
+
+    p {
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #eaf3ff;
+      color: var(--primary-dark);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .group {
+      display: grid;
+      gap: 12px;
+    }
+
+    .group-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .wire-link {
+      display: grid;
+      gap: 4px;
+      width: 100%;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      color: inherit;
+      text-align: left;
+      text-decoration: none;
+      transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+    }
+
+    .wire-link:hover,
+    .wire-link:focus {
+      border-color: var(--primary);
+      box-shadow: 0 8px 18px rgba(25, 118, 210, 0.1);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .wire-link.active {
+      border-color: var(--primary);
+      background: linear-gradient(180deg, #f6fbff 0%, #eef6ff 100%);
+    }
+
+    .wire-id {
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .wire-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .wire-meta {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .button.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .preview-shell {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      min-height: calc(100vh - 48px);
+    }
+
+    .preview-meta {
+      display: grid;
+      gap: 6px;
+    }
+
+    .preview-frame {
+      width: 100%;
+      min-height: 720px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    code {
+      font-family: "JetBrains Mono", Consolas, monospace;
+      font-size: 12px;
+      background: #f2f5f8;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    @media (max-width: 1100px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        max-height: none;
+        border-right: none;
+        border-bottom: 1px solid rgba(217, 226, 236, 0.9);
+      }
+
+      .preview-shell {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .sidebar,
+      .content {
+        padding: 16px;
+      }
+
+      .preview-frame {
+        min-height: 560px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <section class="hero">
+        <p class="eyebrow">Hi-Fi Wireframe Browser</p>
+        <h1>Browse every generated screen from one page.</h1>
+        <p>This index groups the generated HTML wireframes by workflow area and loads the selected screen in the embedded preview.</p>
+        <div class="meta">
+          <span class="chip">29 wireframes</span>
+          <span class="chip">Responsive HTML</span>
+          <span class="chip">Local preview</span>
+        </div>
+      </section>
+
+      <section class="group">
+        <h2>Authentication</h2>
+        <div class="group-list">
+          <a class="wire-link active" href="./wireframe-SCR-001-patient-registration.html" target="wireframe-preview" data-title="Patient Registration" data-id="SCR-001" data-path="wireframe-SCR-001-patient-registration.html">
+            <span class="wire-id">SCR-001</span>
+            <span class="wire-title">Patient Registration</span>
+            <span class="wire-meta">Patient onboarding</span>
+          </a>
+          <a class="wire-link" href="./wireframe-SCR-002-login.html" target="wireframe-preview" data-title="Login" data-id="SCR-002" data-path="wireframe-SCR-002-login.html">
+            <span class="wire-id">SCR-002</span>
+            <span class="wire-title">Login</span>
+            <span class="wire-meta">Shared authentication</span>
+          </a>
+          <a class="wire-link" href="./wireframe-SCR-003-password-reset.html" target="wireframe-preview" data-title="Password Reset" data-id="SCR-003" data-path="wireframe-SCR-003-password-reset.html">
+            <span class="wire-id">SCR-003</span>
+            <span class="wire-title">Password Reset</span>
+            <span class="wire-meta">Recovery flow</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="group">
+        <h2>Patient Journey</h2>
+        <div class="group-list">
+          <a class="wire-link" href="./wireframe-SCR-004-slot-search-discovery.html" target="wireframe-preview" data-title="Slot Search and Discovery" data-id="SCR-004" data-path="wireframe-SCR-004-slot-search-discovery.html"><span class="wire-id">SCR-004</span><span class="wire-title">Slot Search and Discovery</span><span class="wire-meta">Booking filters and slot grid</span></a>
+          <a class="wire-link" href="./wireframe-SCR-005-intake-form.html" target="wireframe-preview" data-title="Intake Form" data-id="SCR-005" data-path="wireframe-SCR-005-intake-form.html"><span class="wire-id">SCR-005</span><span class="wire-title">Intake Form</span><span class="wire-meta">AI-assisted intake capture</span></a>
+          <a class="wire-link" href="./wireframe-SCR-006-booking-confirmation.html" target="wireframe-preview" data-title="Booking Confirmation" data-id="SCR-006" data-path="wireframe-SCR-006-booking-confirmation.html"><span class="wire-id">SCR-006</span><span class="wire-title">Booking Confirmation</span><span class="wire-meta">PDF, QR, and ICS actions</span></a>
+          <a class="wire-link" href="./wireframe-SCR-007-appointment-history.html" target="wireframe-preview" data-title="Appointment History" data-id="SCR-007" data-path="wireframe-SCR-007-appointment-history.html"><span class="wire-id">SCR-007</span><span class="wire-title">Appointment History</span><span class="wire-meta">Upcoming and past visits</span></a>
+          <a class="wire-link" href="./wireframe-SCR-008-waitlist-view.html" target="wireframe-preview" data-title="Waitlist View" data-id="SCR-008" data-path="wireframe-SCR-008-waitlist-view.html"><span class="wire-id">SCR-008</span><span class="wire-title">Waitlist View</span><span class="wire-meta">Offer countdown and claim flow</span></a>
+          <a class="wire-link" href="./wireframe-SCR-009-notification-preferences.html" target="wireframe-preview" data-title="Notification Preferences" data-id="SCR-009" data-path="wireframe-SCR-009-notification-preferences.html"><span class="wire-id">SCR-009</span><span class="wire-title">Notification Preferences</span><span class="wire-meta">Reminder channels and timing</span></a>
+          <a class="wire-link" href="./wireframe-SCR-011-document-upload.html" target="wireframe-preview" data-title="Document Upload" data-id="SCR-011" data-path="wireframe-SCR-011-document-upload.html"><span class="wire-id">SCR-011</span><span class="wire-title">Document Upload</span><span class="wire-meta">Upload, scan, and OCR progress</span></a>
+          <a class="wire-link" href="./wireframe-SCR-012-document-library.html" target="wireframe-preview" data-title="Document Library" data-id="SCR-012" data-path="wireframe-SCR-012-document-library.html"><span class="wire-id">SCR-012</span><span class="wire-title">Document Library</span><span class="wire-meta">Document catalog and actions</span></a>
+          <a class="wire-link" href="./wireframe-SCR-013-document-viewer.html" target="wireframe-preview" data-title="Document Viewer" data-id="SCR-013" data-path="wireframe-SCR-013-document-viewer.html"><span class="wire-id">SCR-013</span><span class="wire-title">Document Viewer</span><span class="wire-meta">Viewer and extraction side panel</span></a>
+          <a class="wire-link" href="./wireframe-SCR-028-insurance-verification.html" target="wireframe-preview" data-title="Insurance Verification" data-id="SCR-028" data-path="wireframe-SCR-028-insurance-verification.html"><span class="wire-id">SCR-028</span><span class="wire-title">Insurance Verification</span><span class="wire-meta">Coverage and card validation</span></a>
+        </div>
+      </section>
+
+      <section class="group">
+        <h2>Clinical Workspace</h2>
+        <div class="group-list">
+          <a class="wire-link" href="./wireframe-SCR-014-patient-profile-360.html" target="wireframe-preview" data-title="360-Degree Patient Profile" data-id="SCR-014" data-path="wireframe-SCR-014-patient-profile-360.html"><span class="wire-id">SCR-014</span><span class="wire-title">360-Degree Patient Profile</span><span class="wire-meta">Traceable patient summary</span></a>
+          <a class="wire-link" href="./wireframe-SCR-015-clinical-timeline.html" target="wireframe-preview" data-title="Clinical Timeline" data-id="SCR-015" data-path="wireframe-SCR-015-clinical-timeline.html"><span class="wire-id">SCR-015</span><span class="wire-title">Clinical Timeline</span><span class="wire-meta">Chronological event history</span></a>
+          <a class="wire-link" href="./wireframe-SCR-016-conflict-alerts.html" target="wireframe-preview" data-title="Conflict Alerts" data-id="SCR-016" data-path="wireframe-SCR-016-conflict-alerts.html"><span class="wire-id">SCR-016</span><span class="wire-title">Conflict Alerts</span><span class="wire-meta">Severity-based safety review</span></a>
+          <a class="wire-link" href="./wireframe-SCR-017-coding-suggestion-review.html" target="wireframe-preview" data-title="Coding Suggestion Review" data-id="SCR-017" data-path="wireframe-SCR-017-coding-suggestion-review.html"><span class="wire-id">SCR-017</span><span class="wire-title">Coding Suggestion Review</span><span class="wire-meta">AI recommendation cards</span></a>
+          <a class="wire-link" href="./wireframe-SCR-018-code-search.html" target="wireframe-preview" data-title="Code Search" data-id="SCR-018" data-path="wireframe-SCR-018-code-search.html"><span class="wire-id">SCR-018</span><span class="wire-title">Code Search</span><span class="wire-meta">Autocomplete and favorites</span></a>
+        </div>
+      </section>
+
+      <section class="group">
+        <h2>Admin and Operations</h2>
+        <div class="group-list">
+          <a class="wire-link" href="./wireframe-SCR-019-system-configuration.html" target="wireframe-preview" data-title="System Configuration" data-id="SCR-019" data-path="wireframe-SCR-019-system-configuration.html"><span class="wire-id">SCR-019</span><span class="wire-title">System Configuration</span><span class="wire-meta">Policies and rules</span></a>
+          <a class="wire-link" href="./wireframe-SCR-020-user-management.html" target="wireframe-preview" data-title="User Management" data-id="SCR-020" data-path="wireframe-SCR-020-user-management.html"><span class="wire-id">SCR-020</span><span class="wire-title">User Management</span><span class="wire-meta">Invite and deactivate flows</span></a>
+          <a class="wire-link" href="./wireframe-SCR-021-audit-log-viewer.html" target="wireframe-preview" data-title="Audit Log Viewer" data-id="SCR-021" data-path="wireframe-SCR-021-audit-log-viewer.html"><span class="wire-id">SCR-021</span><span class="wire-title">Audit Log Viewer</span><span class="wire-meta">Read-only governance trail</span></a>
+          <a class="wire-link" href="./wireframe-SCR-022-compliance-reports.html" target="wireframe-preview" data-title="Compliance Reports" data-id="SCR-022" data-path="wireframe-SCR-022-compliance-reports.html"><span class="wire-id">SCR-022</span><span class="wire-title">Compliance Reports</span><span class="wire-meta">Scheduled report generation</span></a>
+          <a class="wire-link" href="./wireframe-SCR-023-kpi-dashboard.html" target="wireframe-preview" data-title="KPI Dashboard" data-id="SCR-023" data-path="wireframe-SCR-023-kpi-dashboard.html"><span class="wire-id">SCR-023</span><span class="wire-title">KPI Dashboard</span><span class="wire-meta">Operational analytics</span></a>
+          <a class="wire-link" href="./wireframe-SCR-024-template-editor.html" target="wireframe-preview" data-title="Template Editor" data-id="SCR-024" data-path="wireframe-SCR-024-template-editor.html"><span class="wire-id">SCR-024</span><span class="wire-title">Template Editor</span><span class="wire-meta">Live preview messaging</span></a>
+          <a class="wire-link" href="./wireframe-SCR-025-queue-dashboard.html" target="wireframe-preview" data-title="Queue Dashboard" data-id="SCR-025" data-path="wireframe-SCR-025-queue-dashboard.html"><span class="wire-id">SCR-025</span><span class="wire-title">Queue Dashboard</span><span class="wire-meta">Real-time patient flow</span></a>
+          <a class="wire-link" href="./wireframe-SCR-026-daily-schedule-view.html" target="wireframe-preview" data-title="Daily Schedule View" data-id="SCR-026" data-path="wireframe-SCR-026-daily-schedule-view.html"><span class="wire-id">SCR-026</span><span class="wire-title">Daily Schedule View</span><span class="wire-meta">Drag-and-drop calendar</span></a>
+          <a class="wire-link" href="./wireframe-SCR-027-staff-assisted-booking.html" target="wireframe-preview" data-title="Staff-Assisted Booking" data-id="SCR-027" data-path="wireframe-SCR-027-staff-assisted-booking.html"><span class="wire-id">SCR-027</span><span class="wire-title">Staff-Assisted Booking</span><span class="wire-meta">Staff booking wizard</span></a>
+          <a class="wire-link" href="./wireframe-SCR-029-walk-in-registration.html" target="wireframe-preview" data-title="Walk-in Registration" data-id="SCR-029" data-path="wireframe-SCR-029-walk-in-registration.html"><span class="wire-id">SCR-029</span><span class="wire-title">Walk-in Registration</span><span class="wire-meta">Rapid intake</span></a>
+          <a class="wire-link" href="./wireframe-SCR-030-application-shell.html" target="wireframe-preview" data-title="Application Shell" data-id="SCR-030" data-path="wireframe-SCR-030-application-shell.html"><span class="wire-id">SCR-030</span><span class="wire-title">Application Shell</span><span class="wire-meta">Shared role-based frame</span></a>
+        </div>
+      </section>
+    </aside>
+
+    <main class="content">
+      <section class="preview-shell">
+        <div class="toolbar">
+          <div class="preview-meta">
+            <p class="eyebrow" id="preview-id">SCR-001</p>
+            <h2 id="preview-title">Patient Registration</h2>
+            <p id="preview-path">wireframe-SCR-001-patient-registration.html</p>
+          </div>
+          <div class="toolbar-actions">
+            <a class="button" id="open-current" href="./wireframe-SCR-001-patient-registration.html" target="_blank" rel="noopener noreferrer">Open current</a>
+            <a class="button primary" href="./wireframe-SCR-001-patient-registration.html" target="wireframe-preview">Reset to first</a>
+          </div>
+        </div>
+        <iframe
+          class="preview-frame"
+          id="preview-frame"
+          name="wireframe-preview"
+          title="Wireframe preview"
+          src="./wireframe-SCR-001-patient-registration.html"></iframe>
+      </section>
+      <section class="hero">
+        <p class="eyebrow">Usage</p>
+        <p>Open this file directly in a browser from <code>Hi-Fi/index.html</code>. Click any entry in the left panel to swap the embedded preview, or use <strong>Open current</strong> to inspect the selected wireframe in its own tab.</p>
+      </section>
+    </main>
+  </div>
+
+  <script defer src="./wireframe-interactions.js"></script>
+  <script>
+    /* ── Preview panel wiring ─────────────────────────────────── */
+    const links = Array.from(document.querySelectorAll('.wire-link'));
+    const previewId    = document.getElementById('preview-id');
+    const previewTitle = document.getElementById('preview-title');
+    const previewPath  = document.getElementById('preview-path');
+    const openCurrent  = document.getElementById('open-current');
+    const frame        = document.getElementById('preview-frame');
+
+    function setActive(link) {
+      links.forEach((item) => item.classList.remove('active'));
+      link.classList.add('active');
+      previewId.textContent    = link.dataset.id;
+      previewTitle.textContent = link.dataset.title;
+      previewPath.textContent  = link.dataset.path;
+      openCurrent.href         = link.getAttribute('href');
+
+      // Smooth skeleton-style shimmer on frame while the new page loads
+      if (frame) {
+        frame.style.opacity = '0.35';
+        frame.onload = () => { frame.style.opacity = '1'; };
+      }
+    }
+
+    links.forEach((link) => {
+      link.addEventListener('click', () => setActive(link));
+    });
+
+    /* ── Keyboard shortcut: arrow keys to step through screens ── */
+    document.addEventListener('keydown', (e) => {
+      if (e.target && e.target.closest('iframe')) return;
+      const active = links.findIndex((l) => l.classList.contains('active'));
+      if (e.key === 'ArrowDown' && active < links.length - 1) {
+        e.preventDefault();
+        links[active + 1].click();
+        links[active + 1].scrollIntoView({ block: 'nearest' });
+      }
+      if (e.key === 'ArrowUp' && active > 0) {
+        e.preventDefault();
+        links[active - 1].click();
+        links[active - 1].scrollIntoView({ block: 'nearest' });
+      }
+    });
+
+    /* ── Index-specific search filter ───────────────────────────
+       Adds a live search box above the sidebar list to filter
+       wireframe cards by screen ID or title.                   */
+    (function buildSearch() {
+      const sidebar = document.querySelector('.sidebar');
+      if (!sidebar) return;
+
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'position:sticky;top:0;z-index:10;background:rgba(255,255,255,0.9);backdrop-filter:blur(8px);padding:12px 0 10px;margin-bottom:8px;';
+
+      const input = document.createElement('input');
+      input.type = 'search';
+      input.placeholder = 'Filter screens…';
+      input.setAttribute('aria-label', 'Filter wireframe screens');
+      input.style.cssText =
+        'width:100%;padding:10px 14px;border:1px solid #d9e2ec;border-radius:10px;' +
+        'font-size:14px;font-family:inherit;outline:none;' +
+        'transition:border-color 150ms ease,box-shadow 150ms ease;';
+      input.addEventListener('focus', () => {
+        input.style.borderColor = '#1976d2';
+        input.style.boxShadow  = '0 0 0 3px rgba(25,118,210,0.18)';
+      });
+      input.addEventListener('blur', () => {
+        input.style.borderColor = '#d9e2ec';
+        input.style.boxShadow  = '';
+      });
+
+      const shortcut = document.createElement('span');
+      shortcut.textContent = '↑↓ arrow keys to navigate';
+      shortcut.style.cssText = 'display:block;font-size:11px;color:#9aa8b5;margin-top:5px;text-align:center;';
+
+      wrap.appendChild(input);
+      wrap.appendChild(shortcut);
+
+      // Insert after the hero card inside the sidebar
+      const hero = sidebar.querySelector('.hero');
+      if (hero) {
+        hero.insertAdjacentElement('afterend', wrap);
+      } else {
+        sidebar.insertAdjacentElement('afterbegin', wrap);
+      }
+
+      input.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        links.forEach((link) => {
+          const hay = (link.dataset.id + ' ' + link.dataset.title).toLowerCase();
+          const show = !q || hay.includes(q);
+          link.style.display = show ? '' : 'none';
+        });
+        // Show/hide group headers when all children are hidden
+        document.querySelectorAll('.group').forEach((g) => {
+          const visible = Array.from(g.querySelectorAll('.wire-link')).some(
+            (l) => l.style.display !== 'none'
+          );
+          g.style.display = visible ? '' : 'none';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

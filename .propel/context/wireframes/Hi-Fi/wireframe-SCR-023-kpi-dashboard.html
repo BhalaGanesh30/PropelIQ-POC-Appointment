@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-023 KPI Dashboard</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><strong>Admin Portal</strong><small>Operational KPI</small></div>
+      <div class="nav-group"><div class="nav-item active">KPI Dashboard</div><div class="nav-item">User Management</div><div class="nav-item">Reports</div></div>
+    </aside>
+    <main class="content">
+      <header class="topbar"><div><div class="eyebrow">SCR-023</div><h2>Track operational performance</h2></div><div class="chip-row"><button class="button ghost">Date range</button><button class="button primary">Export dashboard</button></div></header>
+      <section class="metric-grid"><div class="metric"><small>No-show rate</small><strong>6.2%</strong><p>Down 1.1% week over week</p></div><div class="metric"><small>Utilization</small><strong>84%</strong><p>Strong weekday performance</p></div><div class="metric"><small>Avg wait time</small><strong>11m</strong><p>2m better than target</p></div><div class="metric"><small>Staff productivity</small><strong>93%</strong><p>Queue handling within SLA</p></div></section>
+      <section class="panel"><div class="card span-6"><h3>No-show trend</h3><div class="mini-card" style="min-height: 240px;"><p>Chart region with export affordance and loading skeleton state.</p></div></div><div class="card span-6"><h3>Queue load by hour</h3><div class="mini-card" style="min-height: 240px;"><p>Responsive chart card with partial-failure retry action.</p></div></div></section>
+    </main>
+  </div>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

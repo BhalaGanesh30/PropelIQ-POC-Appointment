@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-020 User Management</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><strong>Admin Portal</strong><small>User lifecycle</small></div>
+      <div class="nav-group"><div class="nav-item">Configuration</div><div class="nav-item active">User Management</div><div class="nav-item">Audit Logs</div></div>
+    </aside>
+    <main class="content">
+      <header class="topbar"><div><div class="eyebrow">SCR-020</div><h2>Invite, activate, and deactivate users</h2></div><div class="chip-row"><button class="button ghost">Bulk actions</button><button class="button primary">Invite user</button></div></header>
+      <section class="table"><div class="table-header"><div>Name</div><div>Role</div><div>Status</div><div>Last active</div><div>Actions</div></div><div class="table-row"><div>Anika Rao</div><div>Staff</div><div><span class="badge success">Active</span></div><div>2 minutes ago</div><div>Edit | Deactivate</div></div><div class="table-row"><div>Marcus Lee</div><div>Clinician</div><div><span class="badge">Pending invite</span></div><div>Never</div><div>Resend invite</div></div><div class="table-row"><div>Sonia Patel</div><div>Admin</div><div><span class="badge warning">Suspended</span></div><div>3 days ago</div><div>Review history</div></div></section>
+      <section class="banner"><strong>Bulk action guardrail</strong><p>Deactivation and bulk changes always present a confirmation dialog and a concise impact summary.</p></section>
+    </main>
+  </div>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

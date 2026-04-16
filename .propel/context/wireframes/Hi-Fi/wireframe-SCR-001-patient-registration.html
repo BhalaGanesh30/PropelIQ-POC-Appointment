@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-001 Patient Registration</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body class="auth-shell">
+  <main class="auth-card">
+    <section class="auth-hero">
+      <div class="brand"><strong>Unified Patient Access</strong><small>Patient onboarding</small></div>
+      <div class="stack">
+        <span class="eyebrow">SCR-001</span>
+        <h1>Register in under 30 seconds.</h1>
+        <p>Progressive disclosure keeps the flow short while preserving inline validation, accessible focus states, and clear recovery paths.</p>
+      </div>
+      <div class="chip-row">
+        <span class="pill success">UXR-101 rapid completion</span>
+        <span class="pill">UXR-205 inline errors</span>
+      </div>
+    </section>
+    <section class="auth-form">
+      <div class="steps">
+        <span class="step done">1 Contact</span>
+        <span class="step active">2 Verify</span>
+        <span class="step">3 Profile</span>
+      </div>
+      <div class="banner success"><strong>Completed step 1.</strong><p>Verification code sent to priya@example.com.</p></div>
+      <label class="field"><strong>Verification code</strong><div class="input">_ _ _ _ _ _</div><small class="muted">Code expires in 04:31. Resend is available after 30 seconds.</small></label>
+      <label class="field"><strong>Full name</strong><div class="input">Priya Narayanan</div></label>
+      <label class="field"><strong>Create password</strong><div class="input">Minimum 12 characters with one number and symbol</div></label>
+      <div class="chip-row">
+        <span class="pill success">Email valid</span>
+        <span class="pill success">Phone verified</span>
+        <span class="pill warning">Password strength: medium</span>
+      </div>
+      <div class="footer-bar"><small>Terms, privacy, and accessibility links remain visible in the footer.</small><div class="chip-row"><button class="button ghost">Back</button><button class="button primary">Create account</button></div></div>
+    </section>
+  </main>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

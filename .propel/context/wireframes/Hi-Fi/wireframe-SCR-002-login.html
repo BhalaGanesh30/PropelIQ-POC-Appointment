@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-002 Login</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body class="auth-shell">
+  <main class="auth-card">
+    <section class="auth-hero">
+      <div class="brand"><strong>Unified Patient Access</strong><small>Secure sign in</small></div>
+      <div class="stack">
+        <span class="eyebrow">SCR-002</span>
+        <h1>Access the right workspace instantly.</h1>
+        <p>Unified authentication routes patients, staff, clinicians, and admins to role-appropriate landing experiences.</p>
+      </div>
+      <div class="banner warning"><strong>Account lockout warning.</strong><p>After five failed attempts, a countdown banner and support details appear.</p></div>
+    </section>
+    <section class="auth-form">
+      <h2>Welcome back</h2>
+      <label class="field"><strong>Email</strong><div class="input">name@clinic.org</div></label>
+      <label class="field"><strong>Password</strong><div class="input">â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢</div></label>
+      <div class="chip-row">
+        <span class="pill success">Visible focus ring</span>
+        <span class="pill">Remember me toggle</span>
+        <span class="pill error">Inline error on failed login</span>
+      </div>
+      <div class="banner error"><strong>Incorrect password.</strong><p>2 attempts remaining before temporary lockout. Contact support if this was not you.</p></div>
+      <div class="chip-row"><button class="button primary">Sign in</button><button class="button ghost">Forgot password</button></div>
+      <small>New patient? Register here. Social login remains reserved for a future release.</small>
+    </section>
+  </main>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

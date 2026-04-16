@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-013 Document Viewer</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><strong>Documents</strong><small>Viewer</small></div>
+      <div class="nav-group"><div class="nav-item">Library</div><div class="nav-item active">Viewer</div></div>
+    </aside>
+    <main class="content">
+      <header class="topbar"><div><div class="eyebrow">SCR-013</div><h2>View source files with extracted entities</h2></div><div class="chip-row"><button class="button ghost">Zoom</button><button class="button ghost">Rotate</button><button class="button ghost">Search</button></div></header>
+      <section class="split"><div class="editor-pane"><h3>Document canvas</h3><div class="mini-card" style="min-height: 520px;"><p>PDF page rendering area with search highlights, zoom overlay, and keyboard shortcut hints.</p></div></div><div class="editor-pane"><h3>Extracted entities</h3><div class="stack"><div class="mini-card"><strong>Diagnosis</strong><p>Low back pain</p><div class="chip-row"><span class="badge ai">Confidence 92%</span></div></div><div class="mini-card"><strong>Medication</strong><p>Lisinopril 10mg</p><div class="chip-row"><span class="badge">Source page 2</span></div></div><div class="banner"><strong>Search feedback</strong><p>Matches highlight in the document and update an accessible results count.</p></div></div></div></section>
+    </main>
+  </div>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-004 Slot Search and Discovery</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><strong>Patient Portal</strong><small>Appointments</small></div>
+      <div class="nav-group"><div class="nav-item active">Search and Book</div><div class="nav-item">My Appointments</div><div class="nav-item">Waitlist</div><div class="nav-item">Insurance</div></div>
+    </aside>
+    <main class="content">
+      <header class="topbar"><div><div class="eyebrow">SCR-004</div><h2>Find an appointment slot</h2></div><div class="chip-row"><span class="pill success">Results under 1 second</span><span class="pill">Selected slot summary</span></div></header>
+      <section class="hero"><div class="stack"><h1>Filter by date, duration, and visit type.</h1><p>A persistent results grid makes slot comparison fast for patients and staff. Mobile collapses filters into a stacked toolbar.</p></div><div class="banner"><strong>Selection pattern</strong><p>Chosen slot gains a strong border and is mirrored in a sticky footer with a continue CTA.</p></div></section>
+      <section class="panel">
+        <div class="card span-4"><h3>Filters</h3><div class="field"><strong>Date range</strong><div class="input">Jul 22, 2025 to Jul 29, 2025</div></div><div class="field"><strong>Duration</strong><div class="select">30 minutes</div></div><div class="field"><strong>Appointment type</strong><div class="select">Primary care consult</div></div><button class="button primary">Search slots</button></div>
+        <div class="card span-8"><h3>Available slots</h3><div class="table"><div class="table-header"><div>Date</div><div>Time</div><div>Clinician</div><div>Mode</div><div>Status</div></div><div class="table-row"><div>Tue 22 Jul</div><div>09:30 AM</div><div>Dr. Sharma</div><div>In-person</div><div><span class="badge success">Selected</span></div></div><div class="table-row"><div>Tue 22 Jul</div><div>11:15 AM</div><div>Dr. Singh</div><div>Video</div><div><span class="badge">Available</span></div></div><div class="table-row"><div>Wed 23 Jul</div><div>02:00 PM</div><div>Dr. Patel</div><div>In-person</div><div><span class="badge warning">High demand</span></div></div></div></div>
+      </section>
+      <div class="footer-bar"><div><strong>Selected slot:</strong> Tue 22 Jul, 09:30 AM with Dr. Sharma</div><div class="chip-row"><button class="button ghost">Join waitlist</button><button class="button primary">Continue to intake</button></div></div>
+    </main>
+  </div>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

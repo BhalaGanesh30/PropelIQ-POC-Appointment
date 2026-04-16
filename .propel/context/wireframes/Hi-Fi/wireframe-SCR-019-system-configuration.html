@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-019 System Configuration</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><strong>Admin Portal</strong><small>System configuration</small></div>
+      <div class="nav-group"><div class="nav-item active">Configuration</div><div class="nav-item">Users</div><div class="nav-item">Audit Logs</div><div class="nav-item">Reports</div></div>
+    </aside>
+    <main class="content">
+      <section class="hero"><div class="stack"><span class="eyebrow">SCR-019</span><h1>Configure scheduling, reminders, and policy rules.</h1><p>The admin shell uses a dense but readable workspace with category navigation and explicit save or reset controls.</p></div><div class="banner success"><strong>Versioned save</strong><p>Each configuration update writes a new version with rollback access.</p></div></section>
+      <section class="panel"><div class="card span-4"><h3>Categories</h3><div class="stack"><div class="mini-card">Slot templates</div><div class="mini-card">Reminder rules</div><div class="mini-card">Session policy</div><div class="mini-card">Communications</div></div></div><div class="card span-8"><h3>Reminder rules</h3><div class="stack"><label class="field"><strong>Lead times</strong><div class="input">7d, 2d, 1d, 2h</div></label><label class="field"><strong>Default channels</strong><div class="input">Email and SMS</div></label><div class="chip-row"><button class="button ghost">Reset</button><button class="button primary">Save changes</button></div></div></div></section>
+    </main>
+  </div>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

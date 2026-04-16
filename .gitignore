@@ -1,0 +1,21 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+nul
+*/settings.local.json
+.vs/PropelIQ-Stub-Copilot/FileContentIndex/22b15aa1-1f2a-4a19-90ff-9a692afdad4f.vsidx
+.vs/PropelIQ-Stub-Copilot/FileContentIndex/be57fc53-1fab-4c1f-b9ef-10080221f232.vsidx
+.vs/PropelIQ-Stub-Copilot/FileContentIndex/dce6b12f-bfd2-4802-8c4f-35f792feae99.vsidx
+.vs/PropelIQ-Stub-Copilot/FileContentIndex/e7cf1428-015e-4c2b-a4c4-a5b3842a4cb1.vsidx
+.vs/PropelIQ-Stub-Copilot/FileContentIndex/f9042544-90b4-4428-931d-0a4339a2a178.vsidx
+.vs/PropelIQ-Stub-Copilot/v17/.wsuo
+.vs/slnx.sqlite

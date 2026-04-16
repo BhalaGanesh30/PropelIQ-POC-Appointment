@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-025 Queue Dashboard</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><strong>Staff Portal</strong><small>Queue operations</small></div>
+      <div class="nav-group"><div class="nav-item active">Queue Dashboard</div><div class="nav-item">Daily Schedule</div><div class="nav-item">Walk-in Registration</div></div>
+    </aside>
+    <main class="content">
+      <header class="topbar"><div><div class="eyebrow">SCR-025</div><h2>Manage real-time patient flow</h2></div><div class="chip-row"><span class="pill success">Auto-refresh every 15s</span><span class="pill warning">Connection health visible</span></div></header>
+      <section class="banner warning"><strong>Connection lost.</strong><p>Stale data dims and auto-reconnect attempts continue every 10 seconds.</p></section>
+      <section class="table"><div class="table-header"><div>Patient</div><div>Status</div><div>Wait</div><div>Visit type</div><div>Actions</div></div><div class="table-row"><div>Priya Narayanan</div><div><span class="badge success">Checked in</span></div><div>08m</div><div>Primary care</div><div>Expand | Call next</div></div><div class="table-row"><div>Rahul Menon</div><div><span class="badge warning">Waiting</span></div><div>23m</div><div>Walk-in</div><div>Check in</div></div><div class="table-row"><div>Meera Shah</div><div><span class="badge error">Escalation</span></div><div>41m</div><div>Follow-up</div><div>Review</div></div></section>
+    </main>
+  </div>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

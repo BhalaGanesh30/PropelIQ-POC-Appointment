@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-014 360-Degree Patient Profile</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><strong>Clinician Workspace</strong><small>Patient lookup</small></div>
+      <div class="nav-group"><div class="nav-item active">Patient Profile</div><div class="nav-item">Timeline</div><div class="nav-item">Conflict Alerts</div><div class="nav-item">Coding Review</div></div>
+    </aside>
+    <main class="content">
+      <section class="hero"><div class="stack"><span class="eyebrow">SCR-014</span><h1>360-degree patient context with traceability.</h1><p>Summary, timeline, documents, insurance, and coding tabs keep source links visible on every extracted data point.</p><div class="chip-row"><span class="pill ai">AI extracted values labeled</span><span class="pill success">Verified values labeled</span></div></div><div class="card"><h3>Patient snapshot</h3><p>Priya Narayanan, DOB 12 Mar 1993, MRN 0041527</p><div class="chip-row"><span class="badge success">Verified identity</span><span class="badge">5 active documents</span></div></div></section>
+      <section class="panel"><div class="card span-8"><h3>Summary tab</h3><div class="stack"><div class="mini-card"><strong>Allergies</strong><p>Penicillin <span class="badge success">Verified</span></p></div><div class="mini-card"><strong>Primary complaint</strong><p>Low back pain <span class="badge ai">AI extracted</span></p></div><div class="mini-card"><strong>Insurance</strong><p>Acme Health Plan Gold <span class="badge">Source link</span></p></div></div></div><div class="card span-4"><h3>Traceability panel</h3><div class="stack"><div class="mini-card"><strong>Open source</strong><p>Referral letter, page 2, paragraph 3</p></div><div class="mini-card"><strong>Confidence note</strong><p>AI-derived fields remain editable and can be clinician-verified inline.</p></div></div></div></section>
+    </main>
+  </div>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

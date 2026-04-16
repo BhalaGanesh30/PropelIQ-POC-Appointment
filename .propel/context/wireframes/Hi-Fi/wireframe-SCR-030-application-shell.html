@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-030 Application Shell</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><strong>Unified Patient Access</strong><small>Role-based shell</small></div>
+      <div class="nav-group"><div class="nav-item active">Dashboard</div><div class="nav-item">Appointments</div><div class="nav-item">Documents</div><div class="nav-item">Operations</div><div class="nav-item">Administration</div></div>
+      <div class="banner warning"><strong>Session timeout</strong><p>Warning modal appears 2 minutes before expiry with extend and logout actions.</p></div>
+    </aside>
+    <main class="content">
+      <header class="topbar"><div><div class="eyebrow">SCR-030</div><h2>Shared application frame</h2><p>Breadcrumbs, user menu, and contextual actions adapt by role.</p></div><div class="chip-row"><span class="pill">Mobile drawer below 768px</span><span class="pill success">Persistent focus treatment</span></div></header>
+      <section class="panel"><div class="card span-8"><h3>Main content canvas</h3><div class="mini-card" style="min-height: 320px;"><p>This region hosts role-specific modules while preserving global feedback banners, breadcrumbs, and toast placement.</p></div></div><div class="card span-4"><h3>Global utilities</h3><div class="stack"><div class="mini-card">User menu and role badge</div><div class="mini-card">Global loading bar</div><div class="mini-card">Error boundary and recovery action</div></div></div></section>
+    </main>
+  </div>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-017 Coding Suggestion Review</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><strong>Clinician Workspace</strong><small>Coding review</small></div>
+      <div class="nav-group"><div class="nav-item">Conflict Alerts</div><div class="nav-item active">Coding Review</div><div class="nav-item">Code Search</div></div>
+    </aside>
+    <main class="content">
+      <header class="topbar"><div><div class="eyebrow">SCR-017</div><h2>Review AI coding suggestions</h2></div><div class="chip-row"><span class="pill ai">Explainable rationale</span><span class="pill">Manual fallback always available</span></div></header>
+      <section class="panel"><div class="card span-6"><h3>ICD-10 suggestions</h3><div class="stack"><div class="mini-card"><strong class="code">M54.50</strong><p>Low back pain, unspecified</p><div class="progress"><span style="width: 92%"></span></div><p>Based on visit reason and MRI report findings.</p><div class="chip-row"><button class="button primary">Accept</button><button class="button ghost">Modify</button><button class="button danger">Reject</button></div></div><div class="mini-card"><strong class="code">M51.26</strong><p>Other intervertebral disc displacement</p><div class="progress"><span style="width: 68%"></span></div></div></div></div><div class="card span-6"><h3>CPT suggestions</h3><div class="stack"><div class="mini-card"><strong class="code">99214</strong><p>Established patient office visit</p><div class="progress"><span style="width: 88%"></span></div><p>Suggested from expected visit complexity and intake detail.</p><div class="chip-row"><span class="badge success">Accepted preview</span></div></div><div class="banner"><strong>No suggestion fallback</strong><p>If confidence is too low, the empty state links directly into manual code search.</p></div></div></div></section>
+    </main>
+  </div>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

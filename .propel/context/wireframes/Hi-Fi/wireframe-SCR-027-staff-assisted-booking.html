@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-027 Staff-Assisted Booking</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><strong>Staff Portal</strong><small>Assisted booking</small></div>
+      <div class="nav-group"><div class="nav-item">Daily Schedule</div><div class="nav-item active">Book for Patient</div><div class="nav-item">Walk-in Registration</div></div>
+    </aside>
+    <main class="content">
+      <section class="hero"><div class="stack"><span class="eyebrow">SCR-027</span><h1>Book on behalf of a patient.</h1><p>Staff can move quickly through patient search, slot selection, simplified intake, and override justification when policy exceptions apply.</p><div class="steps"><span class="step done">1 Patient</span><span class="step done">2 Slot</span><span class="step active">3 Intake</span><span class="step">4 Confirm</span></div></div><div class="banner warning"><strong>Override required.</strong><p>Scheduling constraint bypassed. Reason becomes mandatory before confirmation.</p></div></section>
+      <section class="panel"><div class="card span-7"><h3>Selected patient and slot</h3><div class="stack"><div class="mini-card"><strong>Patient</strong><p>Rahul Menon, MRN 0041831</p></div><div class="mini-card"><strong>Slot</strong><p>Today at 03:15 PM with Dr. Patel</p></div></div></div><div class="card span-5"><h3>Override reason</h3><label class="field"><strong>Reason</strong><div class="textarea">Urgent same-day review due to escalating pain.</div></label><div class="chip-row"><button class="button ghost">Back</button><button class="button primary">Confirm booking</button></div></div></section>
+    </main>
+  </div>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

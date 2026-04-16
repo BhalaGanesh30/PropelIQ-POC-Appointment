@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-021 Audit Log Viewer</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><strong>Admin Portal</strong><small>Audit logs</small></div>
+      <div class="nav-group"><div class="nav-item">Users</div><div class="nav-item active">Audit Logs</div><div class="nav-item">Reports</div></div>
+    </aside>
+    <main class="content">
+      <header class="topbar"><div><div class="eyebrow">SCR-021</div><h2>Read-only audit trail</h2></div><div class="chip-row"><span class="pill">Filters shown as removable chips</span></div></header>
+      <section class="table"><div class="table-header"><div>Timestamp</div><div>Actor</div><div>Event</div><div>Entity</div><div>Details</div></div><div class="table-row"><div>22 Jul 09:04</div><div>anika.rao</div><div>User invited</div><div>User: Marcus Lee</div><div>Expand</div></div><div class="table-row"><div>22 Jul 08:51</div><div>system</div><div>Reminder sent</div><div>Appointment 45192</div><div>Expand</div></div><div class="table-row"><div>21 Jul 17:28</div><div>sonia.patel</div><div>Template updated</div><div>SMS Reminder</div><div>Expand</div></div></section>
+      <section class="banner"><strong>Large date-range behavior</strong><p>Progressive loading appears above the table when the query spans large audit windows.</p></section>
+    </main>
+  </div>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

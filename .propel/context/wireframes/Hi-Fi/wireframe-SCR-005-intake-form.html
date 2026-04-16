@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-005 Intake Form</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><strong>Patient Portal</strong><small>Intake</small></div>
+      <div class="nav-group"><div class="nav-item active">Visit intake</div><div class="nav-item">Insurance</div><div class="nav-item">Documents</div></div>
+    </aside>
+    <main class="content">
+      <header class="topbar"><div><div class="eyebrow">SCR-005</div><h2>Complete visit intake</h2></div><div class="chip-row"><span class="pill ai">AI assist enabled</span><span class="pill success">Autosaved 10 seconds ago</span></div></header>
+      <section class="panel">
+        <div class="card span-8"><h3>Visit details</h3><div class="stack"><label class="field"><strong>Reason for visit</strong><div class="textarea ai">Persistent lower back pain for 2 weeks, worse in mornings.</div><small>AI-assisted draft populated from booking context. User can edit before submit.</small></label><label class="field"><strong>Medical history</strong><div class="textarea">Existing hypertension. No recent surgeries.</div></label><label class="field"><strong>Current medications</strong><div class="input">Lisinopril 10mg daily</div></label></div></div>
+        <div class="card span-4"><h3>Progress</h3><div class="chip-row"><span class="pill success">Personal info</span><span class="pill success">Visit reason</span><span class="pill warning">Insurance pending</span></div><div class="banner"><strong>Autosave model</strong><p>Field blur saves quietly. Failures raise a persistent warning toast and keep edits local.</p></div><div class="mini-card"><strong>AI field treatment</strong><p>AI-filled inputs use a tinted background plus badge, never a locked state.</p></div></div>
+      </section>
+      <div class="footer-bar"><small>Back and submit remain sticky for long forms on desktop and mobile.</small><div class="chip-row"><button class="button ghost">Back</button><button class="button primary">Submit intake</button></div></div>
+    </main>
+  </div>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

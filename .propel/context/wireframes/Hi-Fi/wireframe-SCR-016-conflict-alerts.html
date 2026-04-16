@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-016 Conflict Alerts</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><strong>Clinician Workspace</strong><small>Safety review</small></div>
+      <div class="nav-group"><div class="nav-item">Patient Profile</div><div class="nav-item active">Conflict Alerts</div><div class="nav-item">Coding Review</div></div>
+    </aside>
+    <main class="content">
+      <section class="hero"><div class="stack"><span class="eyebrow">SCR-016</span><h1>Persistent clinical conflict alerts.</h1><p>Severity-colored alerts remain visible until acknowledged, with typed confirmation required for critical risks.</p></div><div class="banner error"><strong>Critical interaction detected.</strong><p>Warfarin and Aspirin combination requires clinician acknowledgment before proceeding.</p></div></section>
+      <section class="panel"><div class="card span-7"><h3>Critical</h3><div class="mini-card"><strong>Drug-drug conflict</strong><p>Warfarin + Aspirin. Increased bleeding risk.</p><div class="chip-row"><span class="badge error">Critical</span><span class="badge">Acknowledge required</span></div></div></div><div class="card span-5"><h3>Actions</h3><div class="stack"><label class="field"><strong>Typed confirmation</strong><div class="input">Type ACKNOWLEDGE</div></label><button class="button danger">Acknowledge critical alert</button><button class="button ghost">View source evidence</button></div></div></section>
+    </main>
+  </div>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

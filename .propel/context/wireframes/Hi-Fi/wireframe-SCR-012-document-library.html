@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-012 Document Library</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><strong>Documents</strong><small>Patient and staff access</small></div>
+      <div class="nav-group"><div class="nav-item">Upload</div><div class="nav-item active">Document Library</div><div class="nav-item">Viewer</div></div>
+    </aside>
+    <main class="content">
+      <header class="topbar"><div><div class="eyebrow">SCR-012</div><h2>Browse and manage patient documents</h2></div><div class="chip-row"><button class="button ghost">Filter status</button><button class="button primary">Upload new</button></div></header>
+      <section class="table"><div class="table-header"><div>Name</div><div>Category</div><div>Date</div><div>Status</div><div>Actions</div></div><div class="table-row"><div>referral-letter.pdf</div><div>Referral</div><div>22 Jul 2025</div><div><span class="badge success">Processed</span></div><div>View | Rename</div></div><div class="table-row"><div>mri-report.pdf</div><div>Imaging</div><div>18 Jul 2025</div><div><span class="badge ai">Extracted</span></div><div>View | Delete</div></div><div class="table-row"><div>insurance-card.jpg</div><div>Insurance</div><div>15 Jul 2025</div><div><span class="badge warning">Pending review</span></div><div>View | Retry OCR</div></div></section>
+      <section class="banner"><strong>Destructive action pattern</strong><p>Deletes are soft-delete only and always go through a confirmation dialog with recovery guidance.</p></section>
+    </main>
+  </div>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

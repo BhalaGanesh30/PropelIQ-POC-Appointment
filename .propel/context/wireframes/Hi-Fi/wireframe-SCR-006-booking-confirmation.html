@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-006 Booking Confirmation</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><strong>Patient Portal</strong><small>Confirmation</small></div>
+      <div class="nav-group"><div class="nav-item active">Appointment confirmed</div><div class="nav-item">My Appointments</div></div>
+    </aside>
+    <main class="content">
+      <section class="hero"><div class="stack"><span class="eyebrow">SCR-006</span><h1>Your appointment is confirmed.</h1><p>The summary keeps artifacts in one place: PDF, QR code, and calendar export.</p><div class="chip-row"><span class="pill success">Success state</span><span class="pill">PDF and ICS actions</span></div></div><div class="banner success"><strong>Visit booked.</strong><p>Tuesday 22 Jul 2025 at 09:30 AM with Dr. Sharma, Internal Medicine.</p></div></section>
+      <section class="panel"><div class="card span-7"><h3>Appointment summary</h3><div class="stack"><div class="mini-card"><strong>Clinic</strong><p>Northside Medical Center, Level 2, Suite 14</p></div><div class="mini-card"><strong>Patient</strong><p>Priya Narayanan, DOB 12 Mar 1993</p></div><div class="mini-card"><strong>Arrival guidance</strong><p>Please arrive 15 minutes early and bring a photo ID.</p></div></div></div><div class="card span-5"><h3>Actions</h3><div class="stack"><button class="button primary">Download PDF</button><button class="button secondary">Export to calendar</button><button class="button ghost">Show QR code</button></div><div class="banner"><strong>Fallback behavior</strong><p>If artifact generation fails, the page keeps the booking summary and exposes retry controls.</p></div></div></section>
+    </main>
+  </div>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

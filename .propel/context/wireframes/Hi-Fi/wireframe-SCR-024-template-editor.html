@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-024 Template Editor</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><strong>Admin Portal</strong><small>Template editor</small></div>
+      <div class="nav-group"><div class="nav-item">KPI Dashboard</div><div class="nav-item active">Template Editor</div><div class="nav-item">Audit Logs</div></div>
+    </aside>
+    <main class="content">
+      <header class="topbar"><div><div class="eyebrow">SCR-024</div><h2>Edit notification templates with live preview</h2></div><div class="chip-row"><button class="button ghost">Rollback</button><button class="button primary">Save version</button></div></header>
+      <section class="editor"><div class="editor-pane"><h3>HTML editor</h3><pre>&lt;h1&gt;Appointment Reminder&lt;/h1&gt;
+&lt;p&gt;Hello {{patientName}}, your appointment is on {{date}} at {{time}}.&lt;/p&gt;</pre></div><div class="editor-pane"><h3>Preview</h3><div class="mini-card"><strong>Appointment Reminder</strong><p>Hello Priya, your appointment is on Tuesday 22 Jul at 09:30 AM.</p></div><div class="banner"><strong>Validation</strong><p>Syntax errors and missing placeholders appear inline before save.</p></div></div></section>
+    </main>
+  </div>
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>
