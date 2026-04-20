@@ -381,11 +381,11 @@ docker exec propeliq-backup cat /backups/backup.log
 
 ## Implementation Checklist
 
-- [ ] Enable WAL archiving on PostgreSQL service: `wal_level=replica`, `archive_mode=on`, `archive_command`, `archive_timeout=300`
-- [ ] Create `infra/backup/backup.sh` with `pg_basebackup`, completion logging, error handling with ALERT output, and retention purge
-- [ ] Create `infra/backup/entrypoint.sh` with dynamic cron schedule from `BACKUP_SCHEDULE_CRON` and initial backup on start
-- [ ] Create `infra/backup/Dockerfile` using `postgres:15-alpine` with cron and backup script
-- [ ] Add backup sidecar service to `docker-compose.yml` with `wal-archive` and `backups` named volumes
-- [ ] Create `replication_user` role with REPLICATION privilege in `infra/postgres/init.sql`
-- [ ] Implement pre-backup storage check that purges expired backups before retrying on low space
-- [ ] Add `BACKUP_RETENTION_DAYS`, `BACKUP_SCHEDULE_CRON`, `POSTGRES_REPLICATION_PASSWORD` to `.env.example`
+- [x] Enable WAL archiving on PostgreSQL service: `wal_level=replica`, `archive_mode=on`, `archive_command`, `archive_timeout=300`
+- [x] Create `infra/backup/backup.sh` with `pg_basebackup`, completion logging, error handling with ALERT output, and retention purge
+- [x] Create `infra/backup/entrypoint.sh` with dynamic cron schedule from `BACKUP_SCHEDULE_CRON` and initial backup on start
+- [x] Create `infra/backup/Dockerfile` using `postgres:15-alpine` with cron and backup script
+- [x] Add backup sidecar service to `docker-compose.yml` with `wal-archive` and `backups` named volumes
+- [x] Create `replication_user` role with REPLICATION privilege in `infra/postgres/init.sql`
+- [x] Implement pre-backup storage check that purges expired backups before retrying on low space
+- [x] Add `BACKUP_RETENTION_DAYS`, `BACKUP_SCHEDULE_CRON`, `POSTGRES_REPLICATION_PASSWORD` to `.env.example`

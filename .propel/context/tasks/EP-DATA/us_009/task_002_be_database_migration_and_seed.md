@@ -321,22 +321,22 @@ dotnet ef migrations list \
 
 ## Implementation Validation Strategy
 
-- [ ] `dotnet ef migrations add InitialSchema` generates migration covering all 10 entity tables (AC-1)
-- [ ] Generated migration contains UUID (`uuid`) columns with `gen_random_uuid()` defaults for all PKs (AC-2)
-- [ ] Generated migration contains `jsonb` column type for `contact_preferences` and `details` columns (AC-3)
+- [x] `dotnet ef migrations add InitialSchema` generates migration covering all 10 entity tables (AC-1)
+- [x] Generated migration contains UUID (`uuid`) columns with `gen_random_uuid()` defaults for all PKs (AC-2)
+- [x] Generated migration contains `jsonb` column type for `contact_preferences` and `details` columns (AC-3)
 - [ ] `dotnet ef database update` applies migration and seeds admin user and mock patient without errors (AC-4)
 - [ ] `app.__ef_migrations_history` table contains `InitialSchema` entry after apply
 - [ ] `dotnet ef database update 0` rolls back all tables without FK constraint violations (edge case)
-- [ ] Pre-migration guard SQL pattern documented and tested with a simulated data violation scenario (edge case)
-- [ ] `dotnet ef migrations has-pending-model-changes` returns no pending changes after migration is generated
+- [x] Pre-migration guard SQL pattern documented and tested with a simulated data violation scenario (edge case)
+- [x] `dotnet ef migrations has-pending-model-changes` returns no pending changes after migration is generated
 
 ## Implementation Checklist
 
-- [ ] Verify or create `DesignTimeAppDbContextFactory` pointing to local PostgreSQL connection string
-- [ ] Run `dotnet ef migrations add InitialSchema` and confirm all 10 tables appear in the generated `Up()` method
-- [ ] Inspect generated migration for `uuid` PKs, `jsonb` column types, `unique` indexes, and FK constraints
-- [ ] Create `AppDbContextSeed.cs` with idempotent seed logic for admin user and mock patient record
-- [ ] Wire `UseAsyncSeeding` in `AppDbContext` options to call `AppDbContextSeed.SeedAsync`
+- [x] Verify or create `DesignTimeAppDbContextFactory` pointing to local PostgreSQL connection string
+- [x] Run `dotnet ef migrations add InitialSchema` and confirm all 10 tables appear in the generated `Up()` method
+- [x] Inspect generated migration for `uuid` PKs, `jsonb` column types, `unique` indexes, and FK constraints
+- [x] Create `AppDbContextSeed.cs` with idempotent seed logic for admin user and mock patient record
+- [x] Wire `UseAsyncSeeding` in `AppDbContext` options to call `AppDbContextSeed.SeedAsync`
 - [ ] Run `dotnet ef database update` against Docker Compose PostgreSQL and verify tables and seed data
 - [ ] Run `dotnet ef database update 0` and confirm clean rollback without errors
-- [ ] Create `MIGRATION_CONVENTIONS.md` documenting additive-only migration rules per DR-007
+- [x] Create `MIGRATION_CONVENTIONS.md` documenting additive-only migration rules per DR-007

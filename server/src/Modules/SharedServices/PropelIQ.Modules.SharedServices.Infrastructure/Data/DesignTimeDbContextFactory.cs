@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using PropelIQ.Modules.SharedServices.Infrastructure.Data.Seed;
 
 namespace PropelIQ.Modules.SharedServices.Infrastructure.Data;
 
@@ -38,7 +39,14 @@ public sealed class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<App
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
         optionsBuilder.UseNpgsql(
             connectionString,
-            npgsqlOptions => npgsqlOptions.UseVector());
+            npgsqlOptions =>
+            {
+                npgsqlOptions.UseVector();
+                npgsqlOptions.MigrationsHistoryTable("__ef_migrations_history", "app");
+            })
+            .UseSnakeCaseNamingConvention()
+            .UseAsyncSeeding(async (context, _, ct) =>
+                await AppDbContextSeed.SeedAsync((AppDbContext)context, ct));
 
         return new AppDbContext(optionsBuilder.Options);
     }

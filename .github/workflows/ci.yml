@@ -196,6 +196,32 @@ jobs:
           ConnectionStrings__Default: "Host=localhost;Port=5432;Database=propeliq_test;Username=test_user;Password=test_pass;Search Path=app"
           ConnectionStrings__Redis: ""
 
+      - name: Apply EF Core migrations
+        run: |
+          dotnet tool restore || dotnet tool install --global dotnet-ef --version 9.*
+          dotnet ef database update \
+            --project src/Modules/SharedServices/PropelIQ.Modules.SharedServices.Infrastructure \
+            --startup-project src/PropelIQ.Api \
+            --connection "Host=localhost;Port=5432;Database=propeliq_test;Username=test_user;Password=test_pass;Search Path=app"
+        env:
+          DOTNET_ENVIRONMENT: Development
+
+      - name: Create PHI roles for drift check
+        run: |
+          PGPASSWORD=test_pass psql -h localhost -U test_user -d propeliq_test \
+            -f docker/postgres/init/05-create-phi-roles.sql || true
+        working-directory: ${{ github.workspace }}
+
+      - name: PHI Policy Drift Check
+        run: |
+          dotnet test tests/PropelIQ.Infrastructure.Tests \
+            --configuration Release \
+            --no-build \
+            --filter "FullyQualifiedName~PhiPolicyDriftTests" \
+            --logger "console;verbosity=detailed"
+        env:
+          TEST_DB_CONNECTION: "Host=localhost;Port=5432;Database=propeliq_test;Username=test_user;Password=test_pass;Search Path=app"
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4

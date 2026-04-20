@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Pgvector;
 
 #nullable disable
 
@@ -17,32 +16,36 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
 
             migrationBuilder.AlterDatabase()
                 .Annotation("Npgsql:PostgresExtension:pg_trgm", ",,")
-                .Annotation("Npgsql:PostgresExtension:uuid-ossp", ",,")
-                .Annotation("Npgsql:PostgresExtension:vector", ",,");
+                .Annotation("Npgsql:PostgresExtension:uuid-ossp", ",,");
 
-            migrationBuilder.CreateTable(
-                name: "embedding_samples",
-                schema: "app",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "uuid_generate_v4()"),
-                    ContentRef = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
-                    Embedding = table.Column<Vector>(type: "vector(1536)", nullable: true),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_embedding_samples", x => x.Id);
-                });
+            // pgvector is optional — gracefully skip when not installed (local dev without Docker).
+            migrationBuilder.Sql("""
+                DO $$
+                BEGIN
+                    CREATE EXTENSION IF NOT EXISTS vector;
+                EXCEPTION WHEN OTHERS THEN
+                    RAISE NOTICE 'pgvector not available on this instance. Vector search will be disabled.';
+                END $$;
+                """);
 
-            migrationBuilder.CreateIndex(
-                name: "IX_embedding_samples_Embedding",
-                schema: "app",
-                table: "embedding_samples",
-                column: "Embedding")
-                .Annotation("Npgsql:IndexMethod", "ivfflat")
-                .Annotation("Npgsql:IndexOperators", new[] { "vector_cosine_ops" })
-                .Annotation("Npgsql:StorageParameter:lists", 100);
+            // Create embedding_samples only when pgvector is installed.
+            migrationBuilder.Sql("""
+                DO $$
+                BEGIN
+                    CREATE TABLE IF NOT EXISTS app.embedding_samples (
+                        "Id"         uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+                        "ContentRef" character varying(512)   NOT NULL,
+                        "Embedding"  vector(1536),
+                        "CreatedAt"  timestamp with time zone NOT NULL DEFAULT now(),
+                        CONSTRAINT "PK_embedding_samples" PRIMARY KEY ("Id")
+                    );
+                    CREATE INDEX IF NOT EXISTS "IX_embedding_samples_Embedding"
+                        ON app.embedding_samples USING ivfflat ("Embedding" vector_cosine_ops)
+                        WITH (lists = 100);
+                EXCEPTION WHEN OTHERS THEN
+                    RAISE NOTICE 'Skipping embedding_samples table — pgvector not available.';
+                END $$;
+                """);
         }
 
         /// <inheritdoc />

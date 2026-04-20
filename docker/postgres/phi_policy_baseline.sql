@@ -1,0 +1,113 @@
+-- PropelIQ PHI Policy Baseline — Canonical permission snapshot
+-- Used by CI/CD drift detection and compliance audits.
+-- Last updated: 20260420 (AddPhiAccessPolicies migration)
+--
+-- Format: TABLE | COLUMN | app_api | app_analytics | app_admin
+-- Values: GRANT = column accessible | DENY = column denied | N/A = not applicable
+--
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- app.patients
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- id                    | GRANT | GRANT | GRANT
+-- user_id               | GRANT | DENY  | GRANT
+-- first_name            | GRANT | DENY  | GRANT  ← PHI
+-- last_name             | GRANT | DENY  | GRANT  ← PHI
+-- date_of_birth         | GRANT | DENY  | GRANT  ← PHI
+-- mrn                   | GRANT | DENY  | GRANT  ← PHI
+-- contact_preferences   | GRANT | DENY  | GRANT  ← PHI (JSONB, contains phone)
+-- tenant_id             | GRANT | GRANT | GRANT
+-- created_at            | GRANT | GRANT | GRANT
+-- updated_at            | GRANT | GRANT | GRANT
+--
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- app.users
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- id                    | GRANT | GRANT | GRANT
+-- email                 | GRANT | DENY  | GRANT  ← PHI
+-- password_hash         | DENY  | DENY  | GRANT  ← Sensitive
+-- role                  | GRANT | GRANT | GRANT
+-- first_name            | GRANT | DENY  | GRANT  ← PHI
+-- last_name             | GRANT | DENY  | GRANT  ← PHI
+-- is_active             | GRANT | GRANT | GRANT
+-- last_login_at         | GRANT | DENY  | GRANT
+-- tenant_id             | GRANT | GRANT | GRANT
+-- created_at            | GRANT | GRANT | GRANT
+-- updated_at            | GRANT | GRANT | GRANT
+--
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- app.insurance_profiles
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- id                    | GRANT | GRANT | GRANT
+-- patient_id            | GRANT | GRANT | GRANT
+-- payer_name            | GRANT | DENY  | GRANT  ← PHI (linkable)
+-- member_id             | GRANT | DENY  | GRANT  ← PHI
+-- is_primary            | GRANT | GRANT | GRANT
+-- verification_status   | GRANT | GRANT | GRANT
+-- tenant_id             | GRANT | GRANT | GRANT
+-- created_at            | GRANT | GRANT | GRANT
+-- updated_at            | GRANT | GRANT | GRANT
+--
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- app.clinical_documents
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- id                    | GRANT | GRANT | GRANT
+-- patient_id            | GRANT | GRANT | GRANT
+-- file_name             | GRANT | DENY  | GRANT  ← PHI (may contain patient name)
+-- category              | GRANT | GRANT | GRANT
+-- extraction_status     | GRANT | GRANT | GRANT
+-- storage_path          | DENY  | DENY  | GRANT  ← Sensitive (file system path)
+-- tenant_id             | GRANT | GRANT | GRANT
+-- created_at            | GRANT | GRANT | GRANT
+-- updated_at            | GRANT | GRANT | GRANT
+--
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- app.clinical_facts
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- id                    | GRANT | GRANT | GRANT
+-- document_id           | GRANT | GRANT | GRANT
+-- fact_type             | GRANT | GRANT | GRANT
+-- value                 | GRANT | DENY  | GRANT  ← PHI (extracted clinical data)
+-- confidence_score      | GRANT | GRANT | GRANT
+-- verification_state    | GRANT | GRANT | GRANT
+-- last_reviewed_by_user_id | GRANT | DENY | GRANT
+-- last_reviewed_at      | GRANT | DENY  | GRANT
+-- tenant_id             | GRANT | GRANT | GRANT
+-- created_at            | GRANT | GRANT | GRANT
+-- updated_at            | GRANT | GRANT | GRANT
+--
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- app.coding_decisions
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- id                    | GRANT | GRANT | GRANT
+-- patient_id            | GRANT | GRANT | GRANT
+-- document_id           | GRANT | GRANT | GRANT
+-- code_type             | GRANT | GRANT | GRANT
+-- suggested_code        | GRANT | DENY  | GRANT  ← PHI (reveals diagnoses)
+-- rationale             | GRANT | DENY  | GRANT  ← PHI
+-- confidence_score      | GRANT | GRANT | GRANT
+-- reviewer_action       | GRANT | GRANT | GRANT
+-- finalized_code        | GRANT | DENY  | GRANT  ← PHI
+-- reviewed_by_user_id   | GRANT | DENY  | GRANT
+-- tenant_id             | GRANT | GRANT | GRANT
+-- created_at            | GRANT | GRANT | GRANT
+-- updated_at            | GRANT | GRANT | GRANT
+--
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- app.appointments (all columns granted to both roles — no PHI in this table)
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- All columns: GRANT | GRANT | GRANT
+--
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- app.vw_patients_deidentified (de-identified view for analytics)
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- id                    | N/A   | GRANT | GRANT
+-- name_hash             | N/A   | GRANT | GRANT  (SHA-256, non-reversible)
+-- age_years             | N/A   | GRANT | GRANT  (derived, not DOB)
+-- tenant_id             | N/A   | GRANT | GRANT
+-- created_at            | N/A   | GRANT | GRANT
+--
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- RLS Policies (all tenant-bearing tables)
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- tenant_isolation_*    | app_api, app_analytics | USING (tenant_id = current_setting('app.current_tenant_id'))
+-- admin_bypass_*        | app_admin              | USING (true)

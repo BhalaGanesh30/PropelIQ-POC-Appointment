@@ -447,9 +447,9 @@ docker exec propeliq-postgres psql -U postgres -d propeliq -c "
 
 ## Implementation Checklist
 
-- [ ] Create `infra/postgres/check_phi_drift.sql` with queries for column privileges, RLS policies, and unclassified column detection
-- [ ] Create `PhiPolicyDriftTests.cs` with baseline dictionaries for `app_api` and `app_analytics` permitted columns
-- [ ] Implement `NewColumns_Must_Be_Explicitly_Classified` test that detects unassigned columns in PHI tables (AC-3)
-- [ ] Implement `AppApi_Should_Not_Have_Excess_Column_Privileges` test for privilege escalation detection (edge case)
-- [ ] Implement `RlsPolicies_Must_Exist_On_TenantTables` test for RLS coverage validation
-- [ ] Add PHI Policy Drift Check step to `.github/workflows/ci.yml` in the backend job
+- [x] Create `infra/postgres/check_phi_drift.sql` with queries for column privileges, RLS policies, and unclassified column detection
+- [x] Create `PhiPolicyDriftTests.cs` with baseline dictionaries for `app_api` and `app_analytics` permitted columns
+- [x] Implement `NewColumns_Must_Be_Explicitly_Classified` test that detects unassigned columns in PHI tables (AC-3)
+- [x] Implement `AppApi_Should_Not_Have_Excess_Column_Privileges` test for privilege escalation detection (edge case)
+- [x] Implement `RlsPolicies_Must_Exist_On_TenantTables` test for RLS coverage validation
+- [x] Add PHI Policy Drift Check step to `.github/workflows/ci.yml` in the backend job

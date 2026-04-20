@@ -393,22 +393,22 @@ dotnet ef dbcontext info --project server/src/SharedServices.Infrastructure \
 
 ## Implementation Validation Strategy
 
-- [ ] Solution builds without errors after all entity classes are added
+- [x] Solution builds without errors after all entity classes are added
 - [ ] `dotnet ef dbcontext info` returns AppDbContext metadata without errors
-- [ ] All 10 entity DbSet properties are registered and discoverable
-- [ ] Each entity has a `Guid Id` primary key with `uuid` column type
-- [ ] `Patient.MRN` and `User.Email` have unique index configurations
-- [ ] JSONB column types are configured for `ContactPreferences` and `AuditDetails`
-- [ ] Foreign key relationships include explicit `OnDelete` behavior specification
-- [ ] Snake_case naming convention produces `patient_id`, `created_at` style column names
+- [x] All 10 entity DbSet properties are registered and discoverable
+- [x] Each entity has a `Guid Id` primary key with `uuid` column type
+- [x] `Patient.MRN` and `User.Email` have unique index configurations
+- [x] JSONB column types are configured for `ContactPreferences` and `AuditDetails`
+- [x] Foreign key relationships include explicit `OnDelete` behavior specification
+- [x] Snake_case naming convention produces `patient_id`, `created_at` style column names
 
 ## Implementation Checklist
 
-- [ ] Create `EntityBase.cs` in SharedKernel with `Guid Id`, `CreatedAt`, `UpdatedAt`
-- [ ] Create all 10 domain entity classes across Administration, Scheduling, ClinicalIntelligence, and SharedServices domain projects
-- [ ] Create JSONB value object classes: `ContactPreferences` (Patient), `AuditDetails` (AuditRecord)
-- [ ] Create `IEntityTypeConfiguration<T>` for each entity with UUID PK type, FK relationships, unique indexes, and JSONB column mappings
-- [ ] Configure `AuditRecord` as append-only: no `UpdatedAt`, all properties `init`-only
-- [ ] Register all 10 `DbSet<T>` properties in `AppDbContext.cs` and call `ApplyConfigurationsFromAssembly`
-- [ ] Enable `UseSnakeCaseNamingConvention()` and set migrations history table to `app.__ef_migrations_history`
+- [x] Create `EntityBase.cs` in SharedKernel with `Guid Id`, `CreatedAt`, `UpdatedAt`
+- [x] Create all 10 domain entity classes across Administration, Scheduling, ClinicalIntelligence, and SharedServices domain projects
+- [x] Create JSONB value object classes: `ContactPreferences` (Patient), `AuditDetails` (AuditRecord)
+- [x] Create `IEntityTypeConfiguration<T>` for each entity with UUID PK type, FK relationships, unique indexes, and JSONB column mappings
+- [x] Configure `AuditRecord` as append-only: no `UpdatedAt`, all properties `init`-only
+- [x] Register all 10 `DbSet<T>` properties in `AppDbContext.cs` and call `ApplyConfigurationsFromAssembly`
+- [x] Enable `UseSnakeCaseNamingConvention()` and set migrations history table to `app.__ef_migrations_history`
 - [ ] Verify `dotnet ef dbcontext info` succeeds and model validation passes
