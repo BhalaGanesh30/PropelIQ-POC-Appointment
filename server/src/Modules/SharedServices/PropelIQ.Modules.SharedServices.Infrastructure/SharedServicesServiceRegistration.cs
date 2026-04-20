@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PropelIQ.Modules.SharedServices.Infrastructure.Caching;
 using PropelIQ.Modules.SharedServices.Infrastructure.Data;
+using PropelIQ.Modules.SharedServices.Infrastructure.Data.Seed;
 using PropelIQ.SharedKernel.Caching;
 
 namespace PropelIQ.Modules.SharedServices.Infrastructure;
@@ -29,7 +30,14 @@ public static class SharedServicesServiceRegistration
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(
                 connectionString,
-                npgsqlOptions => npgsqlOptions.UseVector()));
+                npgsqlOptions =>
+                {
+                    npgsqlOptions.UseVector();
+                    npgsqlOptions.MigrationsHistoryTable("__ef_migrations_history", "app");
+                })
+            .UseSnakeCaseNamingConvention()
+            .UseAsyncSeeding(async (context, _, ct) =>
+                await AppDbContextSeed.SeedAsync((AppDbContext)context, ct)));
 
         // ── Redis Cache Service (TR-004) ─────────────────────────────────────
         // Bind CacheSettings section; RedisCacheService resolves IDistributedCache

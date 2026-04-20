@@ -267,11 +267,11 @@ dotnet ef database update <PreviousMigrationName> \
 
 ## Implementation Checklist
 
-- [ ] Create EF Core migration `AuditTableImmutability` with `migrationBuilder.Sql()` for all raw SQL objects
-- [ ] Create `app.fn_prevent_audit_mutation()` trigger function that raises exception on UPDATE or DELETE
-- [ ] Create `trg_audit_records_immutable` BEFORE trigger on `app.audit_records` for UPDATE and DELETE
-- [ ] Configure GRANT: `INSERT, SELECT` only on `app.audit_records` for `app_user`; revoke UPDATE/DELETE/TRUNCATE
-- [ ] Set `occurred_at` column DEFAULT to `now()` for server-generated timestamps
-- [ ] Configure `pgaudit` extension: `shared_preload_libraries`, log DDL and role-based access
-- [ ] Implement `Down()` migration to drop trigger, function, and restore privileges
-- [ ] Add post-apply validation query confirming trigger exists on `audit_records` table
+- [x] Create EF Core migration `AuditTableImmutability` with `migrationBuilder.Sql()` for all raw SQL objects
+- [x] Create `app.fn_prevent_audit_mutation()` trigger function that raises exception on UPDATE or DELETE
+- [x] Create `trg_audit_records_immutable` BEFORE trigger on `app.audit_records` for UPDATE and DELETE
+- [x] Configure GRANT: `INSERT, SELECT` only on `app.audit_records` for `app_user`; revoke UPDATE/DELETE/TRUNCATE
+- [x] Set `occurred_at` column DEFAULT to `now()` for server-generated timestamps
+- [x] Configure `pgaudit` extension: `shared_preload_libraries`, log DDL and role-based access
+- [x] Implement `Down()` migration to drop trigger, function, and restore privileges
+- [x] Add post-apply validation query confirming trigger exists on `audit_records` table

@@ -16,6 +16,10 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- pg_trgm: enables trigram index support for fast ILIKE / similarity queries.
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
+-- pgaudit: connection-level audit logging for DDL and role-based DML (NFR-010, DR-005 edge case).
+-- shared_preload_libraries=pgaudit is set in docker-compose.yml command args.
+CREATE EXTENSION IF NOT EXISTS pgaudit;
+
 -- Verify extensions are active (logged to container stdout for diagnostics).
 DO $$
 DECLARE
@@ -23,10 +27,10 @@ DECLARE
 BEGIN
   SELECT COUNT(*) INTO ext_count
   FROM pg_extension
-  WHERE extname IN ('vector', 'uuid-ossp', 'pg_trgm');
+  WHERE extname IN ('vector', 'uuid-ossp', 'pg_trgm', 'pgaudit');
 
-  IF ext_count < 3 THEN
-    RAISE EXCEPTION 'Extension initialization failed: expected 3, found %', ext_count;
+  IF ext_count < 4 THEN
+    RAISE EXCEPTION 'Extension initialization failed: expected 4, found %', ext_count;
   END IF;
 
   RAISE NOTICE 'All % extensions initialized successfully.', ext_count;

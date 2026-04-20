@@ -3,9 +3,13 @@
   <ItemGroup>
     <ProjectReference Include="..\PropelIQ.Modules.SharedServices.Domain\PropelIQ.Modules.SharedServices.Domain.csproj" />
     <ProjectReference Include="..\PropelIQ.Modules.SharedServices.Application\PropelIQ.Modules.SharedServices.Application.csproj" />
+    <ProjectReference Include="..\..\Administration\PropelIQ.Modules.Administration.Domain\PropelIQ.Modules.Administration.Domain.csproj" />
+    <ProjectReference Include="..\..\Scheduling\PropelIQ.Modules.Scheduling.Domain\PropelIQ.Modules.Scheduling.Domain.csproj" />
+    <ProjectReference Include="..\..\ClinicalIntelligence\PropelIQ.Modules.ClinicalIntelligence.Domain\PropelIQ.Modules.ClinicalIntelligence.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="EFCore.NamingConventions" Version="9.0.*" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.6" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.6" />
     <PackageReference Include="Microsoft.Extensions.Resilience" Version="8.*" />

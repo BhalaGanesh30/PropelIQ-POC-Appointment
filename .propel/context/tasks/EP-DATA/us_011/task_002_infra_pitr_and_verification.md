@@ -511,9 +511,9 @@ docker exec propeliq-backup pg_ctl -D /tmp/restore_5433 stop
 
 ## Implementation Checklist
 
-- [ ] Create `infra/backup/restore.sh` with base backup selection, WAL replay via `recovery.signal` + `recovery_target_time`, and 4-hour RTO timeout guard
-- [ ] Create `infra/backup/verify-backup.sh` that restores the latest backup to a temporary instance, runs validation queries, and logs pass/fail to `backup.log`
-- [ ] Create `infra/backup/verify-queries.sql` with schema existence, core table presence, FK integrity, and seed data row count checks
-- [ ] Create `docs/DISASTER_RECOVERY_RUNBOOK.md` with step-by-step PITR procedure, RTO/RPO targets, and verification instructions
-- [ ] Update `infra/backup/entrypoint.sh` to add weekly verification cron job (default: Sunday 03:00 UTC)
-- [ ] Update `infra/backup/Dockerfile` to copy `restore.sh`, `verify-backup.sh`, and `verify-queries.sql` into the sidecar image
+- [x] Create `infra/backup/restore.sh` with base backup selection, WAL replay via `recovery.signal` + `recovery_target_time`, and 4-hour RTO timeout guard
+- [x] Create `infra/backup/verify-backup.sh` that restores the latest backup to a temporary instance, runs validation queries, and logs pass/fail to `backup.log`
+- [x] Create `infra/backup/verify-queries.sql` with schema existence, core table presence, FK integrity, and seed data row count checks
+- [x] Create `docs/DISASTER_RECOVERY_RUNBOOK.md` with step-by-step PITR procedure, RTO/RPO targets, and verification instructions
+- [x] Update `infra/backup/entrypoint.sh` to add weekly verification cron job (default: Sunday 03:00 UTC)
+- [x] Update `infra/backup/Dockerfile` to copy `restore.sh`, `verify-backup.sh`, and `verify-queries.sql` into the sidecar image

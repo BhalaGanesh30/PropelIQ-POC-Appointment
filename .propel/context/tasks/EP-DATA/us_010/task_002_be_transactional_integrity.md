@@ -441,11 +441,11 @@ docker exec propeliq-postgres psql -U app_user -d propeliq -c \
 
 ## Implementation Checklist
 
-- [ ] Create `IUnitOfWork` interface with `SaveChangesAsync`, `BeginTransactionAsync`, `CommitTransactionAsync`, `RollbackTransactionAsync`
-- [ ] Create `UnitOfWork` implementation wrapping `AppDbContext` with `IDbContextTransaction` management and auto-rollback on exception
-- [ ] Create `DatabaseErrorHandler` translating `PostgresException` SQLSTATE codes (23503, 23505, 23502) to domain exceptions
-- [ ] Create `ReferentialIntegrityException` with `TableName`, `ConstraintName` properties for structured error reporting
-- [ ] Create `BulkImportProcessor` with single-transaction batch processing and per-row error identification on FK violation
-- [ ] Create `BulkImportException` with `IReadOnlyList<BulkImportError>` for batch error report
-- [ ] Register `IUnitOfWork` (scoped) and `BulkImportProcessor` (scoped) in `Program.cs`
-- [ ] Document transactional usage pattern for multi-entity domain operations (booking, arrival, waitlist swap, coding finalization)
+- [x] Create `IUnitOfWork` interface with `SaveChangesAsync`, `BeginTransactionAsync`, `CommitTransactionAsync`, `RollbackTransactionAsync`
+- [x] Create `UnitOfWork` implementation wrapping `AppDbContext` with `IDbContextTransaction` management and auto-rollback on exception
+- [x] Create `DatabaseErrorHandler` translating `PostgresException` SQLSTATE codes (23503, 23505, 23502) to domain exceptions
+- [x] Create `ReferentialIntegrityException` with `TableName`, `ConstraintName` properties for structured error reporting
+- [x] Create `BulkImportProcessor` with single-transaction batch processing and per-row error identification on FK violation
+- [x] Create `BulkImportException` with `IReadOnlyList<BulkImportError>` for batch error report
+- [x] Register `IUnitOfWork` (scoped) and `BulkImportProcessor` (scoped) in `Program.cs`
+- [x] Document transactional usage pattern for multi-entity domain operations (booking, arrival, waitlist swap, coding finalization)

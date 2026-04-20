@@ -15,6 +15,17 @@ services:
   postgres:
     image: pgvector/pgvector:pg15
     container_name: propeliq-postgres
+    command: >
+      postgres
+      -c shared_preload_libraries=pgaudit
+      -c pgaudit.log=ddl,role
+      -c pgaudit.log_relation=on
+      -c pgaudit.log_statement_once=on
+      -c wal_level=replica
+      -c archive_mode=on
+      -c archive_command='test ! -f /var/lib/postgresql/wal_archive/%f && cp %p /var/lib/postgresql/wal_archive/%f'
+      -c archive_timeout=300
+      -c max_wal_senders=3
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-propeliq}
       POSTGRES_USER: ${POSTGRES_USER:-propeliq_user}
@@ -27,6 +38,9 @@ services:
       - pgdata:/var/lib/postgresql/data
       # Initialization scripts run alphabetically on first container start only.
       - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+      # WAL archive and backup volumes shared with backup sidecar.
+      - wal-archive:/var/lib/postgresql/wal_archive
+      - backups:/var/lib/postgresql/backups
     healthcheck:
       # pg_isready exits 0 when the server is ready to accept connections.
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-propeliq_user} -d ${POSTGRES_DB:-propeliq}"]
@@ -243,6 +257,32 @@ services:
     networks:
       - propeliq-net
 
+  # ── Database Backup Sidecar ────────────────────────────────────────────────
+
+  backup:
+    build:
+      context: ./infra/backup
+      dockerfile: Dockerfile
+    container_name: propeliq-backup
+    environment:
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGUSER: replication_user
+      PGPASSWORD: ${POSTGRES_REPLICATION_PASSWORD:-repl_pass}
+      BACKUP_DIR: /backups
+      WAL_ARCHIVE_DIR: /wal_archive
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-7}
+      BACKUP_SCHEDULE_CRON: ${BACKUP_SCHEDULE_CRON:-0 */6 * * *}
+    volumes:
+      - backups:/backups
+      - wal-archive:/wal_archive
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - propeliq-net
+
 networks:
   propeliq-net:
     driver: bridge
@@ -257,4 +297,8 @@ volumes:
   prometheus-data:
     driver: local
   grafana-data:
+    driver: local
+  wal-archive:
+    driver: local
+  backups:
     driver: local

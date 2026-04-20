@@ -3,12 +3,15 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using PropelIQ.Api.Infrastructure.Auth;
 using PropelIQ.Api.Infrastructure.HealthChecks;
+using PropelIQ.Api.Infrastructure.Tenancy;
 using PropelIQ.SharedKernel.AiGateway;
 using PropelIQ.SharedKernel.Observability;
+using PropelIQ.SharedKernel.Persistence;
 using PropelIQ.Modules.Scheduling.Infrastructure;
 using PropelIQ.Modules.ClinicalIntelligence.Infrastructure;
 using PropelIQ.Modules.Administration.Infrastructure;
 using PropelIQ.Modules.SharedServices.Infrastructure;
+using PropelIQ.Modules.SharedServices.Infrastructure.Data;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PropelIQ API — Composition Root
@@ -91,6 +94,16 @@ builder.Services
     .AddAdministrationInfrastructure(builder.Configuration)
     .AddSharedServicesInfrastructure(builder.Configuration);
 
+// ── Unit of Work & Bulk Import (DR-002, AC-2) ───────────────────────────────
+// UnitOfWork wraps AppDbContext with explicit transaction management.
+// BulkImportProcessor batches entities in a single transaction with per-row error reporting.
+builder.Services.AddScoped<IUnitOfWork>(sp =>
+    new UnitOfWork(sp.GetRequiredService<AppDbContext>()));
+builder.Services.AddScoped<BulkImportProcessor>(sp =>
+    new BulkImportProcessor(
+        sp.GetRequiredService<IUnitOfWork>(),
+        sp.GetRequiredService<AppDbContext>()));
+
 // ─────────────────────────────────────────────────────────────────────────────
 var app = builder.Build();
 // ─────────────────────────────────────────────────────────────────────────────
@@ -121,6 +134,9 @@ app.UseAuthentication();
 
 // 5. Authorization — enforces [Authorize] policies.
 app.UseAuthorization();
+
+// 5a. Tenant context — sets app.current_tenant_id session variable for RLS.
+app.UseMiddleware<TenantContextMiddleware>();
 
 // ── Routing ───────────────────────────────────────────────────────────────────
 // 6. Controller endpoints.

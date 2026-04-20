@@ -370,11 +370,11 @@ docker exec propeliq-postgres psql -U app_api -d propeliq \
 
 ## Implementation Checklist
 
-- [ ] Create `app_api`, `app_analytics`, `app_admin` roles in `infra/postgres/init.sql` with `NOINHERIT` and schema USAGE grants
-- [ ] Apply column-level GRANT restrictions per PHI classification table — `app_api` gets care-relevant PHI, `app_analytics` gets non-PHI only
-- [ ] Enable RLS on all tenant-bearing tables and create `tenant_isolation_*` policies using `current_setting('app.current_tenant_id')`
-- [ ] Create `vw_patients_deidentified` view with SHA-256 name hash, age derivation, and email domain masking
-- [ ] Configure `pgaudit` role-level logging (write+DDL for api, read+DDL for analytics, all for admin)
-- [ ] Create `infra/postgres/phi_policy_baseline.sql` documenting all column-role permission assignments
-- [ ] Implement `TenantContextMiddleware` that sets PostgreSQL session variable from JWT `tenant_id` claim
-- [ ] Add role-specific connection strings to `appsettings.json` and environment variables to `.env.example`
+- [x] Create `app_api`, `app_analytics`, `app_admin` roles in `infra/postgres/init.sql` with `NOINHERIT` and schema USAGE grants
+- [x] Apply column-level GRANT restrictions per PHI classification table — `app_api` gets care-relevant PHI, `app_analytics` gets non-PHI only
+- [x] Enable RLS on all tenant-bearing tables and create `tenant_isolation_*` policies using `current_setting('app.current_tenant_id')`
+- [x] Create `vw_patients_deidentified` view with SHA-256 name hash, age derivation, and email domain masking
+- [x] Configure `pgaudit` role-level logging (write+DDL for api, read+DDL for analytics, all for admin)
+- [x] Create `infra/postgres/phi_policy_baseline.sql` documenting all column-role permission assignments
+- [x] Implement `TenantContextMiddleware` that sets PostgreSQL session variable from JWT `tenant_id` claim
+- [x] Add role-specific connection strings to `appsettings.json` and environment variables to `.env.example`
