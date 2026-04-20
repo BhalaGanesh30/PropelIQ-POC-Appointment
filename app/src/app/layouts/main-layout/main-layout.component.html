@@ -1,0 +1,46 @@
+<mat-toolbar color="primary" class="app-toolbar" role="banner">
+  <button
+    mat-icon-button
+    (click)="toggleSidenav()"
+    aria-label="Toggle navigation menu"
+    aria-controls="app-sidenav"
+    [attr.aria-expanded]="sidenavOpen()"
+  >
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <span class="app-title">PropelIQ</span>
+</mat-toolbar>
+
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav
+    #sidenav
+    id="app-sidenav"
+    mode="side"
+    [opened]="sidenavOpen()"
+    role="navigation"
+    aria-label="Main navigation"
+    class="app-sidenav"
+  >
+    <mat-nav-list>
+      @for (item of navItems; track item.route) {
+        <a
+          mat-list-item
+          [routerLink]="item.route"
+          routerLinkActive="active-link"
+          [routerLinkActiveOptions]="{ exact: false }"
+          [attr.aria-label]="item.label"
+        >
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+        </a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content role="main">
+    <div class="content-area">
+      <router-outlet />
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

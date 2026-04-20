@@ -523,11 +523,11 @@ dotnet run --project server/src/PropelIQ.Api
 
 ## Implementation Checklist
 
-- [ ] Create `AiGatewayOptions.cs` with `[Required]` annotations, `ValidateDataAnnotations()`, and `ValidateOnStart()` for startup config validation
-- [ ] Create `ChatCompletionRequest.cs` and `ChatCompletionResponse.cs` DTOs matching OpenAI chat completion format
-- [ ] Create `IAiGatewayClient.cs` interface with `GetCompletionAsync` and `IsCircuitBreakerOpen` contract
-- [ ] Create `LiteLlmGatewayClient.cs` with HttpClient calls, OTel child spans recording latency/tokens/model, and circuit breaker fallback returning `null`
-- [ ] Create `AiGatewayServiceCollectionExtensions.cs` with typed HttpClient, Polly retry (exponential backoff), and circuit breaker policies
-- [ ] Add `Microsoft.Extensions.Http.Polly` and `Microsoft.Extensions.Options.DataAnnotations` to `SharedKernel.csproj`
-- [ ] Register `AddAiGateway` in `Program.cs` and add `AiGateway` section to `appsettings.json`
-- [ ] Handle HTTP 401 gracefully: return `null`, log warning, record in OTel span without throwing
+- [x] Create `AiGatewayOptions.cs` with `[Required]` annotations, `ValidateDataAnnotations()`, and `ValidateOnStart()` for startup config validation
+- [x] Create `ChatCompletionRequest.cs` and `ChatCompletionResponse.cs` DTOs matching OpenAI chat completion format
+- [x] Create `IAiGatewayClient.cs` interface with `GetCompletionAsync` and `IsCircuitBreakerOpen` contract
+- [x] Create `LiteLlmGatewayClient.cs` with HttpClient calls, OTel child spans recording latency/tokens/model, and circuit breaker fallback returning `null`
+- [x] Create `AiGatewayServiceCollectionExtensions.cs` with typed HttpClient, Polly v8 retry (exponential backoff), and circuit breaker policies
+- [x] Add `Microsoft.Extensions.Http.Resilience` to `SharedKernel.csproj` (Polly v8, compatible with existing `Microsoft.Extensions.Resilience` in SharedServices)
+- [x] Register `AddAiGateway` in `Program.cs` and add `AiGateway` section to `appsettings.json`
+- [x] Handle HTTP 401 gracefully: return `null`, log warning, record in OTel span without throwing

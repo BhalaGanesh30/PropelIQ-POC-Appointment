@@ -279,11 +279,11 @@ curl -i http://localhost:5000/api/v1/diagnostics/protected
 
 ## Implementation Checklist
 
-- [ ] Install NuGet packages: `Microsoft.Extensions.Diagnostics.HealthChecks`, `Microsoft.AspNetCore.Authentication.JwtBearer`, `OpenTelemetry.Extensions.Hosting`, `OpenTelemetry.Instrumentation.AspNetCore`
-- [ ] Create `DatabaseHealthCheck` implementing `IHealthCheck` with `Degraded` status on connection failure
-- [ ] Register health checks and map `GET /api/v1/health` with custom JSON response writer in `Program.cs`
-- [ ] Configure `AddProblemDetails()` and `UseExceptionHandler()` for RFC 9457 structured error responses
-- [ ] Configure JWT Bearer authentication skeleton with custom `OnChallenge` returning Problem Details 401
-- [ ] Register OpenTelemetry tracing and metrics for ASP.NET Core instrumentation (NFR-011)
-- [ ] Set correct middleware pipeline order in `Program.cs` (exception handler -> auth -> authorization -> endpoints)
-- [ ] Validate all endpoints: health returns 200 JSON, protected returns 401 Problem Details, exception returns 500 Problem Details
+- [x] Install NuGet packages: `Microsoft.Extensions.Diagnostics.HealthChecks`, `Microsoft.AspNetCore.Authentication.JwtBearer`, `OpenTelemetry.Extensions.Hosting`, `OpenTelemetry.Instrumentation.AspNetCore`
+- [x] Create `DatabaseHealthCheck` implementing `IHealthCheck` with `Degraded` status on connection failure
+- [x] Register health checks and map `GET /api/v1/health` with custom JSON response writer in `Program.cs`
+- [x] Configure `AddProblemDetails()` and `UseExceptionHandler()` for RFC 9457 structured error responses
+- [x] Configure JWT Bearer authentication skeleton with custom `OnChallenge` returning Problem Details 401
+- [x] Register OpenTelemetry tracing and metrics for ASP.NET Core instrumentation (NFR-011)
+- [x] Set correct middleware pipeline order in `Program.cs` (exception handler -> auth -> authorization -> endpoints)
+- [x] Validate all endpoints: health returns 200 JSON, protected returns 401 Problem Details, exception returns 500 Problem Details

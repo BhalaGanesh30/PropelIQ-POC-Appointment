@@ -1,0 +1,21 @@
+# Exclude large/generated directories from the Docker build context.
+# This reduces build time and avoids shipping dev artefacts into the image.
+
+# Installed packages — rebuilt inside the image via npm ci.
+node_modules/
+
+# Angular compiler output and incremental build cache.
+dist/
+.angular/
+
+# TypeScript incremental compilation output.
+out-tsc/
+
+# Source control
+.git/
+.gitignore
+
+# IDE / OS artefacts
+.vscode/
+.DS_Store
+Thumbs.db

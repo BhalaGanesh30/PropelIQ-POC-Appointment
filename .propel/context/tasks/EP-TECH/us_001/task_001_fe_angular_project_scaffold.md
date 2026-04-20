@@ -152,10 +152,10 @@ ng build --configuration production
 
 ## Implementation Checklist
 
-- [ ] Generate Angular 17 workspace using `ng new` with `--strict`, `--style=scss`, `--routing`, and standalone component defaults
-- [ ] Verify `tsconfig.json` strict mode flags (`strict`, `noImplicitAny`, `noImplicitReturns`, `noFallthroughCasesInSwitch`)
-- [ ] Create `src/app/core/`, `src/app/shared/`, `src/app/features/`, `src/app/layouts/` directories with barrel index files
-- [ ] Configure `src/environments/environment.ts` and `src/environments/environment.prod.ts` with API base URL and feature flag placeholders
-- [ ] Set production build budgets in `angular.json` (initial: warn 500kB / error 1MB) per NFR-001
+- [x] Generate Angular 17 workspace using `ng new` with `--strict`, `--style=scss`, `--routing`, and standalone component defaults
+- [x] Verify `tsconfig.json` strict mode flags (`strict`, `noImplicitAny`, `noImplicitReturns`, `noFallthroughCasesInSwitch`)
+- [x] Create `src/app/core/`, `src/app/shared/`, `src/app/features/`, `src/app/layouts/` directories with barrel index files
+- [x] Configure `src/environments/environment.ts` and `src/environments/environment.prod.ts` with API base URL and feature flag placeholders
+- [x] Set production build budgets in `angular.json` (initial: warn 500kB / error 1MB) per NFR-001
 - [ ] Run `ng serve` and confirm compilation success and rendering at localhost:4200
-- [ ] Run `ng build --configuration production` and confirm zero errors with AOT
+- [x] Run `ng build --configuration production` and confirm zero errors with AOT

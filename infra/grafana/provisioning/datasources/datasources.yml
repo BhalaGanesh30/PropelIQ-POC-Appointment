@@ -1,0 +1,21 @@
+# Grafana data source provisioning — auto-configures Prometheus and Loki.
+# File is mounted read-only; changes here are applied on container start.
+# editable: false prevents accidental overwrite via the Grafana UI.
+
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    jsonData:
+      timeInterval: "15s"
+
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    editable: false

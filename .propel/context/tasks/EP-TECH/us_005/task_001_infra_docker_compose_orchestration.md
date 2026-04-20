@@ -275,11 +275,11 @@ docker compose down -v
 
 ## Implementation Checklist
 
-- [ ] Create `docker-compose.yml` with PostgreSQL, Redis, API, and Angular service definitions including health checks and restart policies
-- [ ] Configure `depends_on` with `condition: service_healthy` for startup ordering (postgres/redis -> api -> angular)
-- [ ] Create consolidated `.env.example` with all service variables grouped and commented
-- [ ] Ensure `.env` is in `.gitignore` and `.env.example` is tracked
-- [ ] Create PostgreSQL init scripts in `docker/postgres/init/` if not already present from US_003
-- [ ] Define `pgdata` and `redisdata` named volumes for data persistence across restarts
+- [x] Create `docker-compose.yml` with PostgreSQL, Redis, API, and Angular service definitions including health checks and restart policies
+- [x] Configure `depends_on` with `condition: service_healthy` for startup ordering (postgres/redis -> api -> angular)
+- [x] Create consolidated `.env.example` with all service variables grouped and commented
+- [x] Ensure `.env` is in `.gitignore` and `.env.example` is tracked
+- [x] Create PostgreSQL init scripts in `docker/postgres/init/` if not already present from US_003
+- [x] Define `pgdata` and `redisdata` named volumes for data persistence across restarts
 - [ ] Validate all 4 services start and pass health checks within 2 minutes
 - [ ] Verify `docker compose down` preserves volumes while `docker compose down -v` removes them

@@ -56,6 +56,78 @@ This ensures API keys and framework-specific files remain local to your developm
 
 If commands are visible, your setup is complete and PropelIQ-Copilot is ready to use.
 
+## Quickstart
+
+### Prerequisites
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) v4.x or later
+
+### Start the Full Platform
+
+```bash
+# 1. Copy the environment template and fill in any values you want to override.
+cp .env.example .env
+
+# 2. Start all services (PostgreSQL, Redis, API, Angular dev server).
+docker compose up -d
+```
+
+All four containers start in dependency order: **postgres + redis** → **api** → **angular**.
+
+### Access Services
+
+| Service | URL |
+|---------|-----|
+| Angular App | <http://localhost:4200> |
+| ASP.NET Core API | <http://localhost:5000> |
+| API Health Check | <http://localhost:5000/api/v1/health> |
+| Swagger UI | <http://localhost:5000/swagger> |
+
+### Verify Stack Health
+
+```bash
+docker compose ps
+```
+
+All services should show `healthy` status within **2 minutes** of startup.
+
+### Hot Reload
+
+| Layer | Behaviour |
+|-------|-----------|
+| Angular (TypeScript/HTML/SCSS) | HMR via `ng serve --poll 1000`; changes reflect in browser within **5 seconds** |
+| ASP.NET Core API (C#) | `dotnet watch run` recompiles and restarts the API on every saved `.cs` file |
+
+### Stop Services
+
+```bash
+# Stop containers — named volumes (pgdata, redisdata) are preserved.
+docker compose down
+
+# Stop containers AND remove all named volumes (full reset, data is lost).
+docker compose down -v
+```
+
+### Rebuild After Dependency Changes
+
+```bash
+# Rebuild a single service image (e.g. after changing package.json or .csproj).
+docker compose build angular
+docker compose build api
+
+# Rebuild all and restart.
+docker compose up -d --build
+```
+
+### Port Conflicts
+
+If a port is already bound on your machine, Docker Compose exits with a clear message identifying the conflicting port. Edit `.env` to override the default port for that service:
+
+```env
+# Example: move the Angular dev server to 4300
+ANGULAR_PORT=4300
+```
+
 ## Prompts
 
 | Prompt | Description | Input | Output | Usage Example |

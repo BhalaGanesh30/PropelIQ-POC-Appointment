@@ -276,11 +276,11 @@ docker compose exec postgres psql -U propeliq_user -d propeliq \
 
 ## Implementation Checklist
 
-- [ ] Install `Npgsql.EntityFrameworkCore.PostgreSQL` 8.x and `Pgvector.EntityFrameworkCore` in SharedServices.Infrastructure project
-- [ ] Install `Microsoft.EntityFrameworkCore.Design` 8.x in PropelIQ.Api project
-- [ ] Create `AppDbContext` with `HasPostgresExtension("vector")`, `HasPostgresExtension("uuid-ossp")`, and assembly-based configuration application
-- [ ] Create `DesignTimeDbContextFactory` implementing `IDesignTimeDbContextFactory<AppDbContext>` for CLI migration support
-- [ ] Create sample `EmbeddingSample` entity with `Vector` property and IVFFlat index configuration
-- [ ] Register `AppDbContext` in `Program.cs` with `UseNpgsql()` and `UseVector()`
-- [ ] Generate initial migration with `dotnet ef migrations add InitialCreate` and apply with `dotnet ef database update`
+- [x] Install `Npgsql.EntityFrameworkCore.PostgreSQL` 8.x and `Pgvector.EntityFrameworkCore` in SharedServices.Infrastructure project
+- [x] Install `Microsoft.EntityFrameworkCore.Design` 8.x in PropelIQ.Api project
+- [x] Create `AppDbContext` with `HasPostgresExtension("vector")`, `HasPostgresExtension("uuid-ossp")`, and assembly-based configuration application
+- [x] Create `DesignTimeDbContextFactory` implementing `IDesignTimeDbContextFactory<AppDbContext>` for CLI migration support
+- [x] Create sample `EmbeddingSample` entity with `Vector` property and IVFFlat index configuration
+- [x] Register `AppDbContext` in `Program.cs` with `UseNpgsql()` and `UseVector()`
+- [x] Generate initial migration with `dotnet ef migrations add InitialCreate` and apply with `dotnet ef database update`
 - [ ] Validate pgvector `<->` operator query and migration rollback support

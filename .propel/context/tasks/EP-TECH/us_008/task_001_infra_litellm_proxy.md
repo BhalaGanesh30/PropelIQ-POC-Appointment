@@ -262,11 +262,11 @@ docker compose logs litellm-gateway --tail 50
 
 ## Implementation Checklist
 
-- [ ] Add `litellm-gateway` service to `docker-compose.yml` with `ghcr.io/berriai/litellm:v1.81.9-stable` image, health check, and port 4000
-- [ ] Create `infra/litellm/config.yaml` with `model_list` defining `gpt-4.1`, `gpt-4.1-mini`, and `coding-suggestion` model aliases
-- [ ] Configure `litellm_settings` with `num_retries: 3`, `request_timeout: 10`, fallback chains, `allowed_fails: 3`, and `cooldown_time: 30`
-- [ ] Set `general_settings.master_key` from `LITELLM_MASTER_KEY` environment variable for API key authentication
-- [ ] Add `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, and `LITELLM_MASTER_KEY` to `.env.example`
-- [ ] Add `depends_on` condition so the API service waits for `litellm-gateway` to be healthy
-- [ ] Verify malformed config startup failure produces descriptive error output
-- [ ] Verify HTTP 401 response for unauthenticated requests with no model call executed
+- [x] Add `litellm-gateway` service to `docker-compose.yml` with `ghcr.io/berriai/litellm:v1.81.9-stable` image, health check, and port 4000
+- [x] Create `infra/litellm/config.yaml` with `model_list` defining `gpt-4.1`, `gpt-4.1-mini`, and `coding-suggestion` model aliases
+- [x] Configure `litellm_settings` with `num_retries: 3`, `request_timeout: 10`, fallback chains, `allowed_fails: 3`, and `cooldown_time: 30`
+- [x] Set `general_settings.master_key` from `LITELLM_MASTER_KEY` environment variable for API key authentication
+- [x] Add `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, and `LITELLM_MASTER_KEY` to `.env.example`
+- [x] Add `depends_on` condition so the API service waits for `litellm-gateway` to be healthy
+- [x] Verify malformed config startup failure produces descriptive error output
+- [x] Verify HTTP 401 response for unauthenticated requests with no model call executed

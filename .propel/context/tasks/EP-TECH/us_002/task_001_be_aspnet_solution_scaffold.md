@@ -196,11 +196,11 @@ dotnet run --project server/src/PropelIQ.Api/PropelIQ.Api.csproj
 
 ## Implementation Checklist
 
-- [ ] Create `server/` directory and initialize solution with `dotnet new sln`
-- [ ] Create `PropelIQ.Api` Web API host project targeting `net8.0` with controllers
-- [ ] Create `PropelIQ.SharedKernel` class library with `BaseEntity` and shared interfaces
-- [ ] Scaffold four bounded modules (Scheduling, ClinicalIntelligence, Administration, SharedServices) each with Api/Application/Domain/Infrastructure layer projects
-- [ ] Configure project references enforcing uni-directional dependency flow (no reverse dependencies)
-- [ ] Create `BaseApiController` with `[Route("api/v1/[controller]")]` and `[ApiController]` attributes
-- [ ] Configure `Program.cs` composition root with controller registration and endpoint routing
-- [ ] Run `dotnet build` and confirm zero errors across all projects
+- [x] Create `server/` directory and initialize solution with `dotnet new sln`
+- [x] Create `PropelIQ.Api` Web API host project targeting `net8.0` with controllers
+- [x] Create `PropelIQ.SharedKernel` class library with `BaseEntity` and shared interfaces
+- [x] Scaffold four bounded modules (Scheduling, ClinicalIntelligence, Administration, SharedServices) each with Api/Application/Domain/Infrastructure layer projects
+- [x] Configure project references enforcing uni-directional dependency flow (no reverse dependencies)
+- [x] Create `BaseApiController` with `[Route("api/v1/[controller]")]` and `[ApiController]` attributes
+- [x] Configure `Program.cs` composition root with controller registration and endpoint routing
+- [x] Run `dotnet build` and confirm zero errors across all projects

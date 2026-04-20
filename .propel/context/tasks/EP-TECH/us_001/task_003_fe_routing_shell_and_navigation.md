@@ -214,11 +214,11 @@ ng build --configuration production
 
 ## Implementation Checklist
 
-- [ ] Create `MainLayoutComponent` standalone component in `layouts/main-layout/` with Material toolbar, sidenav, and `<router-outlet>`
-- [ ] Create `DashboardComponent` standalone component in `features/dashboard/` with `routes.ts` default export
-- [ ] Create `NotFoundComponent` standalone component in `features/not-found/` with user-friendly 404 message and home link
-- [ ] Create placeholder `LoginComponent` standalone component in `features/login/`
-- [ ] Create `authGuard` functional guard in `core/guards/auth.guard.ts` with redirect-to-login and URL preservation
-- [ ] Create `AuthService` stub in `core/services/auth.service.ts` with `isAuthenticated()` and `redirectUrl` property
-- [ ] Configure route definitions in `app.routes.ts` with lazy-loaded dashboard, login, and wildcard 404 routes
-- [ ] Verify lazy-loaded chunks are generated and navigation does not trigger full page reloads
+- [x] Create `MainLayoutComponent` standalone component in `layouts/main-layout/` with Material toolbar, sidenav, and `<router-outlet>`
+- [x] Create `DashboardComponent` standalone component in `features/dashboard/` with `routes.ts` default export
+- [x] Create `NotFoundComponent` standalone component in `features/not-found/` with user-friendly 404 message and home link
+- [x] Create placeholder `LoginComponent` standalone component in `features/login/`
+- [x] Create `authGuard` functional guard in `core/guards/auth.guard.ts` with redirect-to-login and URL preservation
+- [x] Create `AuthService` stub in `core/services/auth.service.ts` with `isAuthenticated()` and `redirectUrl` property
+- [x] Configure route definitions in `app.routes.ts` with lazy-loaded dashboard, login, and wildcard 404 routes
+- [x] Verify lazy-loaded chunks are generated and navigation does not trigger full page reloads

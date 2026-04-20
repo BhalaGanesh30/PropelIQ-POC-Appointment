@@ -1,0 +1,45 @@
+# ASP.NET Core 8 production Dockerfile — multi-stage build.
+# Stage 1: full SDK image restores, builds, and publishes.
+# Stage 2: lean aspnet:8.0 runtime image; no SDK or compilers included.
+# This file is used by the CD workflow; the dev Dockerfile (Dockerfile) uses dotnet watch.
+
+# ── Stage 1: Build & Publish ──────────────────────────────────────────────────
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy solution and .csproj files first — Docker caches the restore layer
+# independently of source changes, so restore only re-runs on dependency changes.
+COPY PropelIQ.sln ./
+COPY src/PropelIQ.Api/PropelIQ.Api.csproj src/PropelIQ.Api/
+COPY src/PropelIQ.SharedKernel/PropelIQ.SharedKernel.csproj src/PropelIQ.SharedKernel/
+COPY src/Modules/ src/Modules/
+
+RUN dotnet restore PropelIQ.sln
+
+# Copy remaining source and publish in Release mode.
+COPY . .
+RUN dotnet publish src/PropelIQ.Api/PropelIQ.Api.csproj \
+    --configuration Release \
+    --no-restore \
+    --output /app/publish
+
+# ── Stage 2: Runtime ──────────────────────────────────────────────────────────
+# aspnet:8.0 is ~200 MB vs. sdk:8.0 ~900 MB — reduced attack surface (OWASP A05).
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS production
+WORKDIR /app
+
+# Install curl for the Docker / Compose health check probe only.
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Run as non-root user (OWASP A05: security misconfiguration mitigation).
+RUN adduser --disabled-password --gecos "" appuser
+USER appuser
+
+COPY --from=build /app/publish .
+
+# http only inside the container network; TLS terminates at the load balancer / proxy.
+ENV ASPNETCORE_URLS=http://+:5000
+
+EXPOSE 5000
+ENTRYPOINT ["dotnet", "PropelIQ.Api.dll"]

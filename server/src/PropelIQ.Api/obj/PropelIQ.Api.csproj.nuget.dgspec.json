@@ -1,0 +1,1342 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\IQ\\server\\src\\PropelIQ.Api\\PropelIQ.Api.csproj": {}
+  },
+  "projects": {
+    "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Api\\PropelIQ.Modules.Administration.Api.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Api\\PropelIQ.Modules.Administration.Api.csproj",
+        "projectName": "PropelIQ.Modules.Administration.Api",
+        "projectPath": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Api\\PropelIQ.Modules.Administration.Api.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Api\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Application\\PropelIQ.Modules.Administration.Application.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Application\\PropelIQ.Modules.Administration.Application.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Application\\PropelIQ.Modules.Administration.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Application\\PropelIQ.Modules.Administration.Application.csproj",
+        "projectName": "PropelIQ.Modules.Administration.Application",
+        "projectPath": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Application\\PropelIQ.Modules.Administration.Application.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Application\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Domain\\PropelIQ.Modules.Administration.Domain.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Domain\\PropelIQ.Modules.Administration.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Domain\\PropelIQ.Modules.Administration.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Domain\\PropelIQ.Modules.Administration.Domain.csproj",
+        "projectName": "PropelIQ.Modules.Administration.Domain",
+        "projectPath": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Domain\\PropelIQ.Modules.Administration.Domain.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Domain\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\IQ\\server\\src\\PropelIQ.SharedKernel\\PropelIQ.SharedKernel.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\PropelIQ.SharedKernel\\PropelIQ.SharedKernel.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Infrastructure\\PropelIQ.Modules.Administration.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Infrastructure\\PropelIQ.Modules.Administration.Infrastructure.csproj",
+        "projectName": "PropelIQ.Modules.Administration.Infrastructure",
+        "projectPath": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Infrastructure\\PropelIQ.Modules.Administration.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Infrastructure\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Application\\PropelIQ.Modules.Administration.Application.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Application\\PropelIQ.Modules.Administration.Application.csproj"
+              },
+              "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Domain\\PropelIQ.Modules.Administration.Domain.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Domain\\PropelIQ.Modules.Administration.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[10.0.6, )"
+            },
+            "Microsoft.Extensions.DependencyInjection.Abstractions": {
+              "target": "Package",
+              "version": "[10.0.6, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Api\\PropelIQ.Modules.ClinicalIntelligence.Api.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Api\\PropelIQ.Modules.ClinicalIntelligence.Api.csproj",
+        "projectName": "PropelIQ.Modules.ClinicalIntelligence.Api",
+        "projectPath": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Api\\PropelIQ.Modules.ClinicalIntelligence.Api.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Api\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Application\\PropelIQ.Modules.ClinicalIntelligence.Application.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Application\\PropelIQ.Modules.ClinicalIntelligence.Application.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Application\\PropelIQ.Modules.ClinicalIntelligence.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Application\\PropelIQ.Modules.ClinicalIntelligence.Application.csproj",
+        "projectName": "PropelIQ.Modules.ClinicalIntelligence.Application",
+        "projectPath": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Application\\PropelIQ.Modules.ClinicalIntelligence.Application.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Application\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Domain\\PropelIQ.Modules.ClinicalIntelligence.Domain.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Domain\\PropelIQ.Modules.ClinicalIntelligence.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Domain\\PropelIQ.Modules.ClinicalIntelligence.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Domain\\PropelIQ.Modules.ClinicalIntelligence.Domain.csproj",
+        "projectName": "PropelIQ.Modules.ClinicalIntelligence.Domain",
+        "projectPath": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Domain\\PropelIQ.Modules.ClinicalIntelligence.Domain.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Domain\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\IQ\\server\\src\\PropelIQ.SharedKernel\\PropelIQ.SharedKernel.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\PropelIQ.SharedKernel\\PropelIQ.SharedKernel.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Infrastructure\\PropelIQ.Modules.ClinicalIntelligence.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Infrastructure\\PropelIQ.Modules.ClinicalIntelligence.Infrastructure.csproj",
+        "projectName": "PropelIQ.Modules.ClinicalIntelligence.Infrastructure",
+        "projectPath": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Infrastructure\\PropelIQ.Modules.ClinicalIntelligence.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Infrastructure\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Application\\PropelIQ.Modules.ClinicalIntelligence.Application.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Application\\PropelIQ.Modules.ClinicalIntelligence.Application.csproj"
+              },
+              "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Domain\\PropelIQ.Modules.ClinicalIntelligence.Domain.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Domain\\PropelIQ.Modules.ClinicalIntelligence.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[10.0.6, )"
+            },
+            "Microsoft.Extensions.DependencyInjection.Abstractions": {
+              "target": "Package",
+              "version": "[10.0.6, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Api\\PropelIQ.Modules.Scheduling.Api.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Api\\PropelIQ.Modules.Scheduling.Api.csproj",
+        "projectName": "PropelIQ.Modules.Scheduling.Api",
+        "projectPath": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Api\\PropelIQ.Modules.Scheduling.Api.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Api\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Application\\PropelIQ.Modules.Scheduling.Application.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Application\\PropelIQ.Modules.Scheduling.Application.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Application\\PropelIQ.Modules.Scheduling.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Application\\PropelIQ.Modules.Scheduling.Application.csproj",
+        "projectName": "PropelIQ.Modules.Scheduling.Application",
+        "projectPath": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Application\\PropelIQ.Modules.Scheduling.Application.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Application\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Domain\\PropelIQ.Modules.Scheduling.Domain.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Domain\\PropelIQ.Modules.Scheduling.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Domain\\PropelIQ.Modules.Scheduling.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Domain\\PropelIQ.Modules.Scheduling.Domain.csproj",
+        "projectName": "PropelIQ.Modules.Scheduling.Domain",
+        "projectPath": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Domain\\PropelIQ.Modules.Scheduling.Domain.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Domain\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\IQ\\server\\src\\PropelIQ.SharedKernel\\PropelIQ.SharedKernel.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\PropelIQ.SharedKernel\\PropelIQ.SharedKernel.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Infrastructure\\PropelIQ.Modules.Scheduling.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Infrastructure\\PropelIQ.Modules.Scheduling.Infrastructure.csproj",
+        "projectName": "PropelIQ.Modules.Scheduling.Infrastructure",
+        "projectPath": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Infrastructure\\PropelIQ.Modules.Scheduling.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Infrastructure\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Application\\PropelIQ.Modules.Scheduling.Application.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Application\\PropelIQ.Modules.Scheduling.Application.csproj"
+              },
+              "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Domain\\PropelIQ.Modules.Scheduling.Domain.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Domain\\PropelIQ.Modules.Scheduling.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[10.0.6, )"
+            },
+            "Microsoft.Extensions.DependencyInjection.Abstractions": {
+              "target": "Package",
+              "version": "[10.0.6, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Api\\PropelIQ.Modules.SharedServices.Api.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Api\\PropelIQ.Modules.SharedServices.Api.csproj",
+        "projectName": "PropelIQ.Modules.SharedServices.Api",
+        "projectPath": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Api\\PropelIQ.Modules.SharedServices.Api.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Api\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Application\\PropelIQ.Modules.SharedServices.Application.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Application\\PropelIQ.Modules.SharedServices.Application.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Application\\PropelIQ.Modules.SharedServices.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Application\\PropelIQ.Modules.SharedServices.Application.csproj",
+        "projectName": "PropelIQ.Modules.SharedServices.Application",
+        "projectPath": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Application\\PropelIQ.Modules.SharedServices.Application.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Application\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Domain\\PropelIQ.Modules.SharedServices.Domain.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Domain\\PropelIQ.Modules.SharedServices.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Domain\\PropelIQ.Modules.SharedServices.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Domain\\PropelIQ.Modules.SharedServices.Domain.csproj",
+        "projectName": "PropelIQ.Modules.SharedServices.Domain",
+        "projectPath": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Domain\\PropelIQ.Modules.SharedServices.Domain.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Domain\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\IQ\\server\\src\\PropelIQ.SharedKernel\\PropelIQ.SharedKernel.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\PropelIQ.SharedKernel\\PropelIQ.SharedKernel.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Pgvector": {
+              "target": "Package",
+              "version": "[0.3.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Infrastructure\\PropelIQ.Modules.SharedServices.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Infrastructure\\PropelIQ.Modules.SharedServices.Infrastructure.csproj",
+        "projectName": "PropelIQ.Modules.SharedServices.Infrastructure",
+        "projectPath": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Infrastructure\\PropelIQ.Modules.SharedServices.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Infrastructure\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Application\\PropelIQ.Modules.SharedServices.Application.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Application\\PropelIQ.Modules.SharedServices.Application.csproj"
+              },
+              "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Domain\\PropelIQ.Modules.SharedServices.Domain.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Domain\\PropelIQ.Modules.SharedServices.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[10.0.6, )"
+            },
+            "Microsoft.Extensions.DependencyInjection.Abstractions": {
+              "target": "Package",
+              "version": "[10.0.6, )"
+            },
+            "Microsoft.Extensions.Resilience": {
+              "target": "Package",
+              "version": "[8.*, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[9.0.*, )"
+            },
+            "Pgvector.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[0.3.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.*, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\IQ\\server\\src\\PropelIQ.Api\\PropelIQ.Api.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\PropelIQ.Api\\PropelIQ.Api.csproj",
+        "projectName": "PropelIQ.Api",
+        "projectPath": "D:\\IQ\\server\\src\\PropelIQ.Api\\PropelIQ.Api.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\PropelIQ.Api\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Api\\PropelIQ.Modules.Administration.Api.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Api\\PropelIQ.Modules.Administration.Api.csproj"
+              },
+              "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Infrastructure\\PropelIQ.Modules.Administration.Infrastructure.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\Administration\\PropelIQ.Modules.Administration.Infrastructure\\PropelIQ.Modules.Administration.Infrastructure.csproj"
+              },
+              "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Api\\PropelIQ.Modules.ClinicalIntelligence.Api.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Api\\PropelIQ.Modules.ClinicalIntelligence.Api.csproj"
+              },
+              "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Infrastructure\\PropelIQ.Modules.ClinicalIntelligence.Infrastructure.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\ClinicalIntelligence\\PropelIQ.Modules.ClinicalIntelligence.Infrastructure\\PropelIQ.Modules.ClinicalIntelligence.Infrastructure.csproj"
+              },
+              "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Api\\PropelIQ.Modules.Scheduling.Api.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Api\\PropelIQ.Modules.Scheduling.Api.csproj"
+              },
+              "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Infrastructure\\PropelIQ.Modules.Scheduling.Infrastructure.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\Scheduling\\PropelIQ.Modules.Scheduling.Infrastructure\\PropelIQ.Modules.Scheduling.Infrastructure.csproj"
+              },
+              "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Api\\PropelIQ.Modules.SharedServices.Api.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Api\\PropelIQ.Modules.SharedServices.Api.csproj"
+              },
+              "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Infrastructure\\PropelIQ.Modules.SharedServices.Infrastructure.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\Modules\\SharedServices\\PropelIQ.Modules.SharedServices.Infrastructure\\PropelIQ.Modules.SharedServices.Infrastructure.csproj"
+              },
+              "D:\\IQ\\server\\src\\PropelIQ.SharedKernel\\PropelIQ.SharedKernel.csproj": {
+                "projectPath": "D:\\IQ\\server\\src\\PropelIQ.SharedKernel\\PropelIQ.SharedKernel.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.*, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.*, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[8.*, )"
+            },
+            "OpenTelemetry.Exporter.Console": {
+              "target": "Package",
+              "version": "[1.15.2, )"
+            },
+            "OpenTelemetry.Exporter.OpenTelemetryProtocol": {
+              "target": "Package",
+              "version": "[1.*, )"
+            },
+            "OpenTelemetry.Exporter.Prometheus.AspNetCore": {
+              "target": "Package",
+              "version": "[1.15.2-beta.1, )"
+            },
+            "OpenTelemetry.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[1.15.2, )"
+            },
+            "OpenTelemetry.Instrumentation.AspNetCore": {
+              "target": "Package",
+              "version": "[1.15.1, )"
+            },
+            "OpenTelemetry.Instrumentation.Http": {
+              "target": "Package",
+              "version": "[1.*, )"
+            },
+            "OpenTelemetry.Instrumentation.Runtime": {
+              "target": "Package",
+              "version": "[1.*, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.4.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\IQ\\server\\src\\PropelIQ.SharedKernel\\PropelIQ.SharedKernel.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\IQ\\server\\src\\PropelIQ.SharedKernel\\PropelIQ.SharedKernel.csproj",
+        "projectName": "PropelIQ.SharedKernel",
+        "projectPath": "D:\\IQ\\server\\src\\PropelIQ.SharedKernel\\PropelIQ.SharedKernel.csproj",
+        "packagesPath": "C:\\Users\\MurugeswariMariappan\\.nuget\\packages\\",
+        "outputPath": "D:\\IQ\\server\\src\\PropelIQ.SharedKernel\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\MurugeswariMariappan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.Extensions.Http.Resilience": {
+              "target": "Package",
+              "version": "[8.*, )"
+            },
+            "OpenTelemetry.Exporter.Console": {
+              "target": "Package",
+              "version": "[1.*, )"
+            },
+            "OpenTelemetry.Exporter.OpenTelemetryProtocol": {
+              "target": "Package",
+              "version": "[1.*, )"
+            },
+            "OpenTelemetry.Exporter.Prometheus.AspNetCore": {
+              "target": "Package",
+              "version": "[1.15.2-beta.1, )"
+            },
+            "OpenTelemetry.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[1.*, )"
+            },
+            "OpenTelemetry.Instrumentation.AspNetCore": {
+              "target": "Package",
+              "version": "[1.*, )"
+            },
+            "OpenTelemetry.Instrumentation.Http": {
+              "target": "Package",
+              "version": "[1.*, )"
+            },
+            "OpenTelemetry.Instrumentation.Runtime": {
+              "target": "Package",
+              "version": "[1.*, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

@@ -182,11 +182,11 @@ ng build --configuration production
 
 ## Implementation Checklist
 
-- [ ] Run `ng add @angular/material` to install Angular Material 17.x and Angular CDK 17.x
-- [ ] Define custom SCSS theme in `src/styles.scss` using `mat.define-palette()`, `mat.define-light-theme()`, and `mat.all-component-themes()`
-- [ ] Add `@include mat.core()` for baseline Material resets in `src/styles.scss`
-- [ ] Add Roboto font and Material Icons CDN links to `src/index.html`
-- [ ] Add `class="mat-typography"` to `<body>` element in `src/index.html`
-- [ ] Add `provideAnimationsAsync()` to providers in `app.config.ts`
-- [ ] Verify WCAG 2.1 AA color contrast for primary and accent palettes (NFR-009)
-- [ ] Confirm `ng build --configuration production` passes with Material integration
+- [x] Run `ng add @angular/material` to install Angular Material 17.x and Angular CDK 17.x
+- [x] Define custom SCSS theme in `src/styles.scss` using `mat.define-palette()`, `mat.define-light-theme()`, and `mat.all-component-themes()`
+- [x] Add `@include mat.core()` for baseline Material resets in `src/styles.scss`
+- [x] Add Roboto font and Material Icons CDN links to `src/index.html`
+- [x] Add `class="mat-typography"` to `<body>` element in `src/index.html`
+- [x] Add `provideAnimationsAsync()` to providers in `app.config.ts`
+- [x] Verify WCAG 2.1 AA color contrast for primary and accent palettes (NFR-009)
+- [x] Confirm `ng build --configuration production` passes with Material integration

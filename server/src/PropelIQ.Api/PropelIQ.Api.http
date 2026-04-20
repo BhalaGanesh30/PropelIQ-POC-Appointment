@@ -1,0 +1,6 @@
+@PropelIQ.Api_HostAddress = http://localhost:5015
+
+GET {{PropelIQ.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

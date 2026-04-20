@@ -178,8 +178,8 @@ docker compose down
 
 ## Implementation Checklist
 
-- [ ] Add Redis service to `docker-compose.yml` using `redis:7-alpine` with health check, restart policy, and named volume
-- [ ] Configure `--requirepass` and `--maxmemory 256mb --maxmemory-policy allkeys-lru` command arguments
-- [ ] Update `.env.example` with `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` placeholders
-- [ ] Add Redis connection string to `appsettings.Development.json`
+- [x] Add Redis service to `docker-compose.yml` using `redis:7-alpine` with health check, restart policy, and named volume
+- [x] Configure `--requirepass` and `--maxmemory 256mb --maxmemory-policy allkeys-lru` command arguments
+- [x] Update `.env.example` with `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` placeholders
+- [x] Add Redis connection string to `appsettings.Development.json`
 - [ ] Start container and verify connectivity with `redis-cli ping`

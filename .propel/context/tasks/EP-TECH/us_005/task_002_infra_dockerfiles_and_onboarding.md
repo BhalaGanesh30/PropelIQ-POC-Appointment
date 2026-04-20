@@ -248,11 +248,11 @@ docker compose logs -f api
 
 ## Implementation Checklist
 
-- [ ] Create `app/Dockerfile.dev` with Node 20 LTS, npm ci, and `ng serve --host 0.0.0.0 --poll 1000`
-- [ ] Create `app/.dockerignore` excluding node_modules, dist, .angular, .git
-- [ ] Create `server/Dockerfile` with .NET 8 SDK, dotnet restore, and `dotnet watch run` with `DOTNET_USE_POLLING_FILE_WATCHER=true`
-- [ ] Create `server/.dockerignore` excluding bin, obj, .git
+- [x] Create `app/Dockerfile.dev` with Node 20 LTS, npm ci, and `ng serve --host 0.0.0.0 --poll 1000`
+- [x] Create `app/.dockerignore` excluding node_modules, dist, .angular, .git
+- [x] Create `server/Dockerfile` with .NET 8 SDK, dotnet restore, and `dotnet watch run` with `DOTNET_USE_POLLING_FILE_WATCHER=true`
+- [x] Create `server/.dockerignore` excluding bin, obj, .git
 - [ ] Verify Angular HMR reflects source changes within 5 seconds in Docker
 - [ ] Verify API hot-reload recompiles on C# file changes
-- [ ] Update `README.md` with quickstart section (prerequisites, start, access URLs, health check, stop)
+- [x] Update `README.md` with quickstart section (prerequisites, start, access URLs, health check, stop)
 - [ ] End-to-end validation: clean clone -> cp .env.example .env -> docker compose up -> all services healthy

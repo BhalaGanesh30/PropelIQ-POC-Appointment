@@ -1,0 +1,23 @@
+# Exclude build output and tooling artefacts from the Docker build context.
+# This reduces build time and prevents local build state from polluting the image.
+
+# MSBuild output directories — regenerated inside the image by dotnet restore/build.
+**/bin/
+**/obj/
+
+# Source control
+.git/
+.gitignore
+
+# IDE artefacts
+.vs/
+.vscode/
+*.user
+*.suo
+
+# OS artefacts
+.DS_Store
+Thumbs.db
+
+# Published output (produced by dotnet publish; not needed for the dev Dockerfile).
+publish/

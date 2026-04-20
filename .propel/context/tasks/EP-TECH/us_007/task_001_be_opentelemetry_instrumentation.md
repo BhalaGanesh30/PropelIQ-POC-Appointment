@@ -362,11 +362,11 @@ curl http://localhost:5000/metrics
 
 ## Implementation Checklist
 
-- [ ] Add OpenTelemetry NuGet packages to `PropelIQ.Api.csproj` and `SharedKernel.csproj`
-- [ ] Create `DiagnosticsConfig.cs` with centralized `ActivitySource`, `Meter`, and custom metric instruments
-- [ ] Create `TelemetryServiceCollectionExtensions.cs` with `AddPropelIQTelemetry()` configuring traces (OTLP + console fallback), metrics (Prometheus + OTLP), and logging (OTLP + console)
-- [ ] Create `CorrelationIdMiddleware.cs` to propagate/generate correlation IDs and enrich `Activity.Current` and logging scope
-- [ ] Create `CardinalityHasher.cs` with SHA-256 hashing for high-cardinality trace attributes
-- [ ] Register OpenTelemetry services and middleware in `Program.cs` including Prometheus scraping endpoint at `/metrics`
-- [ ] Implement external call child span pattern (`ExecuteWithSpan`) for AI gateway, email, and SMS provider calls
-- [ ] Configure `appsettings.json` with `OpenTelemetry:OtlpEndpoint` setting defaulting to `http://localhost:4317`
+- [x] Add OpenTelemetry NuGet packages to `PropelIQ.Api.csproj` and `SharedKernel.csproj`
+- [x] Create `DiagnosticsConfig.cs` with centralized `ActivitySource`, `Meter`, and custom metric instruments
+- [x] Create `TelemetryServiceCollectionExtensions.cs` with `AddPropelIQTelemetry()` configuring traces (OTLP + console fallback), metrics (Prometheus + OTLP), and logging (OTLP + console)
+- [x] Create `CorrelationIdMiddleware.cs` to propagate/generate correlation IDs and enrich `Activity.Current` and logging scope
+- [x] Create `CardinalityHasher.cs` with SHA-256 hashing for high-cardinality trace attributes
+- [x] Register OpenTelemetry services and middleware in `Program.cs` including Prometheus scraping endpoint at `/metrics`
+- [x] Implement external call child span pattern (`ExecuteWithSpanAsync`) for AI gateway, email, and SMS provider calls
+- [x] Configure `appsettings.json` with `OpenTelemetry:OtlpEndpoint` setting defaulting to `http://localhost:4317`

@@ -1,0 +1,51 @@
+/* Toolbar height aligns with Material spec (64px desktop) */
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky, 1020);
+  flex-shrink: 0;
+}
+
+.app-title {
+  margin-left: 8px; /* designsystem.md spacing.sm */
+  font-size: 20px;  /* designsystem.md typography.heading2 */
+  font-weight: 600;
+}
+
+.sidenav-container {
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Sidebar width: 260px — designsystem.md component SidebarNav */
+.app-sidenav {
+  width: 260px;
+  border-right: 1px solid var(--color-neutral-200);
+  /* Elevation level_3 per designsystem.md (sidebar nav) */
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Active nav item uses primary blue (designsystem.md colors.primary.500) */
+.active-link {
+  background-color: var(--color-primary-50) !important;
+  color: var(--color-primary-500) !important;
+
+  mat-icon {
+    color: var(--color-primary-500);
+  }
+}
+
+/* Page padding: 24px (mobile) / 32px (desktop) per designsystem.md spacing */
+.content-area {
+  padding: 24px;
+
+  @media (min-width: 1024px) {
+    padding: 32px;
+  }
+}

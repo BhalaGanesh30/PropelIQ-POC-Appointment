@@ -248,11 +248,11 @@ curl http://localhost:5000/api/v1/health
 
 ## Implementation Checklist
 
-- [ ] Install `Microsoft.Extensions.Caching.StackExchangeRedis` 8.x and `Microsoft.Extensions.Resilience` 8.x NuGet packages
-- [ ] Register `AddStackExchangeRedisCache` with connection string and instance name in `Program.cs`
-- [ ] Create `ICacheService` interface in SharedKernel with typed get/set/remove methods
-- [ ] Implement `RedisCacheService` wrapping `IDistributedCache` with JSON serialization, circuit breaker, and structured warning logging
-- [ ] Create `CacheKeyBuilder` for type-safe key generation with `{Domain}:{EntityType}:{Identifier}` convention
-- [ ] Configure `CacheSettings` section in `appsettings.json` with per-domain TTL values and circuit breaker thresholds
-- [ ] Add Redis health check to existing health check pipeline with `Degraded` failure status
-- [ ] Create `ICacheInvalidator` and `SlotCacheInvalidator` for booking-related cache key removal
+- [x] Install `Microsoft.Extensions.Caching.StackExchangeRedis` 8.x and `Microsoft.Extensions.Resilience` 8.x NuGet packages
+- [x] Register `AddStackExchangeRedisCache` with connection string and instance name in `Program.cs`
+- [x] Create `ICacheService` interface in SharedKernel with typed get/set/remove methods
+- [x] Implement `RedisCacheService` wrapping `IDistributedCache` with JSON serialization, circuit breaker, and structured warning logging
+- [x] Create `CacheKeyBuilder` for type-safe key generation with `{Domain}:{EntityType}:{Identifier}` convention
+- [x] Configure `CacheSettings` section in `appsettings.json` with per-domain TTL values and circuit breaker thresholds
+- [x] Add Redis health check to existing health check pipeline with `Degraded` failure status
+- [x] Create `ICacheInvalidator` and `SlotCacheInvalidator` for booking-related cache key removal

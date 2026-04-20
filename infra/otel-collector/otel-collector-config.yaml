@@ -1,0 +1,64 @@
+# OpenTelemetry Collector configuration for PropelIQ development stack.
+# Receives OTLP data from the ASP.NET Core API, batches it, and routes:
+#   traces  → debug exporter (console output in dev)
+#   metrics → Prometheus exporter (scraped by Prometheus on :8889)
+#   logs    → Loki exporter (push to Loki on :3100)
+#
+# Health/status extension is exposed on :13133 for the Docker healthcheck.
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    # Batch up to 5 s or 1 024 spans/data-points before forwarding.
+    # Reduces network round-trips and downstream pressure.
+    timeout: 5s
+    send_batch_size: 1024
+
+exporters:
+  # Prometheus exporter — Prometheus scrapes this endpoint on :8889.
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    namespace: propeliq
+    resource_to_telemetry_conversion:
+      enabled: true  # propagates resource attributes (service.name etc.) as labels
+
+  # Loki push exporter — ships structured logs to the Loki service.
+  loki:
+    endpoint: "http://loki:3100/loki/api/v1/push"
+    default_labels_enabled:
+      exporter: true
+      job: true
+      instance: true
+      level: true
+
+  # Debug exporter writes trace/log summaries to the collector's stdout.
+  # Verbosity=basic avoids overwhelming log volume; increase to detailed for debugging.
+  debug:
+    verbosity: basic
+
+service:
+  extensions: [health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [loki]

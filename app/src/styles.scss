@@ -1,0 +1,118 @@
+// =============================================================================
+// PropelIQ Global Theme
+// Source of truth: .propel/context/docs/designsystem.md#colors, #typography
+// =============================================================================
+@use '@angular/material' as mat;
+
+// Material baseline resets (once per application)
+@include mat.core();
+
+// ---------------------------------------------------------------------------
+// Color palettes — aligned to designsystem.md tokens
+// Primary: Blue #1976D2 (designsystem.md colors.primary.500)
+// Accent:  Teal #26A69A (designsystem.md colors.secondary.500)
+// Warn:    Red  #F44336 (designsystem.md colors.semantic.error.main)
+// ---------------------------------------------------------------------------
+$propeliq-primary: mat.define-palette(mat.$blue-palette, 700, 400, 900);
+$propeliq-accent:  mat.define-palette(mat.$teal-palette, 600, 300, 900);
+$propeliq-warn:    mat.define-palette(mat.$red-palette, 600, 300, 900);
+
+// ---------------------------------------------------------------------------
+// Typography — Inter as primary font (designsystem.md typography.font_family)
+// Weights align to heading/body/caption scales in designsystem.md
+// ---------------------------------------------------------------------------
+$propeliq-typography: mat.define-typography-config(
+  $font-family: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  $headline-1: mat.define-typography-level(32px, 40px, 700, $letter-spacing: -0.5px),
+  $headline-2: mat.define-typography-level(24px, 32px, 600, $letter-spacing: -0.25px),
+  $headline-3: mat.define-typography-level(20px, 28px, 600),
+  $subtitle-1: mat.define-typography-level(16px, 24px, 500),
+  $body-1:     mat.define-typography-level(14px, 20px, 400),
+  $body-2:     mat.define-typography-level(14px, 20px, 400),
+  $caption:    mat.define-typography-level(12px, 16px, 400),
+  $button:     mat.define-typography-level(14px, 14px, 500)
+);
+
+// ---------------------------------------------------------------------------
+// Light theme — density 0 (default spacing per Material 3 guidelines)
+// ---------------------------------------------------------------------------
+$propeliq-theme: mat.define-light-theme((
+  color: (
+    primary: $propeliq-primary,
+    accent:  $propeliq-accent,
+    warn:    $propeliq-warn,
+  ),
+  typography: $propeliq-typography,
+  density: 0,
+));
+
+// Apply theme to all Material components
+@include mat.all-component-themes($propeliq-theme);
+
+// Apply typography to all Material components (supplies mat-typography class basis)
+@include mat.all-component-typographies($propeliq-typography);
+
+// =============================================================================
+// Design system CSS custom properties — exposed for non-Material component use
+// =============================================================================
+:root {
+  // Primary palette (designsystem.md colors.primary)
+  --color-primary-50:  #E3F2FD;
+  --color-primary-100: #BBDEFB;
+  --color-primary-500: #1976D2;
+  --color-primary-700: #0D47A1;
+
+  // Secondary / accent palette (designsystem.md colors.secondary)
+  --color-secondary-300: #80CBC4;
+  --color-secondary-500: #26A69A;
+  --color-secondary-700: #00897B;
+
+  // Semantic (designsystem.md colors.semantic)
+  --color-success: #4CAF50;
+  --color-warning: #FF9800;
+  --color-error:   #F44336;
+  --color-info:    #2196F3;
+
+  // AI accent (designsystem.md colors.ai)
+  --color-ai-light: #EDE7F6;
+  --color-ai-main:  #7E57C2;
+  --color-ai-dark:  #4527A0;
+
+  // Neutrals (designsystem.md colors.neutral)
+  --color-neutral-50:  #FAFAFA;
+  --color-neutral-100: #F5F5F5;
+  --color-neutral-200: #EEEEEE;
+  --color-neutral-400: #BDBDBD;
+  --color-neutral-700: #616161;
+  --color-neutral-900: #212121;
+
+  // Background (designsystem.md colors.background)
+  --color-bg-page:    #FAFAFA;
+  --color-bg-surface: #FFFFFF;
+}
+
+// =============================================================================
+// Global resets
+// =============================================================================
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-bg-page);
+  // Inter font applied via mat-typography class; fallback chain matches designsystem.md
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+// WCAG 2.1 AA (NFR-009): visible focus indicator on all interactive elements.
+// Uses primary blue (#1976D2) at 3px to satisfy 3:1 contrast ratio against white.
+:focus-visible {
+  outline: 3px solid var(--color-primary-500);
+  outline-offset: 2px;
+}

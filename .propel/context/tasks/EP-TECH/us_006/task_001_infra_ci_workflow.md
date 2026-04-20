@@ -242,11 +242,11 @@ gh run view <run-id>
 
 ## Implementation Checklist
 
-- [ ] Create `.github/workflows/ci.yml` with `pull_request` and `push` triggers on `main` branch
-- [ ] Add `concurrency` group with `cancel-in-progress: true` for duplicate run prevention
-- [ ] Create `validate-secrets` job that fails early with descriptive error on missing secrets
-- [ ] Create `ci-frontend` job: checkout, Node 20, npm ci, ng lint, ng build, ng test with ChromeHeadless
-- [ ] Create `ci-backend` job: checkout, .NET 8 SDK, dotnet build, dotnet format, dotnet test with PostgreSQL service container
-- [ ] Configure test retry (3 attempts) using `nick-fields/retry@v3` action
-- [ ] Add `$GITHUB_STEP_SUMMARY` reporting for build/test results
-- [ ] Set `timeout-minutes: 10` on each job to enforce 10-minute completion constraint
+- [x] Create `.github/workflows/ci.yml` with `pull_request` and `push` triggers on `main` branch
+- [x] Add `concurrency` group with `cancel-in-progress: true` for duplicate run prevention
+- [x] Create `validate-secrets` job that fails early with descriptive error on missing secrets
+- [x] Create `ci-frontend` job: checkout, Node 20, npm ci, ng lint, ng build, ng test with ChromeHeadless
+- [x] Create `ci-backend` job: checkout, .NET 8 SDK, dotnet build, dotnet format, dotnet test with PostgreSQL service container
+- [x] Configure test retry (3 attempts) using `nick-fields/retry@v3` action
+- [x] Add `$GITHUB_STEP_SUMMARY` reporting for build/test results
+- [x] Set `timeout-minutes: 10` on each job to enforce 10-minute completion constraint

@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.*">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.*" />
+    <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.15.2" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.*" />
+    <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.15.2-beta.1" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.15.2" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.1" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.*" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.*" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PropelIQ.SharedKernel\PropelIQ.SharedKernel.csproj" />
+    <ProjectReference Include="..\Modules\Scheduling\PropelIQ.Modules.Scheduling.Api\PropelIQ.Modules.Scheduling.Api.csproj" />
+    <ProjectReference Include="..\Modules\Scheduling\PropelIQ.Modules.Scheduling.Infrastructure\PropelIQ.Modules.Scheduling.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\ClinicalIntelligence\PropelIQ.Modules.ClinicalIntelligence.Api\PropelIQ.Modules.ClinicalIntelligence.Api.csproj" />
+    <ProjectReference Include="..\Modules\ClinicalIntelligence\PropelIQ.Modules.ClinicalIntelligence.Infrastructure\PropelIQ.Modules.ClinicalIntelligence.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Administration\PropelIQ.Modules.Administration.Api\PropelIQ.Modules.Administration.Api.csproj" />
+    <ProjectReference Include="..\Modules\Administration\PropelIQ.Modules.Administration.Infrastructure\PropelIQ.Modules.Administration.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\SharedServices\PropelIQ.Modules.SharedServices.Api\PropelIQ.Modules.SharedServices.Api.csproj" />
+    <ProjectReference Include="..\Modules\SharedServices\PropelIQ.Modules.SharedServices.Infrastructure\PropelIQ.Modules.SharedServices.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

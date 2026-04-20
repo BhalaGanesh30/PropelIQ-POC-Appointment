@@ -1,0 +1,260 @@
+# PropelIQ Docker Compose — unified local development stack.
+# Services: PostgreSQL 15+pgvector, Redis 7, ASP.NET Core API, Angular dev server.
+# Startup order: postgres + redis (healthy) → api (healthy) → angular.
+#
+# Usage:
+#   cp .env.example .env          # fill in credentials (secrets never hardcoded here)
+#   docker compose up -d          # start full stack
+#   docker compose up -d postgres redis  # infra only
+#   docker compose ps             # view health status
+#   docker compose logs -f        # tail all logs
+#   docker compose down           # stop containers; pgdata/redisdata volumes preserved
+#   docker compose down -v        # full reset including named volumes (destructive)
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg15
+    container_name: propeliq-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-propeliq}
+      POSTGRES_USER: ${POSTGRES_USER:-propeliq_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-propeliq_dev_pass}
+    ports:
+      # Host port is configurable via POSTGRES_PORT to avoid conflicts (Edge Case).
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # Named volume ensures data survives container restarts (DR-001, NFR-005).
+      - pgdata:/var/lib/postgresql/data
+      # Initialization scripts run alphabetically on first container start only.
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # pg_isready exits 0 when the server is ready to accept connections.
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-propeliq_user} -d ${POSTGRES_DB:-propeliq}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - propeliq-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: propeliq-redis
+    # --requirepass: authentication required for all commands (OWASP A07).
+    # --maxmemory / --maxmemory-policy: bounds memory usage; allkeys-lru evicts
+    # least recently used keys when the limit is reached (TR-004).
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD:-propeliq_dev_pass}
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    ports:
+      # Host port is configurable via REDIS_PORT to avoid conflicts.
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      # Named volume persists data across container restarts (NFR-005).
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-propeliq_dev_pass}", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - propeliq-net
+
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: propeliq-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      # http only inside Docker network; TLS termination handled by reverse proxy in production.
+      ASPNETCORE_URLS: http://+:5000
+      # Connection strings injected via environment so no secrets live in the Compose file.
+      ConnectionStrings__Default: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-propeliq};Username=${POSTGRES_USER:-propeliq_user};Password=${POSTGRES_PASSWORD:-propeliq_dev_pass};Search Path=app"
+      ConnectionStrings__Redis: "${REDIS_HOST:-redis}:${REDIS_PORT:-6379},password=${REDIS_PASSWORD:-propeliq_dev_pass},abortConnect=false"
+    ports:
+      - "${API_PORT:-5000}:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      litellm-gateway:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:5000/api/v1/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - propeliq-net
+
+  # ── AI Gateway ─────────────────────────────────────────────────────────────
+
+  litellm-gateway:
+    image: ghcr.io/berriai/litellm:v1.81.9-stable
+    container_name: propeliq-litellm
+    # --detailed_debug: ensures malformed config produces verbose error output on
+    # startup; process exits non-zero and Docker marks container unhealthy (edge case).
+    command: ["--config", "/app/config.yaml", "--detailed_debug"]
+    volumes:
+      - ./infra/litellm/config.yaml:/app/config.yaml:ro
+    ports:
+      - "4000:4000"   # OpenAI-compatible API (/chat/completions, /embeddings)
+    environment:
+      # Secrets sourced from environment — never hardcoded in config.yaml.
+      AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY}
+      AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT}
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:4000/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - propeliq-net
+
+  # ── Observability Stack ────────────────────────────────────────────────────
+
+  loki:
+    image: grafana/loki:latest
+    container_name: propeliq-loki
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./infra/loki/loki-config.yaml:/etc/loki/local-config.yaml:ro
+      - loki-data:/loki
+    ports:
+      - "3100:3100"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:3100/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    networks:
+      - propeliq-net
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: propeliq-otel-collector
+    command: ["--config", "/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./infra/otel-collector/otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    ports:
+      - "4317:4317"   # OTLP gRPC — used by the API's OtlpEndpoint setting
+      - "4318:4318"   # OTLP HTTP
+      - "8889:8889"   # Prometheus metrics exposed by the Collector itself
+    depends_on:
+      loki:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:13133/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    networks:
+      - propeliq-net
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: propeliq-prometheus
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      otel-collector:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:9090/-/healthy || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    networks:
+      - propeliq-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: propeliq-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      # Allow anonymous read-only access for local development convenience.
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+    networks:
+      - propeliq-net
+
+  angular:
+    build:
+      context: ./app
+      dockerfile: Dockerfile.dev
+    container_name: propeliq-angular
+    environment:
+      NODE_ENV: development
+    ports:
+      - "${ANGULAR_PORT:-4200}:4200"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:4200 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+    restart: unless-stopped
+    volumes:
+      # Live-reload: bind-mount source only; keep node_modules in anonymous volume.
+      - ./app/src:/app/src
+      - /app/node_modules
+    networks:
+      - propeliq-net
+
+networks:
+  propeliq-net:
+    driver: bridge
+
+volumes:
+  pgdata:
+    driver: local
+  redisdata:
+    driver: local
+  loki-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local

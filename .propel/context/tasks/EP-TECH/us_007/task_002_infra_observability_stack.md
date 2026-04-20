@@ -411,11 +411,11 @@ docker compose down -v
 
 ## Implementation Checklist
 
-- [ ] Add otel-collector service to `docker-compose.yml` with OTLP ports (4317, 4318) and health check
-- [ ] Create `infra/otel-collector/otel-collector-config.yaml` with OTLP receiver, batch processor, and Prometheus/Loki/debug exporters
-- [ ] Add Prometheus service to `docker-compose.yml` and create `infra/prometheus/prometheus.yml` with scrape targets for API and collector
-- [ ] Add Loki service to `docker-compose.yml` and create `infra/loki/loki-config.yaml` with local filesystem storage
-- [ ] Add Grafana service to `docker-compose.yml` with provisioning volume mounts and environment config
-- [ ] Create Grafana provisioning files: datasources (Prometheus + Loki) and dashboard provider config
-- [ ] Create `propeliq-overview.json` Grafana dashboard with request rate, error rate, latency p50/p95/p99, and log stream panels
-- [ ] Add `GRAFANA_ADMIN_PASSWORD` to `.env.example` and add `prometheus-data`, `grafana-data`, `loki-data` named volumes
+- [x] Add otel-collector service to `docker-compose.yml` with OTLP ports (4317, 4318) and health check
+- [x] Create `infra/otel-collector/otel-collector-config.yaml` with OTLP receiver, batch processor, and Prometheus/Loki/debug exporters
+- [x] Add Prometheus service to `docker-compose.yml` and create `infra/prometheus/prometheus.yml` with scrape targets for API and collector
+- [x] Add Loki service to `docker-compose.yml` and create `infra/loki/loki-config.yaml` with local filesystem storage
+- [x] Add Grafana service to `docker-compose.yml` with provisioning volume mounts and environment config
+- [x] Create Grafana provisioning files: datasources (Prometheus + Loki) and dashboard provider config
+- [x] Create `propeliq-overview.json` Grafana dashboard with request rate, error rate, latency p50/p95/p99, and log stream panels
+- [x] Add `GRAFANA_ADMIN_PASSWORD` to `.env.example` and add `prometheus-data`, `grafana-data`, `loki-data` named volumes

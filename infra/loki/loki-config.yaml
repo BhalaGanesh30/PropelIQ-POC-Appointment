@@ -1,0 +1,35 @@
+# Loki configuration for PropelIQ development stack.
+# Uses local filesystem storage — suitable for development only.
+# For production, replace filesystem storage with object storage (S3/GCS).
+
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+
+common:
+  path_prefix: /loki
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+
+schema_config:
+  configs:
+    - from: 2024-01-01
+      store: tsdb
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+limits_config:
+  # allow_structured_metadata enables Loki's structured metadata feature (v3+).
+  allow_structured_metadata: true
+  # volume_enabled enables the log volume API used by Grafana Explore.
+  volume_enabled: true

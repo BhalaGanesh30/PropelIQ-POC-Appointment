@@ -1,0 +1,17 @@
+# Grafana dashboard provisioning — loads JSON dashboards from this directory.
+# disableDeletion: true prevents dashboards from being deleted via the UI.
+# editable: false makes dashboards read-only in the Grafana UI.
+# foldersFromFilesStructure: false means all dashboards land in the root folder.
+
+apiVersion: 1
+
+providers:
+  - name: PropelIQ
+    orgId: 1
+    type: file
+    disableDeletion: true
+    editable: false
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards
+      foldersFromFilesStructure: false

@@ -1,0 +1,208 @@
+# PropelIQ CD — triggers after successful CI on main.
+# Jobs: build-images → deploy-staging → deploy-production (manual approval gate).
+# AC-2: staging deployment completes within 15 minutes.
+# AC-3: production deployment requires manual approval via environment protection rules.
+# AC-4: any step failure stops the pipeline; error surfaced in $GITHUB_STEP_SUMMARY.
+#
+# Required GitHub repository configuration (Settings → Environments):
+#   staging:    No required reviewers. Deployment branch: main.
+#   production: Required reviewers enabled (manual approval gate). Deployment branch: main.
+#
+# Required repository variables (Settings → Variables):
+#   STAGING_URL    e.g. https://staging.propeliq.example.com
+#   PRODUCTION_URL e.g. https://propeliq.example.com
+#
+# Required secrets (Settings → Secrets):
+#   DEPLOY_TOKEN  (deployment credential; checked by ci.yml validate-secrets job)
+#   REGISTRY_URL  (checked by ci.yml validate-secrets job)
+
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    branches: [main]
+    types: [completed]
+
+# CD runs are NOT cancelled mid-flight — a partial deployment could leave infra in
+# a broken state. New pushes to main queue behind the running deployment instead.
+concurrency:
+  group: cd-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write    # required for ghcr.io push
+  id-token: write    # required for OIDC-based cloud authentication (future use)
+
+# ──────────────────────────────────────────────────────────────────────────────
+jobs:
+  # ── 1. Build & push production images ────────────────────────────────────
+  # Runs only when CI completed successfully (AC-4: CD never runs on CI failure).
+  build-images:
+    name: Build & Push Docker Images
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    outputs:
+      image-tag: ${{ github.sha }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          # GITHUB_TOKEN has packages:write permission declared above.
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./server
+          file: ./server/Dockerfile.prod
+          push: true
+          tags: ghcr.io/${{ github.repository }}/api:${{ github.sha }}
+          # GHA cache: re-uses layer cache from previous runs, cutting build time.
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Angular image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./app
+          file: ./app/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}/angular:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Write image summary
+        run: |
+          echo "## 🐳 Images Built & Pushed" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Image | Tag |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|-----|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| \`ghcr.io/${{ github.repository }}/api\` | \`${{ github.sha }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| \`ghcr.io/${{ github.repository }}/angular\` | \`${{ github.sha }}\` |" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Write failure summary
+        if: failure()
+        run: |
+          echo "## ❌ Image Build Failed" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Docker image build or push failed. See step logs for details." >> "$GITHUB_STEP_SUMMARY"
+          echo "No deployment will proceed." >> "$GITHUB_STEP_SUMMARY"
+
+  # ── 2. Deploy to staging ──────────────────────────────────────────────────
+  # Auto-deploys on every successful CI run; no manual approval required.
+  # AC-2: staging deployment within 15 minutes.
+  deploy-staging:
+    name: Deploy → Staging
+    runs-on: ubuntu-latest
+    needs: build-images
+    timeout-minutes: 15
+    environment:
+      name: staging
+      url: ${{ vars.STAGING_URL }}
+
+    steps:
+      - name: Deploy to staging
+        run: |
+          echo "Deploying API image:     ghcr.io/${{ github.repository }}/api:${{ github.sha }}"
+          echo "Deploying Angular image: ghcr.io/${{ github.repository }}/angular:${{ github.sha }}"
+          # TODO (EP-007): Replace with platform-specific deployment command, e.g.:
+          #   docker compose pull && docker compose up -d
+          #   or: render deploy, railway up, kubectl set image, etc.
+          echo "Deployment placeholder — configure for target platform in EP-007."
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+
+      - name: Wait for staging health
+        run: |
+          echo "Polling staging health endpoint (max 5 minutes)..."
+          staging_url="${{ vars.STAGING_URL }}"
+          for i in $(seq 1 30); do
+            if curl -sf "${staging_url}/api/v1/health" > /dev/null 2>&1; then
+              echo "✅ Staging is healthy after $((i * 10))s"
+              exit 0
+            fi
+            echo "  Attempt $i/30 — waiting 10s..."
+            sleep 10
+          done
+          echo "::error::Staging health check failed after 300 seconds"
+          exit 1
+
+      - name: Write staging summary
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "## ✅ Staging Deployment Complete" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "## ❌ Staging Deployment Failed" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Image Tag**: \`${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Environment**: staging" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **URL**: ${{ vars.STAGING_URL }}" >> "$GITHUB_STEP_SUMMARY"
+
+  # ── 3. Deploy to production ───────────────────────────────────────────────
+  # AC-3: pauses here and waits for a reviewer to approve in GitHub UI
+  #   (Settings → Environments → production → Required reviewers).
+  deploy-production:
+    name: Deploy → Production
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_URL }}
+
+    steps:
+      - name: Deploy to production
+        run: |
+          echo "Deploying API image:     ghcr.io/${{ github.repository }}/api:${{ github.sha }}"
+          echo "Deploying Angular image: ghcr.io/${{ github.repository }}/angular:${{ github.sha }}"
+          # TODO (EP-007): Replace with platform-specific production deployment command.
+          echo "Deployment placeholder — configure for target platform in EP-007."
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+
+      - name: Wait for production health
+        run: |
+          echo "Polling production health endpoint (max 5 minutes)..."
+          prod_url="${{ vars.PRODUCTION_URL }}"
+          for i in $(seq 1 30); do
+            if curl -sf "${prod_url}/api/v1/health" > /dev/null 2>&1; then
+              echo "✅ Production is healthy after $((i * 10))s"
+              exit 0
+            fi
+            echo "  Attempt $i/30 — waiting 10s..."
+            sleep 10
+          done
+          echo "::error::Production health check failed after 300 seconds"
+          exit 1
+
+      - name: Write production summary
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "## ✅ Production Deployment Complete" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "## ❌ Production Deployment Failed" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Image Tag**: \`${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Environment**: production" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **URL**: ${{ vars.PRODUCTION_URL }}" >> "$GITHUB_STEP_SUMMARY"

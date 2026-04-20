@@ -190,10 +190,10 @@ docker compose down -v
 
 ## Implementation Checklist
 
-- [ ] Create `docker-compose.yml` with PostgreSQL service using `pgvector/pgvector:pg15` image, health check, restart policy, and named volume
-- [ ] Create `docker/postgres/init/01-create-extensions.sql` enabling `vector`, `uuid-ossp`, and `pg_trgm` extensions
-- [ ] Create `docker/postgres/init/02-create-schemas.sql` creating `app` and `audit` schemas
-- [ ] Create `.env.example` with database credential placeholders and add `.env` to `.gitignore`
-- [ ] Add PostgreSQL connection string to `server/src/PropelIQ.Api/appsettings.Development.json`
+- [x] Create `docker-compose.yml` with PostgreSQL service using `pgvector/pgvector:pg15` image, health check, restart policy, and named volume
+- [x] Create `docker/postgres/init/01-create-extensions.sql` enabling `vector`, `uuid-ossp`, and `pg_trgm` extensions
+- [x] Create `docker/postgres/init/02-create-schemas.sql` creating `app` and `audit` schemas
+- [x] Create `.env.example` with database credential placeholders and add `.env` to `.gitignore`
+- [x] Add PostgreSQL connection string to `server/src/PropelIQ.Api/appsettings.Development.json`
 - [ ] Start container and verify pgvector extension is active via `pg_extension` query
 - [ ] Verify data persistence across container restart cycles

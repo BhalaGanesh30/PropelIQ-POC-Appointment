@@ -1,0 +1,81 @@
+# LiteLLM Proxy configuration for PropelIQ AI Gateway.
+# All secrets are sourced from environment variables — never hardcoded here.
+# Malformed YAML or missing required fields cause the proxy to fail on startup
+# with a descriptive validation error (edge case: config validation).
+#
+# Model aliases:
+#   gpt-4.1          — primary Azure OpenAI GPT-4.1 deployment
+#   gpt-4.1-mini     — fallback (lower cost / lower latency)
+#   coding-suggestion — named alias for coding suggestion feature; maps to gpt-4.1
+#
+# Reliability (AC-4):
+#   num_retries: 3 + exponential backoff on transient errors
+#   fallbacks: gpt-4.1 → gpt-4.1-mini when primary exhausted
+#   circuit breaker: allowed_fails=3 / cooldown_time=30 s
+
+model_list:
+  # Primary: Azure OpenAI GPT-4.1
+  - model_name: gpt-4.1
+    litellm_params:
+      model: azure/gpt-4.1
+      api_key: os.environ/AZURE_OPENAI_API_KEY
+      api_base: os.environ/AZURE_OPENAI_ENDPOINT
+      api_version: "2026-01-01-preview"
+      timeout: 10
+      # Retries delegated to the router level; keep 0 here to avoid double-retry.
+      max_retries: 0
+    tpm: 60000   # tokens per minute — rate limit guard
+    rpm: 600     # requests per minute
+
+  # Fallback: Azure OpenAI GPT-4.1-mini (higher throughput quota)
+  - model_name: gpt-4.1-mini
+    litellm_params:
+      model: azure/gpt-4.1-mini
+      api_key: os.environ/AZURE_OPENAI_API_KEY
+      api_base: os.environ/AZURE_OPENAI_ENDPOINT
+      api_version: "2026-01-01-preview"
+      timeout: 10
+      max_retries: 0
+    tpm: 120000
+    rpm: 1200
+
+  # Named alias for the coding-suggestion feature (maps to primary gpt-4.1).
+  # Keeps feature code decoupled from model selection decisions.
+  - model_name: coding-suggestion
+    litellm_params:
+      model: azure/gpt-4.1
+      api_key: os.environ/AZURE_OPENAI_API_KEY
+      api_base: os.environ/AZURE_OPENAI_ENDPOINT
+      api_version: "2026-01-01-preview"
+      timeout: 10
+      max_retries: 0
+
+litellm_settings:
+  # Retry policy with exponential backoff (AC-4).
+  # LiteLLM uses jittered exponential backoff between attempts automatically.
+  num_retries: 3
+  request_timeout: 10
+
+  # Fallback chains (AC-4): when primary model group is exhausted, route to mini.
+  fallbacks:
+    - gpt-4.1: ["gpt-4.1-mini"]
+    - coding-suggestion: ["gpt-4.1-mini"]
+
+  # Circuit breaker (AC-4): after 3 consecutive failures, cool the deployment
+  # down for 30 s before allowing traffic again.
+  allowed_fails: 3
+  cooldown_time: 30
+
+  # Drop unrecognised parameters instead of forwarding them to the provider.
+  # Prevents accidental leakage of internal LiteLLM routing metadata.
+  drop_params: true
+
+  # Callback hooks — empty lists are explicit no-ops (not omitted) for clarity.
+  success_callback: []
+  failure_callback: []
+
+general_settings:
+  # Master key authentication (edge case: API key validation).
+  # All requests must include "Authorization: Bearer <LITELLM_MASTER_KEY>".
+  # Requests with a missing or invalid key receive HTTP 401 — no model call is made.
+  master_key: os.environ/LITELLM_MASTER_KEY

@@ -1,0 +1,161 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{ABDC672D-FEDD-4DFE-A06E-103F18AAD9DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.Api", "src\PropelIQ.Api\PropelIQ.Api.csproj", "{A907C966-2B40-4A8B-952C-D7BC7E790C45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.SharedKernel", "src\PropelIQ.SharedKernel\PropelIQ.SharedKernel.csproj", "{7CC0E1F7-F343-4240-94B6-9FE5BB0BC6C3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{EB9FCC99-96AC-4EEB-BE47-2155EF182F00}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scheduling", "Scheduling", "{24DD6F86-4261-4F57-B3E3-777C5D782CD1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.Modules.Scheduling.Api", "src\Modules\Scheduling\PropelIQ.Modules.Scheduling.Api\PropelIQ.Modules.Scheduling.Api.csproj", "{67FCDF75-905B-46ED-9C35-041047C3C35D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.Modules.Scheduling.Application", "src\Modules\Scheduling\PropelIQ.Modules.Scheduling.Application\PropelIQ.Modules.Scheduling.Application.csproj", "{8ED1BA61-F37B-419B-91B1-AC760D71FFD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.Modules.Scheduling.Domain", "src\Modules\Scheduling\PropelIQ.Modules.Scheduling.Domain\PropelIQ.Modules.Scheduling.Domain.csproj", "{3846F660-BAF1-4C15-947A-406D84A07B95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.Modules.Scheduling.Infrastructure", "src\Modules\Scheduling\PropelIQ.Modules.Scheduling.Infrastructure\PropelIQ.Modules.Scheduling.Infrastructure.csproj", "{F71AEB91-6E76-4760-8174-8FC3119297C1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ClinicalIntelligence", "ClinicalIntelligence", "{876C9549-BF42-4EDB-A92A-D3C1820CDCCE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.Modules.ClinicalIntelligence.Api", "src\Modules\ClinicalIntelligence\PropelIQ.Modules.ClinicalIntelligence.Api\PropelIQ.Modules.ClinicalIntelligence.Api.csproj", "{FD2E3C56-69CE-453C-A9BF-A20B1363EF9B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.Modules.ClinicalIntelligence.Application", "src\Modules\ClinicalIntelligence\PropelIQ.Modules.ClinicalIntelligence.Application\PropelIQ.Modules.ClinicalIntelligence.Application.csproj", "{06E237BB-8FFE-4FEE-ABFF-657D998393AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.Modules.ClinicalIntelligence.Domain", "src\Modules\ClinicalIntelligence\PropelIQ.Modules.ClinicalIntelligence.Domain\PropelIQ.Modules.ClinicalIntelligence.Domain.csproj", "{C22622A6-3CC0-47B9-8EE1-27BC69A17EE6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.Modules.ClinicalIntelligence.Infrastructure", "src\Modules\ClinicalIntelligence\PropelIQ.Modules.ClinicalIntelligence.Infrastructure\PropelIQ.Modules.ClinicalIntelligence.Infrastructure.csproj", "{BB38042A-921F-4EB4-9AF2-1BBC1D742691}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Administration", "Administration", "{F9E79DE7-606D-4164-9FC2-58B6522D4CF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.Modules.Administration.Api", "src\Modules\Administration\PropelIQ.Modules.Administration.Api\PropelIQ.Modules.Administration.Api.csproj", "{275A2D5D-3453-4AF2-90B5-2DD1C7B783AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.Modules.Administration.Application", "src\Modules\Administration\PropelIQ.Modules.Administration.Application\PropelIQ.Modules.Administration.Application.csproj", "{147EFCBB-2126-410E-82D1-569406EA26B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.Modules.Administration.Domain", "src\Modules\Administration\PropelIQ.Modules.Administration.Domain\PropelIQ.Modules.Administration.Domain.csproj", "{EEC35129-2ECF-4755-B4A9-C827C2D43CD5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.Modules.Administration.Infrastructure", "src\Modules\Administration\PropelIQ.Modules.Administration.Infrastructure\PropelIQ.Modules.Administration.Infrastructure.csproj", "{9E73B897-53AD-4F70-B200-660B929E3E97}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SharedServices", "SharedServices", "{CEBFED10-5D0B-4D4B-8A08-2DB5333E8805}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.Modules.SharedServices.Api", "src\Modules\SharedServices\PropelIQ.Modules.SharedServices.Api\PropelIQ.Modules.SharedServices.Api.csproj", "{5BBEEED4-6584-41CA-B526-499BB01301CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.Modules.SharedServices.Application", "src\Modules\SharedServices\PropelIQ.Modules.SharedServices.Application\PropelIQ.Modules.SharedServices.Application.csproj", "{47DF8C7A-FFCF-46BA-A5CE-BBDAFE69A196}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.Modules.SharedServices.Domain", "src\Modules\SharedServices\PropelIQ.Modules.SharedServices.Domain\PropelIQ.Modules.SharedServices.Domain.csproj", "{51A20682-C64E-4533-88AF-7E685BC5BC71}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropelIQ.Modules.SharedServices.Infrastructure", "src\Modules\SharedServices\PropelIQ.Modules.SharedServices.Infrastructure\PropelIQ.Modules.SharedServices.Infrastructure.csproj", "{8F932489-DDDE-4C14-913D-AFB28485AEBF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A907C966-2B40-4A8B-952C-D7BC7E790C45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A907C966-2B40-4A8B-952C-D7BC7E790C45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A907C966-2B40-4A8B-952C-D7BC7E790C45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A907C966-2B40-4A8B-952C-D7BC7E790C45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CC0E1F7-F343-4240-94B6-9FE5BB0BC6C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CC0E1F7-F343-4240-94B6-9FE5BB0BC6C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CC0E1F7-F343-4240-94B6-9FE5BB0BC6C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CC0E1F7-F343-4240-94B6-9FE5BB0BC6C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67FCDF75-905B-46ED-9C35-041047C3C35D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67FCDF75-905B-46ED-9C35-041047C3C35D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67FCDF75-905B-46ED-9C35-041047C3C35D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67FCDF75-905B-46ED-9C35-041047C3C35D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8ED1BA61-F37B-419B-91B1-AC760D71FFD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8ED1BA61-F37B-419B-91B1-AC760D71FFD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8ED1BA61-F37B-419B-91B1-AC760D71FFD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8ED1BA61-F37B-419B-91B1-AC760D71FFD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3846F660-BAF1-4C15-947A-406D84A07B95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3846F660-BAF1-4C15-947A-406D84A07B95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3846F660-BAF1-4C15-947A-406D84A07B95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3846F660-BAF1-4C15-947A-406D84A07B95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F71AEB91-6E76-4760-8174-8FC3119297C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F71AEB91-6E76-4760-8174-8FC3119297C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F71AEB91-6E76-4760-8174-8FC3119297C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F71AEB91-6E76-4760-8174-8FC3119297C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD2E3C56-69CE-453C-A9BF-A20B1363EF9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD2E3C56-69CE-453C-A9BF-A20B1363EF9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD2E3C56-69CE-453C-A9BF-A20B1363EF9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD2E3C56-69CE-453C-A9BF-A20B1363EF9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06E237BB-8FFE-4FEE-ABFF-657D998393AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06E237BB-8FFE-4FEE-ABFF-657D998393AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06E237BB-8FFE-4FEE-ABFF-657D998393AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06E237BB-8FFE-4FEE-ABFF-657D998393AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C22622A6-3CC0-47B9-8EE1-27BC69A17EE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C22622A6-3CC0-47B9-8EE1-27BC69A17EE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C22622A6-3CC0-47B9-8EE1-27BC69A17EE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C22622A6-3CC0-47B9-8EE1-27BC69A17EE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB38042A-921F-4EB4-9AF2-1BBC1D742691}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB38042A-921F-4EB4-9AF2-1BBC1D742691}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB38042A-921F-4EB4-9AF2-1BBC1D742691}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB38042A-921F-4EB4-9AF2-1BBC1D742691}.Release|Any CPU.Build.0 = Release|Any CPU
+		{275A2D5D-3453-4AF2-90B5-2DD1C7B783AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{275A2D5D-3453-4AF2-90B5-2DD1C7B783AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{275A2D5D-3453-4AF2-90B5-2DD1C7B783AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{275A2D5D-3453-4AF2-90B5-2DD1C7B783AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{147EFCBB-2126-410E-82D1-569406EA26B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{147EFCBB-2126-410E-82D1-569406EA26B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{147EFCBB-2126-410E-82D1-569406EA26B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{147EFCBB-2126-410E-82D1-569406EA26B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEC35129-2ECF-4755-B4A9-C827C2D43CD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEC35129-2ECF-4755-B4A9-C827C2D43CD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEC35129-2ECF-4755-B4A9-C827C2D43CD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEC35129-2ECF-4755-B4A9-C827C2D43CD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E73B897-53AD-4F70-B200-660B929E3E97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E73B897-53AD-4F70-B200-660B929E3E97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E73B897-53AD-4F70-B200-660B929E3E97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E73B897-53AD-4F70-B200-660B929E3E97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BBEEED4-6584-41CA-B526-499BB01301CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BBEEED4-6584-41CA-B526-499BB01301CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BBEEED4-6584-41CA-B526-499BB01301CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BBEEED4-6584-41CA-B526-499BB01301CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47DF8C7A-FFCF-46BA-A5CE-BBDAFE69A196}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47DF8C7A-FFCF-46BA-A5CE-BBDAFE69A196}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47DF8C7A-FFCF-46BA-A5CE-BBDAFE69A196}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47DF8C7A-FFCF-46BA-A5CE-BBDAFE69A196}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51A20682-C64E-4533-88AF-7E685BC5BC71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51A20682-C64E-4533-88AF-7E685BC5BC71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51A20682-C64E-4533-88AF-7E685BC5BC71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51A20682-C64E-4533-88AF-7E685BC5BC71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F932489-DDDE-4C14-913D-AFB28485AEBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F932489-DDDE-4C14-913D-AFB28485AEBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F932489-DDDE-4C14-913D-AFB28485AEBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F932489-DDDE-4C14-913D-AFB28485AEBF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A907C966-2B40-4A8B-952C-D7BC7E790C45} = {ABDC672D-FEDD-4DFE-A06E-103F18AAD9DC}
+		{7CC0E1F7-F343-4240-94B6-9FE5BB0BC6C3} = {ABDC672D-FEDD-4DFE-A06E-103F18AAD9DC}
+		{EB9FCC99-96AC-4EEB-BE47-2155EF182F00} = {ABDC672D-FEDD-4DFE-A06E-103F18AAD9DC}
+		{24DD6F86-4261-4F57-B3E3-777C5D782CD1} = {EB9FCC99-96AC-4EEB-BE47-2155EF182F00}
+		{67FCDF75-905B-46ED-9C35-041047C3C35D} = {24DD6F86-4261-4F57-B3E3-777C5D782CD1}
+		{8ED1BA61-F37B-419B-91B1-AC760D71FFD9} = {24DD6F86-4261-4F57-B3E3-777C5D782CD1}
+		{3846F660-BAF1-4C15-947A-406D84A07B95} = {24DD6F86-4261-4F57-B3E3-777C5D782CD1}
+		{F71AEB91-6E76-4760-8174-8FC3119297C1} = {24DD6F86-4261-4F57-B3E3-777C5D782CD1}
+		{876C9549-BF42-4EDB-A92A-D3C1820CDCCE} = {EB9FCC99-96AC-4EEB-BE47-2155EF182F00}
+		{FD2E3C56-69CE-453C-A9BF-A20B1363EF9B} = {876C9549-BF42-4EDB-A92A-D3C1820CDCCE}
+		{06E237BB-8FFE-4FEE-ABFF-657D998393AD} = {876C9549-BF42-4EDB-A92A-D3C1820CDCCE}
+		{C22622A6-3CC0-47B9-8EE1-27BC69A17EE6} = {876C9549-BF42-4EDB-A92A-D3C1820CDCCE}
+		{BB38042A-921F-4EB4-9AF2-1BBC1D742691} = {876C9549-BF42-4EDB-A92A-D3C1820CDCCE}
+		{F9E79DE7-606D-4164-9FC2-58B6522D4CF9} = {EB9FCC99-96AC-4EEB-BE47-2155EF182F00}
+		{275A2D5D-3453-4AF2-90B5-2DD1C7B783AB} = {F9E79DE7-606D-4164-9FC2-58B6522D4CF9}
+		{147EFCBB-2126-410E-82D1-569406EA26B1} = {F9E79DE7-606D-4164-9FC2-58B6522D4CF9}
+		{EEC35129-2ECF-4755-B4A9-C827C2D43CD5} = {F9E79DE7-606D-4164-9FC2-58B6522D4CF9}
+		{9E73B897-53AD-4F70-B200-660B929E3E97} = {F9E79DE7-606D-4164-9FC2-58B6522D4CF9}
+		{CEBFED10-5D0B-4D4B-8A08-2DB5333E8805} = {EB9FCC99-96AC-4EEB-BE47-2155EF182F00}
+		{5BBEEED4-6584-41CA-B526-499BB01301CC} = {CEBFED10-5D0B-4D4B-8A08-2DB5333E8805}
+		{47DF8C7A-FFCF-46BA-A5CE-BBDAFE69A196} = {CEBFED10-5D0B-4D4B-8A08-2DB5333E8805}
+		{51A20682-C64E-4533-88AF-7E685BC5BC71} = {CEBFED10-5D0B-4D4B-8A08-2DB5333E8805}
+		{8F932489-DDDE-4C14-913D-AFB28485AEBF} = {CEBFED10-5D0B-4D4B-8A08-2DB5333E8805}
+	EndGlobalSection
+EndGlobal

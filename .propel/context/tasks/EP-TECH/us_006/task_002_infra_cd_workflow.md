@@ -332,11 +332,11 @@ gh run review <run-id> --approve
 
 ## Implementation Checklist
 
-- [ ] Create `.github/workflows/cd.yml` with `workflow_run` trigger gated on CI success
-- [ ] Create `build-images` job: Docker login to ghcr.io, build and push API and Angular production images with GHA cache
-- [ ] Create `deploy-staging` job with `environment: staging`, deployment command placeholder, and health check verification
-- [ ] Create `deploy-production` job with `environment: production` (manual approval gate) and health check verification
-- [ ] Create `app/Dockerfile` (production multi-stage: Node build + nginx serve) and `app/nginx.conf` for SPA routing
-- [ ] Create `server/Dockerfile.prod` (production multi-stage: SDK build + aspnet runtime)
-- [ ] Add failure reporting to `$GITHUB_STEP_SUMMARY` on each job with `if: failure()` step
+- [x] Create `.github/workflows/cd.yml` with `workflow_run` trigger gated on CI success
+- [x] Create `build-images` job: Docker login to ghcr.io, build and push API and Angular production images with GHA cache
+- [x] Create `deploy-staging` job with `environment: staging`, deployment command placeholder, and health check verification
+- [x] Create `deploy-production` job with `environment: production` (manual approval gate) and health check verification
+- [x] Create `app/Dockerfile` (production multi-stage: Node build + nginx serve) and `app/nginx.conf` for SPA routing
+- [x] Create `server/Dockerfile.prod` (production multi-stage: SDK build + aspnet runtime)
+- [x] Add failure reporting to `$GITHUB_STEP_SUMMARY` on each job with `if: failure()` step
 - [ ] Document GitHub environment setup (staging: auto-deploy, production: required reviewers) in repository configuration

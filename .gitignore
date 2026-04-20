@@ -3,6 +3,15 @@
 .env.local
 .env.*.local
 
+# Docker
+docker/postgres/data/
+
+# Angular build artifacts
+app/dist/
+app/.angular/
+app/node_modules/
+app/out-tsc/
+
 # OS specific files
 .DS_Store
 Thumbs.db

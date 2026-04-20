@@ -1,0 +1,22 @@
+# Angular 17 development server — hot-reload enabled.
+# Used exclusively for local development via Docker Compose.
+# Production builds use a separate multi-stage Dockerfile (added in EP-007).
+
+FROM node:20-alpine AS dev
+WORKDIR /app
+
+# Copy package manifests first so npm install is only re-run when dependencies change.
+COPY package.json package-lock.json ./
+RUN npm ci --prefer-offline
+
+# Copy application source. Live-reload is achieved by bind-mounting ./app/src
+# over /app/src in docker-compose.yml, so the COPY here is for the initial build.
+COPY . .
+
+EXPOSE 4200
+
+# --host 0.0.0.0 makes the dev server reachable from outside the container.
+# --poll 1000 enables file-system polling required for Docker volume mounts on
+# Windows/macOS where native inotify events are not forwarded into the container.
+# AC-3: source changes reflect in browser within 5 seconds.
+CMD ["npx", "ng", "serve", "--host", "0.0.0.0", "--port", "4200", "--poll", "1000", "--disable-host-check"]
