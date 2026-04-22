@@ -730,16 +730,16 @@ ng test
 
 ## Implementation Checklist
 
-- [ ] Install `@microsoft/signalr` npm package
-- [ ] Create `InactivityTimerService` with `start()`, `stop()`, `resetTimer()`, activity event tracking, and `BroadcastChannel` sync
-- [ ] Create `SessionSignalRService` with authenticated hub connection, `SessionEnded` handler, and auto-reconnect
-- [ ] Create `SessionTimeoutModalComponent` standalone component with countdown display and action buttons
-- [ ] Create modal HTML template with `role="dialog"`, `aria-modal="true"`, `aria-live` countdown region, and `aria-labelledby`/`aria-describedby`
-- [ ] Create modal SCSS with overlay, centered card, tabular-nums countdown, and `.sr-only` utility class
-- [ ] Implement focus trapping within modal using `keydown` Tab handler (UXR-206)
-- [ ] Implement screen reader announcements at 60s, 30s, and 10s countdown intervals (UXR-203)
-- [ ] Add `extendSession()` method to `AuthService` calling `POST /api/v1/auth/session/extend`
-- [ ] Add `sessionToken` storage methods to `TokenStorageService`
-- [ ] Update `AppComponent` to import modal and initialize session services on authenticated state
-- [ ] Add session-expired and session-ended banner message handling to `LoginComponent`
+- [x] Install `@microsoft/signalr` npm package
+- [x] Create `InactivityTimerService` with `start()`, `stop()`, `resetTimer()`, activity event tracking, and `BroadcastChannel` sync
+- [x] Create `SessionSignalRService` with authenticated hub connection, `SessionEnded` handler, and auto-reconnect
+- [x] Create `SessionTimeoutModalComponent` standalone component with countdown display and action buttons
+- [x] Create modal HTML template with `role="dialog"`, `aria-modal="true"`, `aria-live` countdown region, and `aria-labelledby`/`aria-describedby`
+- [x] Create modal SCSS with overlay, centered card, tabular-nums countdown, and `.sr-only` utility class
+- [x] Implement focus trapping within modal using `keydown` Tab handler (UXR-206)
+- [x] Implement screen reader announcements at 60s, 30s, and 10s countdown intervals (UXR-203)
+- [x] Add `extendSession()` method to `AuthService` calling `POST /api/v1/auth/session/extend`
+- [x] Add `sessionToken` storage methods to `TokenStorageService`
+- [x] Update `MainLayoutComponent` to import modal and initialize session services on authenticated state
+- [x] Add session-expired and session-ended banner message handling to `LoginComponent`
 - [ ] Verify cross-tab activity sync resets warning timer in all same-origin tabs

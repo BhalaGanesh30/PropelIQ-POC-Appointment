@@ -1,0 +1,110 @@
+.activate-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 48px 16px;
+  background-color: var(--mat-app-background-color, #fafafa);
+}
+
+// ── Shared card shell ─────────────────────────────────────────────────────────
+.activate-card,
+.state-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  padding: 40px 32px;
+  text-align: center;
+}
+
+// ── Brand icon ────────────────────────────────────────────────────────────────
+.brand-icon {
+  font-size: 48px;
+  height: 48px;
+  width: 48px;
+  color: var(--mat-primary-color, #3f51b5);
+  margin-bottom: 16px;
+}
+
+h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.subtitle {
+  font-size: 0.9375rem;
+  color: rgba(0, 0, 0, 0.6);
+  margin: 0 0 24px;
+}
+
+// ── Form fields ───────────────────────────────────────────────────────────────
+.full-width {
+  width: 100%;
+}
+
+.submit-btn {
+  margin-top: 8px;
+  min-height: 44px; // WCAG 2.1 AA minimum touch target
+}
+
+// ── Server error ──────────────────────────────────────────────────────────────
+.server-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #fdecea;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  color: #c62828;
+  font-size: 0.875rem;
+  text-align: left;
+
+  mat-icon {
+    flex-shrink: 0;
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+  }
+}
+
+// ── State card variations ─────────────────────────────────────────────────────
+.state-card {
+  p {
+    font-size: 0.9375rem;
+    color: rgba(0, 0, 0, 0.6);
+    margin: 0 0 24px;
+    line-height: 1.6;
+  }
+}
+
+.state-icon {
+  font-size: 64px;
+  height: 64px;
+  width: 64px;
+  margin-bottom: 16px;
+}
+
+.success-icon {
+  color: #2e7d32;
+}
+
+.error-icon {
+  color: #c62828;
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 480px) {
+  .activate-container {
+    padding: 24px 12px;
+  }
+
+  .activate-card,
+  .state-card {
+    padding: 28px 20px;
+  }
+}

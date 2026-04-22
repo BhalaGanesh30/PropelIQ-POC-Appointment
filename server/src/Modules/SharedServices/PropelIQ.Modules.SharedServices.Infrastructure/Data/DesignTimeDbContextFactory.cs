@@ -45,6 +45,9 @@ public sealed class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<App
                 npgsqlOptions.MigrationsHistoryTable("__ef_migrations_history", "app");
             })
             .UseSnakeCaseNamingConvention()
+            // UseSeeding: required by the synchronous EF CLI path (dotnet ef database update).
+            .UseSeeding((context, _) =>
+                AppDbContextSeed.SeedAsync((AppDbContext)context).GetAwaiter().GetResult())
             .UseAsyncSeeding(async (context, _, ct) =>
                 await AppDbContextSeed.SeedAsync((AppDbContext)context, ct));
 

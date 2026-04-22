@@ -1,0 +1,84 @@
+/* Screen-reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Backdrop ─────────────────────────────────────────────────────────────── */
+.session-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+/* ── Dialog ───────────────────────────────────────────────────────────────── */
+.session-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 32px 40px;
+  width: min(480px, calc(100vw - 32px));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+
+  &__icon {
+    color: #f57c00;
+    margin-bottom: 12px;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+    }
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #212121;
+    margin: 0 0 8px;
+  }
+
+  &__body {
+    font-size: 0.9375rem;
+    color: #616161;
+    margin: 0 0 4px;
+  }
+
+  &__countdown {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #e53935;
+    margin: 0 0 28px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  &__extend-btn,
+  &__logout-btn {
+    width: 100%;
+  }
+}

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PropelIQ.Api.Controllers;
@@ -9,6 +10,7 @@ namespace PropelIQ.Api.Controllers;
 public sealed class HealthController : BaseApiController
 {
     [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(HealthResponse), StatusCodes.Status200OK)]
     public IActionResult GetHealth()
     {

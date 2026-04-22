@@ -752,11 +752,11 @@ ng lint
 
 ## Implementation Checklist
 
-- [ ] Create `TokenStorageService` with `saveTokens`, `getAccessToken`, `getRefreshToken`, `clearTokens`, `getUserRole`, `isTokenExpired`
-- [ ] Create `LoginComponent` with reactive form, remember-me checkbox, password show/hide toggle, loading spinner, and generic error display
-- [ ] Create responsive login SCSS matching SCR-002 single-column centered layout with 375/768/1440px breakpoints
-- [ ] Create `authInterceptor` functional interceptor that attaches bearer token and handles 401 with transparent refresh
-- [ ] Create `authGuard` functional CanActivateFn redirecting unauthenticated users to `/auth/login`
-- [ ] Update `AuthService` with `login()`, `refresh()`, and `logout()` methods calling backend endpoints
-- [ ] Register interceptor in `app.config.ts` via `provideHttpClient(withInterceptors([authInterceptor]))`
+- [x] Create `TokenStorageService` with `saveTokens`, `getAccessToken`, `getRefreshToken`, `clearTokens`, `getUserRole`, `isTokenExpired`
+- [x] Create `LoginComponent` with reactive form, remember-me checkbox, password show/hide toggle, loading spinner, and generic error display
+- [x] Create responsive login SCSS matching SCR-002 single-column centered layout with 375/768/1440px breakpoints
+- [x] Create `authInterceptor` functional interceptor that attaches bearer token and handles 401 with transparent refresh
+- [x] Create `authGuard` functional CanActivateFn redirecting unauthenticated users to `/login`
+- [x] Update `AuthService` with `login()`, `refresh()`, and `logout()` methods calling backend endpoints
+- [x] Register interceptor in `app.config.ts` via `provideHttpClient(withInterceptors([authInterceptor]))`
 - [ ] **[UI Tasks - MANDATORY]** Reference wireframe from Design References table during implementation

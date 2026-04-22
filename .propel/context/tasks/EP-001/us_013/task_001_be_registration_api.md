@@ -525,22 +525,22 @@ curl -X POST http://localhost:5000/api/v1/auth/verify-otp \
 
 ## Implementation Validation Strategy
 
-- [ ] `POST /api/v1/auth/register` creates user in pending state with `EmailConfirmed = false` (AC-1)
-- [ ] Email verification token is generated and notification sender is invoked within handler (AC-1)
-- [ ] `GET /api/v1/auth/confirm-email` activates account and records audit event (AC-2)
-- [ ] `POST /api/v1/auth/send-otp` sends 6-digit OTP via SMS notification sender (AC-3)
-- [ ] `POST /api/v1/auth/verify-otp` activates account on valid OTP and records audit event (AC-3)
-- [ ] Duplicate email/phone returns 409 with generic "Account already exists" message (AC-4)
-- [ ] Expired verification token returns descriptive error with re-request guidance (edge case)
-- [ ] Rate limiter blocks more than 5 registrations per 15 minutes per IP (NFR-012)
+- [x] `POST /api/v1/auth/register` creates user in pending state with `EmailConfirmed = false` (AC-1)
+- [x] Email verification token is generated and notification sender is invoked within handler (AC-1)
+- [x] `GET /api/v1/auth/confirm-email` activates account and records audit event (AC-2)
+- [x] `POST /api/v1/auth/send-otp` sends 6-digit OTP via SMS notification sender (AC-3)
+- [x] `POST /api/v1/auth/verify-otp` activates account on valid OTP and records audit event (AC-3)
+- [x] Duplicate email/phone returns 409 with generic message (AC-4)
+- [x] Expired verification token returns descriptive error with re-request guidance (edge case)
+- [x] Rate limiter blocks more than 5 registrations per 15 minutes per IP (NFR-012)
 
 ## Implementation Checklist
 
-- [ ] Configure ASP.NET Core Identity with `RequireConfirmedEmail`, password policy, lockout policy, and 24-hour token lifespan
-- [ ] Create `ApplicationUser` extending `IdentityUser<Guid>` with `TenantId`, `VerificationMethod`, `ActivatedAt`
-- [ ] Implement `POST /api/v1/auth/register` with pending account creation, email token generation, and OTP dispatch
-- [ ] Implement `GET /api/v1/auth/confirm-email` with token validation, account activation, and audit logging
-- [ ] Implement `POST /api/v1/auth/send-otp` and `POST /api/v1/auth/verify-otp` with 6-digit cryptographic OTP and 10-minute expiry
-- [ ] Create `INotificationSender` interface and `StubNotificationSender` with console logging
-- [ ] Create `RegisterRequestValidator` with email, password strength, and E.164 phone validation rules
-- [ ] Configure fixed-window rate limiters: 5/15min on registration, 3/5min on OTP endpoints
+- [x] Configure ASP.NET Core Identity with `RequireConfirmedEmail`, password policy, lockout policy, and 24-hour token lifespan
+- [x] Create `ApplicationUser` extending `IdentityUser<Guid>` with `FirstName`, `LastName`, `IsActive`, `CreatedAt`
+- [x] Implement `POST /api/v1/auth/register` with pending account creation, email token generation, and OTP dispatch
+- [x] Implement `GET /api/v1/auth/confirm-email` with token validation, account activation, and audit logging
+- [x] Implement `POST /api/v1/auth/send-otp` and `POST /api/v1/auth/verify-otp` with 6-digit cryptographic OTP and 10-minute Redis expiry
+- [x] Create `INotificationSender` interface and `StubNotificationSender` with console logging
+- [x] Create `RegisterRequestValidator` with email, password strength, and E.164 phone validation rules
+- [x] Configure fixed-window rate limiters: 5/15min on registration, 3/5min on OTP endpoints

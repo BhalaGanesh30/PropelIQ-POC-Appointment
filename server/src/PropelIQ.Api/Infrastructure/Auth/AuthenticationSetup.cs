@@ -2,16 +2,15 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using PropelIQ.SharedKernel.Auth;
 
 namespace PropelIQ.Api.Infrastructure.Auth;
 
 /// <summary>
-/// Extension method for JWT Bearer authentication registration.
-/// Skeleton implementation — placeholder Jwt:Key/Issuer/Audience values
-/// are replaced with real identity provider config in EP-001 (auth epic).
-///
-/// AC-4: unauthenticated requests to [Authorize] endpoints return HTTP 401
-/// with an RFC 9457 Problem Details JSON body (never a raw exception or HTML).
+/// JWT Bearer authentication registration.
+/// Signs with HMAC-SHA256; 30-second clock-skew tolerance.
+/// Expired tokens receive an <c>X-Token-Expired: true</c> response header
+/// so clients can trigger the refresh flow without inspecting the body.
 /// </summary>
 public static class AuthenticationSetup
 {
@@ -19,8 +18,14 @@ public static class AuthenticationSetup
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        var jwtSection = configuration.GetSection(JwtSettings.SectionName);
+
         services
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -29,16 +34,25 @@ public static class AuthenticationSetup
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = configuration["Jwt:Issuer"],
-                    ValidAudience = configuration["Jwt:Audience"],
-                    // Placeholder key — replaced with identity provider secret in EP-001.
+                    ValidIssuer = jwtSection["Issuer"],
+                    ValidAudience = jwtSection["Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(
-                            configuration["Jwt:Key"] ?? "placeholder-key-replace-in-ep001")),
+                            jwtSection["SigningKey"] ?? throw new InvalidOperationException(
+                                "Jwt:SigningKey is missing from configuration."))),
+                    ClockSkew = TimeSpan.FromSeconds(30)
                 };
 
                 options.Events = new JwtBearerEvents
                 {
+                    // Surface token expiry to clients via header so they can refresh silently.
+                    OnAuthenticationFailed = context =>
+                    {
+                        if (context.Exception is SecurityTokenExpiredException)
+                            context.Response.Headers.Append("X-Token-Expired", "true");
+                        return Task.CompletedTask;
+                    },
+
                     // Return structured Problem Details 401 instead of empty 401 or redirect.
                     OnChallenge = async context =>
                     {
@@ -60,7 +74,8 @@ public static class AuthenticationSetup
                 };
             });
 
-        services.AddAuthorization();
+        // Authorization (policies + FallbackPolicy) are registered separately
+        // in AddAppAuthorizationPolicies() called from Program.cs.
 
         return services;
     }

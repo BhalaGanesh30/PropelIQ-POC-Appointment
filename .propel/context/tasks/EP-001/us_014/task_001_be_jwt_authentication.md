@@ -671,11 +671,11 @@ curl -X POST http://localhost:5000/api/v1/auth/login \
 
 ## Implementation Checklist
 
-- [ ] Configure JWT bearer authentication with `AddJwtBearer`, `TokenValidationParameters`, 30s clock skew, and `X-Token-Expired` header
-- [ ] Create `RefreshToken` entity with one-time-use rotation fields (ReplacedByToken, RevokedAt, RevokeReason, CreatedByIp)
-- [ ] Create `JwtTokenService` with `GenerateAccessToken` (role claims, 15min expiry), `GenerateRefreshToken` (64-byte crypto random), `GetPrincipalFromExpiredToken`
-- [ ] Implement `POST /api/v1/auth/login` with SignInManager validation, lockout support, generic error response, and audit logging
-- [ ] Implement `POST /api/v1/auth/refresh` with token rotation, revoked-token-reuse detection, and bulk revocation
-- [ ] Implement `POST /api/v1/auth/logout` with server-side refresh token revocation and audit event
-- [ ] Create `RefreshTokenRepository` with `AddAsync`, `GetByTokenAsync`, `UpdateAsync`, `RevokeAllForUserAsync`
-- [ ] Add `Jwt` configuration section to `appsettings.json` and register `JwtSettings` options with `ValidateOnStart`
+- [x] Configure JWT bearer authentication with `AddJwtBearer`, `TokenValidationParameters`, 30s clock skew, and `X-Token-Expired` header
+- [x] Create `RefreshToken` entity with one-time-use rotation fields (ReplacedByToken, RevokedAt, RevokeReason, CreatedByIp)
+- [x] Create `JwtTokenService` with `GenerateAccessToken` (role claims, 15min expiry), `GenerateRefreshToken` (64-byte crypto random), `GetPrincipalFromExpiredToken`
+- [x] Implement `POST /api/v1/auth/login` with SignInManager validation, lockout support, generic error response, and audit logging
+- [x] Implement `POST /api/v1/auth/refresh` with token rotation, revoked-token-reuse detection, and bulk revocation
+- [x] Implement `POST /api/v1/auth/logout` with server-side refresh token revocation and audit event
+- [x] Create `RefreshTokenRepository` with `AddAsync`, `GetByTokenAsync`, `UpdateAsync`, `RevokeAllForUserAsync`
+- [x] Add `Jwt` configuration section to `appsettings.json` and register `JwtSettings` options with `ValidateOnStart`

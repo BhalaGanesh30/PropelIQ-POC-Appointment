@@ -1,0 +1,353 @@
+<div class="register-container" role="main" aria-label="Patient Registration">
+
+  <!-- ── Branded header ─────────────────────────────────────────────────── -->
+  <header class="register-header">
+    <span class="brand-mark" aria-hidden="true">IQ</span>
+    <h1 id="register-heading">Create Your Account</h1>
+  </header>
+
+  <!-- ── Registration complete ─────────────────────────────────────────── -->
+  @if (registrationComplete()) {
+    <section class="complete-panel" role="status" aria-live="polite">
+      <mat-icon class="complete-icon" aria-hidden="true">check_circle</mat-icon>
+      <h2>You're all set!</h2>
+      <p>Your account has been verified. You can now log in.</p>
+      <a mat-raised-button color="primary" routerLink="/login"
+         class="submit-btn">
+        Go to Login
+      </a>
+    </section>
+  } @else {
+
+  <!-- ── 3-step stepper ────────────────────────────────────────────────── -->
+  <mat-stepper
+    [linear]="true"
+    [selectedIndex]="currentStep()"
+    aria-label="Registration steps"
+    class="register-stepper">
+
+    <!-- ══ Step 1 — Contact ═══════════════════════════════════════════════ -->
+    <mat-step [stepControl]="contactForm" label="Contact">
+      <form [formGroup]="contactForm"
+            (ngSubmit)="onContactNext()"
+            aria-labelledby="register-heading"
+            novalidate>
+
+        <!-- Verification method toggle -->
+        <fieldset class="method-fieldset">
+          <legend class="method-legend">How would you like to verify?</legend>
+          <mat-radio-group formControlName="verificationMethod"
+                           class="method-radio-group"
+                           aria-label="Choose verification method">
+            <mat-radio-button value="email">Email link</mat-radio-button>
+            <mat-radio-button value="phone">Phone OTP</mat-radio-button>
+          </mat-radio-group>
+        </fieldset>
+
+        <!-- Email field (always required) -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email Address</mat-label>
+          <input matInput
+                 formControlName="email"
+                 type="email"
+                 autocomplete="email"
+                 inputmode="email"
+                 aria-required="true"
+                 [attr.aria-invalid]="
+                   contactForm.controls.email.invalid &&
+                   contactForm.controls.email.touched"
+                 aria-describedby="email-hint email-error" />
+          <mat-hint id="email-hint">Used to log in and receive communications</mat-hint>
+          @if (contactForm.controls.email.touched && contactForm.controls.email.invalid) {
+            <mat-error id="email-error" role="alert">
+              @if (contactForm.controls.email.errors?.['required']) {
+                Email address is required.
+              } @else if (contactForm.controls.email.errors?.['email']) {
+                Please enter a valid email address.
+              } @else if (contactForm.controls.email.errors?.['maxlength']) {
+                Email must be 256 characters or fewer.
+              }
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Phone field (visible + required when method = phone) -->
+        @if (isPhoneMethod) {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Phone Number</mat-label>
+            <input matInput
+                   formControlName="phoneNumber"
+                   type="tel"
+                   autocomplete="tel"
+                   inputmode="tel"
+                   placeholder="+1 555 123 4567"
+                   aria-required="true"
+                   [attr.aria-invalid]="
+                     contactForm.controls.phoneNumber.invalid &&
+                     contactForm.controls.phoneNumber.touched"
+                   aria-describedby="phone-hint phone-error" />
+            <mat-hint id="phone-hint">E.164 format, e.g. +15551234567</mat-hint>
+            @if (contactForm.controls.phoneNumber.touched &&
+                 contactForm.controls.phoneNumber.invalid) {
+              <mat-error id="phone-error" role="alert">
+                Please enter a valid phone number in E.164 format.
+              </mat-error>
+            }
+          </mat-form-field>
+        }
+
+        <!-- Server error (409 duplicate / other) -->
+        @if (serverError()) {
+          <div class="server-error" role="alert" aria-live="assertive">
+            <mat-icon aria-hidden="true">error_outline</mat-icon>
+            <span>{{ serverError() }}</span>
+            @if (serverError()?.includes('already exists')) {
+              — <a routerLink="/login" class="inline-link">Log in instead</a>
+            }
+          </div>
+        }
+
+        <button mat-raised-button
+                color="primary"
+                type="submit"
+                class="submit-btn"
+                [disabled]="isSubmitting()">
+          Continue
+          <mat-icon aria-hidden="true" iconPositionEnd>arrow_forward</mat-icon>
+        </button>
+
+        <p class="login-prompt">
+          Already have an account?
+          <a routerLink="/login" class="inline-link">Log in</a>
+        </p>
+      </form>
+    </mat-step>
+
+    <!-- ══ Step 2 — Profile & Password ═══════════════════════════════════ -->
+    <mat-step [stepControl]="profileForm" label="Profile">
+      <form [formGroup]="profileForm"
+            (ngSubmit)="onProfileSubmit()"
+            novalidate>
+
+        <div class="name-row">
+          <!-- First name -->
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>First Name</mat-label>
+            <input matInput
+                   formControlName="firstName"
+                   type="text"
+                   autocomplete="given-name"
+                   aria-required="true"
+                   [attr.aria-invalid]="
+                     profileForm.controls.firstName.invalid &&
+                     profileForm.controls.firstName.touched"
+                   aria-describedby="first-name-error" />
+            @if (profileForm.controls.firstName.touched &&
+                 profileForm.controls.firstName.invalid) {
+              <mat-error id="first-name-error" role="alert">
+                First name is required.
+              </mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Last name -->
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Last Name</mat-label>
+            <input matInput
+                   formControlName="lastName"
+                   type="text"
+                   autocomplete="family-name"
+                   aria-required="true"
+                   [attr.aria-invalid]="
+                     profileForm.controls.lastName.invalid &&
+                     profileForm.controls.lastName.touched"
+                   aria-describedby="last-name-error" />
+            @if (profileForm.controls.lastName.touched &&
+                 profileForm.controls.lastName.invalid) {
+              <mat-error id="last-name-error" role="alert">
+                Last name is required.
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <!-- Password -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput
+                 formControlName="password"
+                 [type]="showPassword() ? 'text' : 'password'"
+                 autocomplete="new-password"
+                 aria-required="true"
+                 [attr.aria-invalid]="
+                   profileForm.controls.password.invalid &&
+                   profileForm.controls.password.touched"
+                 aria-describedby="password-hint password-error" />
+          <button mat-icon-button
+                  matSuffix
+                  type="button"
+                  (click)="togglePasswordVisibility()"
+                  [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'">
+            <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-hint id="password-hint">
+            At least 8 characters with uppercase, lowercase, digit, and symbol
+          </mat-hint>
+          @if (profileForm.controls.password.touched &&
+               profileForm.controls.password.invalid) {
+            <mat-error id="password-error" role="alert">
+              @if (profileForm.controls.password.errors?.['required']) {
+                Password is required.
+              } @else if (profileForm.controls.password.errors?.['minlength']) {
+                Password must be at least 8 characters.
+              } @else if (profileForm.controls.password.errors?.['passwordStrength']) {
+                Password must include uppercase, lowercase, a number, and a special character.
+              }
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Confirm password -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirm Password</mat-label>
+          <input matInput
+                 formControlName="confirmPassword"
+                 [type]="showConfirmPassword() ? 'text' : 'password'"
+                 autocomplete="new-password"
+                 aria-required="true"
+                 [attr.aria-invalid]="
+                   (profileForm.controls.confirmPassword.touched &&
+                    profileForm.errors?.['passwordMismatch']) || false"
+                 aria-describedby="confirm-password-error" />
+          <button mat-icon-button
+                  matSuffix
+                  type="button"
+                  (click)="toggleConfirmPasswordVisibility()"
+                  [attr.aria-label]="showConfirmPassword() ? 'Hide password' : 'Show password'">
+            <mat-icon>{{ showConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (profileForm.controls.confirmPassword.touched &&
+               profileForm.errors?.['passwordMismatch']) {
+            <mat-error id="confirm-password-error" role="alert">
+              Passwords do not match.
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Server error -->
+        @if (serverError()) {
+          <div class="server-error" role="alert" aria-live="assertive">
+            <mat-icon aria-hidden="true">error_outline</mat-icon>
+            <span>{{ serverError() }}</span>
+            @if (serverError()?.includes('already exists')) {
+              — <a routerLink="/login" class="inline-link">Log in instead</a>
+            }
+          </div>
+        }
+
+        <button mat-raised-button
+                color="primary"
+                type="submit"
+                class="submit-btn"
+                [disabled]="isSubmitting()">
+          @if (isSubmitting()) {
+            <mat-spinner diameter="20" aria-label="Creating account…"></mat-spinner>
+          } @else {
+            Create Account
+          }
+        </button>
+      </form>
+    </mat-step>
+
+    <!-- ══ Step 3 — Verification ══════════════════════════════════════════ -->
+    <mat-step label="Verify">
+      @if (isPhoneMethod) {
+        <!-- Phone OTP path (AC-3) -->
+        <form [formGroup]="verificationForm"
+              (ngSubmit)="onOtpSubmit()"
+              novalidate>
+
+          <p class="instruction-text">
+            We sent a 6-digit code to your phone number.
+            Enter it below to complete your registration.
+          </p>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Verification Code</mat-label>
+            <input matInput
+                   formControlName="otp"
+                   type="text"
+                   inputmode="numeric"
+                   maxlength="6"
+                   autocomplete="one-time-code"
+                   aria-required="true"
+                   [attr.aria-invalid]="
+                     verificationForm.controls.otp.invalid &&
+                     verificationForm.controls.otp.touched"
+                   aria-describedby="otp-error" />
+            @if (verificationForm.controls.otp.touched &&
+                 verificationForm.controls.otp.invalid) {
+              <mat-error id="otp-error" role="alert">
+                Please enter the 6-digit code sent to your phone.
+              </mat-error>
+            }
+          </mat-form-field>
+
+          @if (serverError()) {
+            <div class="server-error" role="alert" aria-live="assertive">
+              <mat-icon aria-hidden="true">error_outline</mat-icon>
+              <span>{{ serverError() }}</span>
+            </div>
+          }
+
+          <button mat-raised-button
+                  color="primary"
+                  type="submit"
+                  class="submit-btn"
+                  [disabled]="isSubmitting()">
+            @if (isSubmitting()) {
+              <mat-spinner diameter="20" aria-label="Verifying code…"></mat-spinner>
+            } @else {
+              Verify Code
+            }
+          </button>
+
+          <button mat-button
+                  type="button"
+                  class="resend-btn"
+                  [disabled]="isResending()"
+                  (click)="resendOtp()">
+            @if (isResending()) {
+              Resending…
+            } @else {
+              Resend code
+            }
+          </button>
+        </form>
+      } @else {
+        <!-- Email confirmation path (AC-1/AC-2) -->
+        <section class="email-check-panel" role="status" aria-live="polite">
+          <mat-icon class="email-icon" aria-hidden="true">mark_email_read</mat-icon>
+          <h2>Check your inbox</h2>
+          <p>
+            We sent a confirmation link to
+            <strong>{{ emailValue }}</strong>.
+            Click the link to activate your account.
+          </p>
+          <p class="hint-text">
+            Didn't receive it? Check your spam folder or
+            <a routerLink="/login" class="inline-link">return to login</a>.
+          </p>
+        </section>
+      }
+    </mat-step>
+
+  </mat-stepper>
+  }<!-- end @else registrationComplete -->
+
+  <footer class="register-footer">
+    <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+    <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+  </footer>
+
+</div>

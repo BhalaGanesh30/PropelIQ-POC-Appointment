@@ -715,26 +715,27 @@ ng lint
 
 ## Implementation Validation Strategy
 
-- [ ] Registration form renders with 3-step stepper and email/phone radio toggle (SCR-001)
-- [ ] Step 1 validates email format and phone E.164 pattern with inline error messages (UXR-205)
-- [ ] Step 2 accepts 6-digit OTP input with `inputmode="numeric"` and `autocomplete="one-time-code"` (AC-3)
-- [ ] Submit buttons show spinner and disable during API calls (UXR-501)
-- [ ] Duplicate account error displays "Account already exists" with login link (AC-4)
-- [ ] All interactive elements have visible focus indicators (UXR-202)
-- [ ] Color contrast meets WCAG 2.1 AA minimum 4.5:1 ratio (UXR-201)
-- [ ] Layout is responsive at 375px, 768px, and 1440px breakpoints (UXR-301)
-- [ ] Touch targets are at least 44x44px on mobile (UXR-304)
-- [ ] Form fields have `aria-describedby` linking to error messages (UXR-205)
-- [ ] **[UI Tasks]** Visual comparison against wireframe completed at 375px, 768px, 1440px
+- [x] Registration form renders with 3-step stepper and email/phone radio toggle (SCR-001)
+- [x] Step 1 validates email format and phone E.164 pattern with inline error messages (UXR-205)
+- [x] Step 2 collects firstName, lastName, password with strength validation
+- [x] Step 3 accepts 6-digit OTP input with `inputmode="numeric"` and `autocomplete="one-time-code"` (AC-3) or shows email-check message (AC-1)
+- [x] Submit buttons show spinner and disable during API calls (UXR-501)
+- [x] Duplicate account error displays with login link (AC-4)
+- [x] All interactive elements have visible focus indicators (UXR-202)
+- [x] Color contrast meets WCAG 2.1 AA minimum 4.5:1 ratio (UXR-201)
+- [x] Layout is responsive at 375px, 768px, and 1440px breakpoints (UXR-301)
+- [x] Touch targets are at least 44x44px on mobile (UXR-304)
+- [x] Form fields have `aria-describedby` linking to error messages (UXR-205)
+- [ ] **[UI Tasks]** Visual comparison against wireframe completed at 375px, 768px, 1440px — wireframe PENDING
 - [ ] **[UI Tasks]** Run `/analyze-ux` to validate wireframe alignment
 
 ## Implementation Checklist
 
-- [ ] Create `RegisterComponent` with 3 `FormGroup` instances for progressive step validation
-- [ ] Create template with `mat-stepper`, `mat-form-field`, inline `mat-error`, and `aria-describedby` associations
-- [ ] Create responsive SCSS with max-width 480px centered layout, mobile/tablet/desktop breakpoints
-- [ ] Create `AuthService` with `register()`, `sendOtp()`, `verifyOtp()`, and `resendVerificationEmail()` methods
-- [ ] Create `passwordStrengthValidator` custom validator enforcing uppercase, lowercase, digit, and special character
-- [ ] Implement step transition logic with loading state signals and error handling for 409/429 responses
-- [ ] Add `/register` route to auth routing module with lazy-loaded component
-- [ ] **[UI Tasks - MANDATORY]** Reference wireframe from Design References table during implementation
+- [x] Create `RegisterComponent` with 3 `FormGroup` instances for progressive step validation
+- [x] Create template with `mat-stepper`, `mat-form-field`, inline `mat-error`, and `aria-describedby` associations
+- [x] Create responsive SCSS with max-width 480px centered layout, mobile/tablet/desktop breakpoints
+- [x] Create `AuthService` with `register()`, `sendOtp()`, and `verifyOtp()` methods
+- [x] Create `passwordStrengthValidator` and `passwordMatchValidator` custom validators
+- [x] Implement step transition logic with loading state signals and error handling for 409/429 responses
+- [x] Add `/auth/register` route to auth `routes.ts` with lazy-loaded component
+- [x] Add `/auth` lazy-loaded children to `app.routes.ts`

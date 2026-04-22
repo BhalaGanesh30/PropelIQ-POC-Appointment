@@ -550,16 +550,16 @@ done
 
 ## Implementation Checklist
 
-- [ ] Configure `IdentityOptions.Lockout` with `MaxFailedAccessAttempts = 5` and `DefaultLockoutTimeSpan = 30 minutes`
-- [ ] Configure `IdentityOptions.Password` with required complexity rules (8+ chars, uppercase, digit, special)
-- [ ] Configure `DataProtectionTokenProviderOptions.TokenLifespan = 24 hours`
-- [ ] Create `ForgotPasswordRequest`/`ForgotPasswordResponse` DTOs
-- [ ] Create `ResetPasswordRequest`/`ResetPasswordResponse` DTOs
-- [ ] Create `ResetPasswordRequestValidator` and `ForgotPasswordRequestValidator` with FluentValidation
-- [ ] Create `AccountLockoutHandler` with session invalidation, token revocation, and lockout email notification
-- [ ] Implement `POST /api/v1/auth/forgot-password` with user-enumeration-safe response and rate limiting
-- [ ] Implement `POST /api/v1/auth/reset-password` with token validation, password update, and session invalidation
-- [ ] Add `[EnableRateLimiting("password-reset")]` to forgot-password endpoint
-- [ ] Configure `password-reset` fixed-window rate limiter (3 per 15 minutes)
-- [ ] Integrate `AccountLockoutHandler` in login endpoint lockout branch
-- [ ] Register `AccountLockoutHandler` in `DependencyInjection.cs`
+- [x] Configure `IdentityOptions.Lockout` with `MaxFailedAccessAttempts = 5` and `DefaultLockoutTimeSpan = 30 minutes`
+- [x] Configure `IdentityOptions.Password` with required complexity rules (8+ chars, uppercase, digit, special)
+- [x] Configure named `"PasswordReset"` token provider with `TokenLifespan = 24 hours`
+- [x] Create `ForgotPasswordRequest`/`ForgotPasswordResponse` DTOs
+- [x] Create `ResetPasswordRequest`/`ResetPasswordResponse` DTOs
+- [x] Create `ResetPasswordRequestValidator` and `ForgotPasswordRequestValidator` with FluentValidation
+- [x] Create `AccountLockoutHandler` with session invalidation, token revocation, and lockout email notification
+- [x] Implement `POST /api/v1/auth/forgot-password` with user-enumeration-safe response and rate limiting
+- [x] Implement `POST /api/v1/auth/reset-password` with token validation, password update, and session invalidation
+- [x] Add `[EnableRateLimiting("password-reset-policy")]` to forgot-password endpoint
+- [x] Configure `password-reset-policy` fixed-window rate limiter (3 per 15 minutes)
+- [x] Integrate `AccountLockoutHandler` in login endpoint lockout branch
+- [x] Register `AccountLockoutHandler` in `Program.cs`

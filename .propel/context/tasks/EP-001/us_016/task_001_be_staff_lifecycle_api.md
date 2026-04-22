@@ -539,11 +539,11 @@ dotnet test
 
 ## Implementation Checklist
 
-- [ ] Extend `ApplicationUser` with InvitedBy, InvitedAt, InvitationExpiresAt, ActivatedAt, DeactivatedAt, DeactivatedBy, AccountStatus fields
-- [ ] Create DTOs: InviteStaffRequest, InviteStaffResponse, ActivateStaffRequest, StaffListResponse with StaffListItem
-- [ ] Create FluentValidation validators for InviteStaffRequest (email, name, allowed roles) and ActivateStaffRequest (token, email, 12-char password)
-- [ ] Implement POST /invite endpoint with duplicate detection (Edge-2), token generation, and email sending (AC-1)
-- [ ] Implement POST /activate endpoint with token validation, expiry check (AC-4), password setting, role assignment, and audit logging (AC-2)
-- [ ] Implement POST /{userId}/deactivate endpoint with self-deactivation guard (Edge-1), refresh token revocation, and security stamp update (AC-3)
-- [ ] Implement GET staff listing with pagination, status filter, and search
-- [ ] Configure 48-hour DataProtectionTokenProviderOptions and invitation rate limiter in Program.cs
+- [x] Extend `ApplicationUser` with InvitedBy, InvitedAt, InvitationExpiresAt, ActivatedAt, DeactivatedAt, DeactivatedBy, AccountStatus fields
+- [x] Create DTOs: InviteStaffRequest, InviteStaffResponse, ActivateStaffRequest, StaffListResponse with StaffListItem
+- [x] Create FluentValidation validators for InviteStaffRequest (email, name, allowed roles) and ActivateStaffRequest (token, email, 12-char password)
+- [x] Implement POST /invite endpoint with duplicate detection (Edge-2), DataProtection token generation, and email sending (AC-1)
+- [x] Implement POST /activate endpoint with token validation, expiry check (AC-4), password setting, and audit logging (AC-2)
+- [x] Implement POST /{userId}/deactivate endpoint with self-deactivation guard (Edge-1), refresh token revocation, and security stamp update (AC-3)
+- [x] Implement GET staff listing with pagination, status filter, and search
+- [x] Configure 48-hour DataProtectionTokenProviderOptions and invite-policy rate limiter in Program.cs; EF Core migration applied (`AddStaffLifecycleFields`)

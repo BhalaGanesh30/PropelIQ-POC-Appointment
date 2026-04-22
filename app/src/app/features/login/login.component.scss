@@ -1,0 +1,185 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 24px 16px;
+  max-width: 480px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+  width: 100%;
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 4px;
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+
+.login-subtitle {
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.54);
+  margin: 0;
+}
+
+.login-form {
+  width: 100%;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.forgot-link {
+  color: var(--mat-primary-color, #1976d2);
+  text-decoration: none;
+  font-size: 0.875rem;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-primary-color, #1976d2);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+.submit-btn {
+  width: 100%;
+  height: 48px;
+  font-size: 1rem;
+  min-height: 44px; // UXR-304: 44px minimum touch target
+
+  ::ng-deep mat-spinner {
+    display: inline-flex;
+  }
+}
+
+.session-banner {
+  color: #1565c0;
+  background-color: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+  width: 100%;
+  box-sizing: border-box;
+
+  // AC-2 (us_018): password-reset success.
+  &--success {
+    color: #1b5e20;
+    background-color: #e8f5e9;
+    border-color: #a5d6a7;
+  }
+
+  // AC-3 (us_018): account lockout.
+  &--lockout {
+    color: #b71c1c;
+    background-color: #fdecea;
+    border-color: #ef9a9a;
+    font-weight: 500;
+  }
+}
+
+.server-error {
+  color: #c62828;
+  background-color: #fdecea;
+  border: 1px solid #ef9a9a;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.6);
+
+  a {
+    color: var(--mat-primary-color, #1976d2);
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--mat-primary-color, #1976d2);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+  }
+}
+
+.login-footer {
+  margin-top: auto;
+  padding-top: 32px;
+  display: flex;
+  gap: 24px;
+  font-size: 0.75rem;
+
+  a {
+    color: rgba(0, 0, 0, 0.54);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--mat-primary-color, #1976d2);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+  }
+}
+
+// UXR-301: Responsive breakpoints
+@media (max-width: 375px) {
+  .login-container {
+    padding: 16px 12px;
+  }
+
+  .login-header h1 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .login-container {
+    padding: 64px 24px 48px;
+  }
+
+  .login-header {
+    margin-bottom: 48px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .login-container {
+    padding-top: 80px;
+  }
+}
