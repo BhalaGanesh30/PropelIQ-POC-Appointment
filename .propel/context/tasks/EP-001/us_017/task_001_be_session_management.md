@@ -698,29 +698,29 @@ curl -X POST http://localhost:5000/api/v1/auth/login \
 
 ## Implementation Validation Strategy
 
-- [ ] Login creates an `ActiveSession` record and returns `sessionToken` in the response (AC-3)
-- [ ] Second login from another device invalidates the first session and revokes its refresh tokens (AC-3)
-- [ ] SignalR sends "SessionEnded" message to the first device on session replacement (AC-3)
-- [ ] `POST /api/v1/auth/session/extend` resets `LastActivityAt` and `ExpiresAt` to 15 minutes from now (AC-4)
-- [ ] Extend request on an expired or inactive session returns HTTP 401 (AC-2)
-- [ ] Logout invalidates the active session and revokes refresh tokens (AC-2)
-- [ ] `SessionCleanupService` terminates sessions with `LastActivityAt` older than 15 minutes (edge case: browser crash)
-- [ ] All session lifecycle events (create, extend, invalidate, expire) are recorded in audit log (NFR-010)
-- [ ] `ActiveSession` table has indexes on `(UserId, IsActive)`, `SessionToken` (unique), and `LastActivityAt`
-- [ ] SignalR hub requires JWT bearer authentication and groups connections by user ID
+- [x] Login creates an `ActiveSession` record and returns `sessionToken` in the response (AC-3)
+- [x] Second login from another device invalidates the first session and revokes its refresh tokens (AC-3)
+- [x] SignalR sends "SessionEnded" message to the first device on session replacement (AC-3)
+- [x] `POST /api/v1/auth/session/extend` resets `LastActivityAt` and `ExpiresAt` to 15 minutes from now (AC-4)
+- [x] Extend request on an expired or inactive session returns HTTP 401 (AC-2)
+- [x] Logout invalidates the active session and revokes refresh tokens (AC-2)
+- [x] `SessionCleanupService` terminates sessions with `LastActivityAt` older than 15 minutes (edge case: browser crash)
+- [x] All session lifecycle events (create, extend, invalidate, expire) are recorded in audit log (NFR-010)
+- [x] `ActiveSession` table has indexes on `(UserId, IsActive)`, `SessionToken` (unique), and `LastActivityAt`
+- [x] SignalR hub requires JWT bearer authentication and groups connections by user ID
 
 ## Implementation Checklist
 
-- [ ] Create `ActiveSession` entity with `Id`, `UserId`, `SessionToken`, `LastActivityAt`, `ExpiresAt`, `IsActive`, `TerminationReason`, `TerminatedAt`, `IpAddress`, `UserAgent`
-- [ ] Create `IActiveSessionRepository` with `GetActiveByUserIdAsync`, `GetBySessionTokenAsync`, `AddAsync`, `UpdateAsync`, `GetExpiredSessionsAsync`
-- [ ] Create `ActiveSessionRepository` implementation against `AppDbContext`
-- [ ] Create `ISessionService` with `CreateSessionAsync`, `ExtendSessionAsync`, `InvalidateSessionAsync`, `IsSessionValidAsync`
-- [ ] Create `SessionService` with single-session enforcement, SignalR push, and audit logging
-- [ ] Create `SessionHub` with JWT auth, user-group mapping on connect/disconnect
-- [ ] Create `SessionCleanupService` background service with 5-minute interval and 15-minute inactivity cutoff
-- [ ] Add `POST /api/v1/auth/session/extend` endpoint to `AuthController`
-- [ ] Modify login endpoint to call `CreateSessionAsync` and include `SessionToken` in response
-- [ ] Modify logout endpoint to call `InvalidateSessionAsync`
-- [ ] Add `ActiveSession` DbSet and entity configuration to `AppDbContext`
-- [ ] Register all session services in `DependencyInjection.cs`
-- [ ] Register `AddSignalR()` and `MapHub<SessionHub>("/hubs/session")` in `Program.cs`
+- [x] Create `ActiveSession` entity with `Id`, `UserId`, `SessionToken`, `LastActivityAt`, `ExpiresAt`, `IsActive`, `TerminationReason`, `TerminatedAt`, `IpAddress`, `UserAgent`
+- [x] Create `IActiveSessionRepository` with `GetActiveByUserIdAsync`, `GetBySessionTokenAsync`, `AddAsync`, `UpdateAsync`, `GetExpiredSessionsAsync`
+- [x] Create `ActiveSessionRepository` implementation against `AppDbContext`
+- [x] Create `ISessionService` with `CreateSessionAsync`, `ExtendSessionAsync`, `InvalidateSessionAsync`, `IsSessionValidAsync`
+- [x] Create `SessionService` with single-session enforcement, SignalR push, and audit logging
+- [x] Create `SessionHub` with JWT auth, user-group mapping on connect/disconnect
+- [x] Create `SessionCleanupService` background service with 5-minute interval and 15-minute inactivity cutoff
+- [x] Add `POST /api/v1/auth/session/extend` endpoint to `AuthController`
+- [x] Modify login endpoint to call `CreateSessionAsync` and include `SessionToken` in response
+- [x] Modify logout endpoint to call `InvalidateSessionAsync`
+- [x] Add `ActiveSession` DbSet and entity configuration to `AppDbContext`
+- [x] Register all session services in `DependencyInjection.cs`
+- [x] Register `AddSignalR()` and `MapHub<SessionHub>("/hubs/session")` in `Program.cs`

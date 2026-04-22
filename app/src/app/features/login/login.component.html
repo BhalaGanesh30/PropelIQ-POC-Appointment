@@ -1,0 +1,117 @@
+<div class="login-container" role="main" aria-label="User Login">
+  <header class="login-header">
+    <h1>Welcome Back</h1>
+    <p class="login-subtitle">Sign in to your PropelIQ account</p>
+  </header>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate class="login-form">
+
+    @if (sessionBanner()) {
+      @if (bannerType() === 'success') {
+        <div class="session-banner session-banner--success" role="status" aria-live="polite">
+          {{ sessionBanner() }}
+        </div>
+      } @else if (bannerType() === 'lockout') {
+        <div class="session-banner session-banner--lockout" role="alert" aria-live="assertive">
+          <span aria-hidden="true">&#128274;</span> {{ sessionBanner() }}
+        </div>
+      } @else {
+        <div class="session-banner" role="alert" aria-live="polite">
+          {{ sessionBanner() }}
+        </div>
+      }
+    }
+
+    @if (serverError()) {
+      <div class="server-error" role="alert" aria-live="polite">
+        {{ serverError() }}
+      </div>
+    }
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email Address</mat-label>
+      <input
+        matInput
+        formControlName="email"
+        type="email"
+        autocomplete="email"
+        inputmode="email"
+        [attr.aria-describedby]="
+          loginForm.controls.email.invalid && loginForm.controls.email.touched
+            ? 'email-error'
+            : null
+        "
+      />
+      @if (loginForm.controls.email.touched && loginForm.controls.email.invalid) {
+        <mat-error id="email-error">
+          @if (loginForm.controls.email.errors?.['required']) {
+            Email is required
+          } @else if (loginForm.controls.email.errors?.['email']) {
+            Please enter a valid email address
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Password</mat-label>
+      <input
+        matInput
+        formControlName="password"
+        [type]="showPassword() ? 'text' : 'password'"
+        autocomplete="current-password"
+        [attr.aria-describedby]="
+          loginForm.controls.password.invalid && loginForm.controls.password.touched
+            ? 'password-error'
+            : null
+        "
+      />
+      <button
+        mat-icon-button
+        matSuffix
+        type="button"
+        (click)="togglePasswordVisibility()"
+        [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+      >
+        <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      @if (loginForm.controls.password.touched && loginForm.controls.password.invalid) {
+        <mat-error id="password-error">Password is required</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="form-options">
+      <mat-checkbox formControlName="rememberMe" color="primary">
+        Remember me
+      </mat-checkbox>
+      <a routerLink="/auth/forgot-password" class="forgot-link">
+        Forgot password?
+      </a>
+    </div>
+
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      class="submit-btn"
+      [disabled]="loginForm.invalid || isSubmitting()"
+      aria-label="Log in"
+    >
+      @if (isSubmitting()) {
+        <mat-spinner diameter="20" />
+      } @else {
+        Log In
+      }
+    </button>
+  </form>
+
+  <p class="register-link">
+    Don't have an account?
+    <a routerLink="/auth/register">Create one</a>
+  </p>
+
+  <footer class="login-footer">
+    <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+    <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+  </footer>
+</div>

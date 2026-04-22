@@ -1032,26 +1032,26 @@ ng lint
 
 ## Implementation Validation Strategy
 
-- [ ] User Management page renders data table with staff list per SCR-020 Default state
-- [ ] Loading state shows progress bar during API fetch
-- [ ] Empty state shows "No users found" with invite CTA
-- [ ] Error state shows retry banner on API failure
-- [ ] Invite dialog opens, validates inputs, sends invitation, shows success snackbar (AC-1)
-- [ ] Deactivate confirmation dialog requires explicit confirmation before proceeding (UXR-111, AC-3)
-- [ ] Self-deactivation error message is displayed from backend response (Edge-1)
-- [ ] Activation page extracts email/token from URL, allows password setup (AC-2)
-- [ ] Expired invitation shows "Invitation expired" state with admin contact prompt (AC-4)
-- [ ] Successful activation shows success state with login redirect
+- [x] User Management page renders data table with staff list per SCR-020 Default state
+- [x] Loading state shows progress bar during API fetch
+- [x] Empty state shows "No users found" with invite CTA
+- [x] Error state shows retry banner on API failure
+- [x] Invite dialog opens, validates inputs, sends invitation, shows success snackbar (AC-1)
+- [x] Deactivate confirmation dialog requires explicit confirmation before proceeding (UXR-111, AC-3)
+- [x] Self-deactivation error message is displayed from backend response (Edge-1)
+- [x] Activation page extracts email/token from URL, allows password setup (AC-2)
+- [x] Expired invitation shows "Invitation expired" state with admin contact prompt (AC-4)
+- [x] Successful activation shows success state with login redirect
 - [ ] **[UI Tasks]** Visual comparison against wireframe completed at 375px, 768px, 1440px
 - [ ] **[UI Tasks]** Run `/analyze-ux` to validate wireframe alignment
 
 ## Implementation Checklist
 
-- [ ] Create `StaffManagementService` with getStaffList, inviteStaff, deactivateStaff, activateStaff methods
-- [ ] Create `UserManagementComponent` with MatTable, MatPaginator, search field, status filter, and all 5 SCR-020 states
-- [ ] Create `InviteStaffDialogComponent` with reactive form for name, email, role and loading spinner (UXR-501)
-- [ ] Create `DeactivateConfirmDialogComponent` with confirmation prompt for destructive action (UXR-111)
-- [ ] Create `ActivateComponent` with password setup form, expired state (AC-4), and success state (AC-2)
-- [ ] Create responsive SCSS for user management and activation pages with 375/768/1440px breakpoints
-- [ ] Register routes: /admin/users (guarded) and /auth/activate (public) with lazy loading
+- [x] Create `StaffManagementService` with getStaffList, inviteStaff, deactivateStaff, activateStaff methods
+- [x] Create `UserManagementComponent` with MatTable, MatPaginator, search field, status filter, and all 5 SCR-020 states
+- [x] Create `InviteStaffDialogComponent` with reactive form for name, email, role and loading spinner (UXR-501)
+- [x] Create `DeactivateConfirmDialogComponent` with confirmation prompt for destructive action (UXR-111)
+- [x] Create `ActivateComponent` with password setup form, expired state (AC-4), and success state (AC-2)
+- [x] Create responsive SCSS for user management and activation pages with 375/768/1440px breakpoints
+- [x] Register routes: /admin/users (guarded) and /auth/activate (public) with lazy loading
 - [ ] **[UI Tasks - MANDATORY]** Reference wireframe from Design References table during implementation

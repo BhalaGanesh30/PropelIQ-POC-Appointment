@@ -1,0 +1,113 @@
+<div class="activate-container" role="main">
+
+  <!-- ── Activation form (default state) ───────────────────────────── -->
+  @if (pageState() === 'form') {
+    <div class="activate-card" aria-label="Account activation form">
+      <mat-icon class="brand-icon">lock_open</mat-icon>
+      <h1>Set Your Password</h1>
+      <p class="subtitle">
+        Create a secure password to activate your PropelIQ account.
+      </p>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            type="password"
+            formControlName="password"
+            autocomplete="new-password"
+            aria-describedby="password-hint"
+          />
+          @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
+            <mat-error>Password is required</mat-error>
+          }
+          @if (form.get('password')?.hasError('minlength') && form.get('password')?.touched) {
+            <mat-error>Password must be at least 8 characters</mat-error>
+          }
+          <mat-hint id="password-hint">Minimum 8 characters</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirm Password</mat-label>
+          <input
+            matInput
+            type="password"
+            formControlName="confirmPassword"
+            autocomplete="new-password"
+            aria-describedby="confirm-error"
+          />
+          @if (form.hasError('passwordMismatch') && form.get('confirmPassword')?.touched) {
+            <mat-error id="confirm-error">Passwords do not match</mat-error>
+          }
+        </mat-form-field>
+
+        @if (serverError()) {
+          <div class="server-error" role="alert" aria-live="polite">
+            <mat-icon>error_outline</mat-icon>
+            {{ serverError() }}
+          </div>
+        }
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          class="full-width submit-btn"
+          [disabled]="isSubmitting()"
+          aria-label="Activate account"
+        >
+          @if (isSubmitting()) {
+            <mat-spinner diameter="20" />
+          } @else {
+            Activate Account
+          }
+        </button>
+
+      </form>
+    </div>
+  }
+
+  <!-- ── Expired state (AC-4) ────────────────────────────────────────── -->
+  @if (pageState() === 'expired') {
+    <div class="state-card expired-card" role="status" aria-live="polite">
+      <mat-icon class="state-icon error-icon">link_off</mat-icon>
+      <h1>Invitation Expired</h1>
+      <p>
+        This invitation link is invalid or has expired (invitations are valid
+        for 48 hours). Please contact your administrator to request a new
+        invitation.
+      </p>
+      <button
+        mat-stroked-button
+        color="primary"
+        (click)="navigateToLogin()"
+        aria-label="Go to login page"
+      >
+        Go to Login
+      </button>
+    </div>
+  }
+
+  <!-- ── Success state (AC-2) ────────────────────────────────────────── -->
+  @if (pageState() === 'success') {
+    <div class="state-card success-card" role="status" aria-live="polite">
+      <mat-icon class="state-icon success-icon">check_circle</mat-icon>
+      <h1>Account Activated!</h1>
+      <p>
+        Your account has been activated successfully. You will be redirected to
+        the login page in a few seconds…
+      </p>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="navigateToLogin()"
+        aria-label="Go to login page"
+      >
+        Go to Login
+      </button>
+    </div>
+  }
+
+</div>

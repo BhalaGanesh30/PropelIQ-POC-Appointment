@@ -1,23 +1,19 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { TokenStorageService } from '../services/token-storage.service';
 
 /**
  * Functional route guard protecting authenticated routes.
- * When unauthenticated, stores the attempted URL for post-login redirect
- * and navigates to /login (US_001 Edge Case).
- *
- * Replace stub check with real token validation in EP-001.
+ * Checks the `TokenStorageService` signal; if the token is absent or expired
+ * the user is redirected to /login (US_001 Edge Case).
  */
-export const authGuard: CanActivateFn = (_route, state) => {
-  const authService = inject(AuthService);
+export const authGuard: CanActivateFn = () => {
+  const tokenStorage = inject(TokenStorageService);
   const router = inject(Router);
 
-  if (authService.isAuthenticated()) {
+  if (tokenStorage.isAuthenticated() && !tokenStorage.isTokenExpired()) {
     return true;
   }
 
-  // Preserve attempted URL for post-authentication redirect.
-  authService.redirectUrl = state.url;
-  return router.createUrlTree(['/login']);
+  return router.parseUrl('/login');
 };

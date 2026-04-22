@@ -1,0 +1,169 @@
+<div class="user-management" role="main" aria-label="User Management">
+
+  <!-- Page header -->
+  <header class="page-header">
+    <h1>User Management</h1>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="openInviteDialog()"
+      aria-label="Invite new staff member"
+    >
+      <mat-icon>person_add</mat-icon>
+      Invite Staff
+    </button>
+  </header>
+
+  <!-- Search + status filter toolbar -->
+  <div class="toolbar" role="search">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search by name or email</mat-label>
+      <input
+        matInput
+        [(ngModel)]="searchTerm"
+        (keyup.enter)="onSearch()"
+        aria-label="Search staff members"
+      />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Status</mat-label>
+      <mat-select [(ngModel)]="statusFilter" (selectionChange)="onStatusFilterChange()">
+        <mat-option value="">All</mat-option>
+        <mat-option value="Active">Active</mat-option>
+        <mat-option value="Pending">Pending</mat-option>
+        <mat-option value="Inactive">Inactive</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-stroked-button (click)="onSearch()" aria-label="Apply search">
+      Search
+    </button>
+  </div>
+
+  <!-- Loading state -->
+  @if (isLoading()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading staff list" />
+  }
+
+  <!-- Error state -->
+  @if (loadError()) {
+    <div class="error-banner" role="alert" aria-live="polite">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ loadError() }}</span>
+      <button mat-button color="primary" (click)="loadStaff()">Retry</button>
+    </div>
+  }
+
+  <!-- Empty state -->
+  @if (!isLoading() && !loadError() && staffList().length === 0) {
+    <div class="empty-state" role="status">
+      <mat-icon class="empty-icon">group_off</mat-icon>
+      <p>No staff accounts found.</p>
+      <button mat-raised-button color="primary" (click)="openInviteDialog()">
+        Invite Your First Staff Member
+      </button>
+    </div>
+  }
+
+  <!-- Default state: data table -->
+  @if (!isLoading() && !loadError() && staffList().length > 0) {
+    <div class="table-container">
+      <table
+        mat-table
+        [dataSource]="staffList()"
+        matSort
+        class="staff-table"
+        aria-label="Staff accounts"
+      >
+
+        <!-- Name column -->
+        <ng-container matColumnDef="fullName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">Name</th>
+          <td mat-cell *matCellDef="let row">{{ row.fullName }}</td>
+        </ng-container>
+
+        <!-- Email column -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">Email</th>
+          <td mat-cell *matCellDef="let row">{{ row.email }}</td>
+        </ng-container>
+
+        <!-- Role column -->
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef scope="col">Role</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="role-badge">{{ row.role || '—' }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Status column -->
+        <ng-container matColumnDef="accountStatus">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">Status</th>
+          <td mat-cell *matCellDef="let row">
+            <span
+              class="status-badge"
+              [class.active]="row.accountStatus === 'Active'"
+              [class.pending]="row.accountStatus === 'Pending'"
+              [class.inactive]="row.accountStatus === 'Inactive'"
+            >
+              {{ row.accountStatus }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Invited At column -->
+        <ng-container matColumnDef="invitedAt">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">Invited</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.invitedAt ? (row.invitedAt | date: 'mediumDate') : '—' }}
+          </td>
+        </ng-container>
+
+        <!-- Actions column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef scope="col">Actions</th>
+          <td mat-cell *matCellDef="let row">
+            @if (row.accountStatus === 'Active') {
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="confirmDeactivate(row)"
+                [attr.aria-label]="'Deactivate ' + row.fullName"
+                matTooltip="Deactivate account"
+              >
+                <mat-icon>block</mat-icon>
+              </button>
+            }
+            @if (row.accountStatus === 'Pending') {
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="resendInvitation(row)"
+                [attr.aria-label]="'Resend invitation to ' + row.fullName"
+                matTooltip="Resend invitation"
+              >
+                <mat-icon>send</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="totalCount()"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="[10, 25, 50]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons
+      aria-label="Staff list pagination"
+    />
+  }
+
+</div>

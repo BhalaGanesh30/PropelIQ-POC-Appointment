@@ -330,8 +330,8 @@ dotnet test --filter "FullyQualifiedName~AuthorizationCoverageTests"
 
 ## Implementation Checklist
 
-- [ ] Create `AuthorizationCoverageTests` class with reflection-based endpoint scanning test that fails on unannotated actions
-- [ ] Add policy registration validation test comparing `[Authorize(Policy = "...")]` attribute values against registered policies
-- [ ] Add FallbackPolicy configuration test verifying `DenyAnonymousAuthorizationRequirement` is present
-- [ ] Add role-policy alignment test verifying each named policy requires at least one role
-- [ ] Verify CI pipeline `dotnet test` step discovers and executes authorization coverage tests
+- [x] Create `AuthorizationCoverageTests` class with reflection-based endpoint scanning test that fails on unannotated actions
+- [x] Add policy registration validation test comparing `[Authorize(Policy = "...")]` attribute values against registered policies
+- [x] Add DefaultPolicy configuration test verifying `DenyAnonymousAuthorizationRequirement` is present (adapted from FallbackPolicy — FallbackPolicy was removed in task_001 to avoid blocking health endpoints; enforcement uses `MapControllers().RequireAuthorization()` which applies DefaultPolicy)
+- [x] Add role-policy alignment test verifying each named role policy requires at least one `RolesAuthorizationRequirement`
+- [x] Verified CI pipeline `dotnet test PropelIQ.sln` step in `.github/workflows/ci.yml` discovers and executes authorization coverage tests (project added to solution)

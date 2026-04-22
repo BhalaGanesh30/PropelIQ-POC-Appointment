@@ -1,9 +1,19 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.RateLimiting;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using PropelIQ.Api.Authorization;
+using PropelIQ.Api.Authorization.Handlers;
+using PropelIQ.Api.Authorization.Policies;
+using PropelIQ.Api.Hubs;
 using PropelIQ.Api.Infrastructure.Auth;
 using PropelIQ.Api.Infrastructure.HealthChecks;
 using PropelIQ.Api.Infrastructure.Tenancy;
+using PropelIQ.Api.Sessions;
+using PropelIQ.Modules.Administration.Application.Auth.Validators;
 using PropelIQ.SharedKernel.AiGateway;
 using PropelIQ.SharedKernel.Observability;
 using PropelIQ.SharedKernel.Persistence;
@@ -12,6 +22,7 @@ using PropelIQ.Modules.ClinicalIntelligence.Infrastructure;
 using PropelIQ.Modules.Administration.Infrastructure;
 using PropelIQ.Modules.SharedServices.Infrastructure;
 using PropelIQ.Modules.SharedServices.Infrastructure.Data;
+using System.Threading.RateLimiting;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PropelIQ API — Composition Root
@@ -23,8 +34,69 @@ using PropelIQ.Modules.SharedServices.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ── CORS ────────────────────────────────────────────────────────────────────
+// Allow the Angular dev server origin during local development.
+// In production this should be restricted to the actual frontend domain.
+var angularOrigin = builder.Configuration.GetValue<string>("Cors:AllowedOrigin") ?? "http://localhost:4200";
+builder.Services.AddCors(options =>
+    options.AddPolicy("PropelIQCors", policy =>
+        policy.WithOrigins(angularOrigin)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              // Required for SignalR WebSocket negotiation (us_017).
+              .AllowCredentials()));
+
+// ── SignalR (us_017: real-time session notifications) ────────────────────────
+// AllowCredentials + explicit origin required for SignalR WebSocket handshake.
+builder.Services.AddSignalR();
+
 // ── MVC / API Controllers ────────────────────────────────────────────────────
 builder.Services.AddControllers();
+
+// ── FluentValidation ─────────────────────────────────────────────────────────
+// Auto-validation: invalid [FromBody] payloads return 400 before the action runs.
+// Validators are discovered from Administration.Application assembly and the API assembly.
+// Two assembly scans are needed because staff management validators live in PropelIQ.Api.
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<PropelIQ.Api.Validators.InviteStaffRequestValidator>();
+
+// ── Rate Limiting (auth endpoints) ───────────────────────────────────────────
+// OWASP A07 / AC-4: cap registration and OTP requests per IP to prevent abuse.
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("register-policy", opt =>
+    {
+        opt.PermitLimit = 5;
+        opt.Window = TimeSpan.FromMinutes(15);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0;
+    });
+    options.AddFixedWindowLimiter("otp-policy", opt =>
+    {
+        opt.PermitLimit = 3;
+        opt.Window = TimeSpan.FromMinutes(5);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0;
+    });
+    // NFR-012: max 10 staff invitations per 15 minutes per Admin (us_016).
+    options.AddFixedWindowLimiter("invite-policy", opt =>
+    {
+        opt.PermitLimit = 10;
+        opt.Window = TimeSpan.FromMinutes(15);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0;
+    });
+    // OWASP A07 / us_018 edge case: max 3 password-reset requests per 15 minutes.
+    options.AddFixedWindowLimiter("password-reset-policy", opt =>
+    {
+        opt.PermitLimit = 3;
+        opt.Window = TimeSpan.FromMinutes(15);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0;
+    });
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
 
 // ── Problem Details (RFC 9457) ───────────────────────────────────────────────
 // Adds IProblemDetailsService and configures built-in exception handler to return
@@ -48,6 +120,31 @@ builder.Services.AddProblemDetails(options =>
 // JWT Bearer skeleton — AC-4: unauthenticated requests return 401 Problem Details.
 // Replaced with real IdP config in EP-001.
 builder.Services.AddPropelIQAuthentication(builder.Configuration);
+
+// ── DataProtection token lifespan (us_016) ────────────────────────────────────
+// Sets the TTL for DataProtection-based tokens (TokenOptions.DefaultProvider).
+// Used for staff invitation tokens — 48h matches the invitation expiry window (AC-1).
+// The OTP email-confirmation flow uses the TOTP EmailTokenProvider and is unaffected.
+builder.Services.Configure<Microsoft.AspNetCore.Identity.DataProtectionTokenProviderOptions>(
+    opts => opts.TokenLifespan = TimeSpan.FromHours(48));
+
+// ── Password-reset token lifespan (us_018 edge case) ─────────────────────────
+// Named "PasswordReset" provider uses a separate 24-hour TTL so staff invite tokens
+// remain at 48h. AddTokenProvider registers this provider in SharedServicesServiceRegistration.
+builder.Services.Configure<Microsoft.AspNetCore.Identity.DataProtectionTokenProviderOptions>(
+    "PasswordReset",
+    opts => opts.TokenLifespan = TimeSpan.FromHours(24));
+
+// ── RBAC Authorization Policies (EP-001 us_015) ──────────────────────────────
+// Named policies: PatientOnly, StaffOnly, AdminOnly, StaffOrAdmin, PatientResourceOwner.
+// FallbackPolicy requires authentication on all endpoints not marked [AllowAnonymous].
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddAppAuthorizationPolicies();
+builder.Services.AddScoped<IAuthorizationHandler, PatientResourceAuthorizationHandler>();
+// AuditAuthorizationHandler registered AFTER PatientResourceAuthorizationHandler
+// so it sees the final state of context.HasFailed / PendingRequirements.
+builder.Services.AddScoped<IAuthorizationHandler, AuditAuthorizationHandler>();
+builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, ForbiddenResultHandler>();
 
 // ── Redis Distributed Cache ──────────────────────────────────────────────────
 // TR-004: distributed cache for hot slot search and profile read acceleration.
@@ -104,6 +201,16 @@ builder.Services.AddScoped<BulkImportProcessor>(sp =>
         sp.GetRequiredService<IUnitOfWork>(),
         sp.GetRequiredService<AppDbContext>()));
 
+// ── Session Management (us_017) ──────────────────────────────────────────────
+// ISessionService: session create/extend/invalidate with single-session enforcement.
+// SessionCleanupService: background worker purging idle sessions every 5 minutes.
+builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddHostedService<SessionCleanupService>();
+
+// ── Account Lockout Handler (us_018) ─────────────────────────────────────────
+// Handles lockout events: invalidates sessions, revokes tokens, sends email (AC-3).
+builder.Services.AddScoped<PropelIQ.Api.AccountLockoutHandler>();
+
 // ─────────────────────────────────────────────────────────────────────────────
 var app = builder.Build();
 // ─────────────────────────────────────────────────────────────────────────────
@@ -126,8 +233,15 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// 3. HTTPS redirect before auth.
+// 3. CORS — must come before auth so preflight OPTIONS requests are handled.
+// Uses the named policy registered in AddCors above (includes AllowCredentials for SignalR).
+app.UseCors("PropelIQCors");
+
+// 3a. HTTPS redirect before auth.
 app.UseHttpsRedirection();
+
+// 3a. Rate limiter — before auth so limits apply to unauthenticated callers too.
+app.UseRateLimiter();
 
 // 4. Authentication — validates JWT bearer token.
 app.UseAuthentication();
@@ -138,9 +252,15 @@ app.UseAuthorization();
 // 5a. Tenant context — sets app.current_tenant_id session variable for RLS.
 app.UseMiddleware<TenantContextMiddleware>();
 
-// ── Routing ───────────────────────────────────────────────────────────────────
-// 6. Controller endpoints.
-app.MapControllers();
+// 6. Controller endpoints — RequireAuthorization() makes all controller actions
+//    require authentication by default; [AllowAnonymous] on individual actions
+//    exempts public endpoints (AC-4). This scopes enforcement to controllers only
+//    so health/metrics endpoints remain anonymous without extra metadata.
+app.MapControllers().RequireAuthorization();
+
+// 6b. SignalR hub — requires JWT auth (configured via Authorize on SessionHub).
+// Excluded from the MapControllers() RequireAuthorization scope so it uses its own [Authorize].
+app.MapHub<SessionHub>("/hubs/session");
 
 // 7. Health endpoint — unauthenticated, responds at /api/v1/health (AC-2).
 app.MapHealthChecks("/api/v1/health", new HealthCheckOptions
@@ -151,6 +271,8 @@ app.MapHealthChecks("/api/v1/health", new HealthCheckOptions
 // 8. Prometheus metrics scraping endpoint (GET /metrics).
 // Excluded from trace collection by the OTel ASP.NET Core instrumentation filter.
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
+
+
 
 app.Run();
 

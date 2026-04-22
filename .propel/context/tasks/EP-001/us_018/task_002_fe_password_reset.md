@@ -1031,18 +1031,18 @@ ng test
 
 ## Implementation Checklist
 
-- [ ] Create `PasswordStrengthValidator` with rules: 8+ chars, uppercase, digit, special character
-- [ ] Create `passwordMatchValidator` cross-field validator for confirm-password
-- [ ] Create `PasswordCheckPipe` for template-driven checklist rendering
-- [ ] Create `ForgotPasswordComponent` standalone component with email form and generic confirmation
-- [ ] Create forgot-password HTML template with step indicator, email field, loading state, confirmation view
-- [ ] Create forgot-password SCSS with centered 480px auth layout
-- [ ] Create `ResetPasswordComponent` standalone component with password fields, complexity validation, token handling
-- [ ] Create reset-password HTML template with step indicator, password fields, complexity checklist, expired-token view
-- [ ] Create reset-password SCSS with checklist styles, error-banner, token-expired state
-- [ ] Add `forgotPassword()` and `resetPassword()` methods to `AuthService`
-- [ ] Add lazy routes for `/auth/forgot-password` and `/auth/reset-password` in auth routing
-- [ ] Add lockout-specific error banner to login page template
-- [ ] Add `password-reset` query param handling to login page for success banner
-- [ ] Verify `aria-describedby` associations on all form error messages (UXR-205)
-- [ ] Verify keyboard navigation through all form fields and buttons (UXR-202)
+- [x] Create `PasswordStrengthValidator` with rules: 8+ chars, uppercase, digit, special character
+- [x] Create `passwordMatchValidator` cross-field validator for confirm-password
+- [x] Create `PasswordCheckPipe` for template-driven checklist rendering
+- [x] Create `ForgotPasswordComponent` standalone component with email form and generic confirmation
+- [x] Create forgot-password HTML template with step indicator, email field, loading state, confirmation view
+- [x] Create forgot-password SCSS with centered 480px auth layout
+- [x] Create `ResetPasswordComponent` standalone component with password fields, complexity validation, token handling
+- [x] Create reset-password HTML template with step indicator, password fields, complexity checklist, expired-token view
+- [x] Create reset-password SCSS with checklist styles, error-banner, token-expired state
+- [x] Add `forgotPassword()` and `resetPassword()` methods to `AuthService`
+- [x] Add lazy routes for `/auth/forgot-password` and `/auth/reset-password` in auth routing
+- [x] Add lockout-specific error banner to login page template
+- [x] Add `password-reset` query param handling to login page for success banner
+- [x] Verify `aria-describedby` associations on all form error messages (UXR-205)
+- [x] Verify keyboard navigation through all form fields and buttons (UXR-202)

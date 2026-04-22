@@ -31,6 +31,13 @@ public sealed class AuditRecordConfiguration : IEntityTypeConfiguration<AuditRec
         builder.OwnsOne(a => a.Details, d =>
         {
             d.ToJson();
+            d.Property(x => x.IpAddress).HasMaxLength(45);
+            d.Property(x => x.UserAgent).HasMaxLength(512);
+            d.Property(x => x.ChangeDescription).HasMaxLength(2000);
+            // Dictionary<string,string> is not supported by Npgsql EF Core inside
+            // ToJson() owned entities. Ignore it; callers never set Metadata in
+            // the current audit writes so no data is lost.
+            d.Ignore(x => x.Metadata);
         });
 
         builder.HasIndex(a => a.ActorUserId);

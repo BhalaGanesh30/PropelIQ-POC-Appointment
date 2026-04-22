@@ -390,10 +390,10 @@ dotnet test
 
 ## Implementation Checklist
 
-- [ ] Create `AuthorizationPolicies` static class with named policy constants and `AddAppAuthorizationPolicies` extension method including FallbackPolicy
-- [ ] Create `PatientResourceRequirement` and `PatientResourceAuthorizationHandler` comparing route patientId against JWT patient_id claim
-- [ ] Create `AuditAuthorizationHandler` logging all authorization decisions (granted and denied) with structured fields
-- [ ] Create `ForbiddenResultHandler` returning standardized ProblemDetails on 403
-- [ ] Register all authorization services, handlers, and FallbackPolicy in Program.cs
-- [ ] Apply `[Authorize(Policy = "...")]` attributes to controllers and `[AllowAnonymous]` to public auth endpoints
-- [ ] Verify structured audit log output integrates with OpenTelemetry pipeline (US_007)
+- [x] Create `AuthorizationPolicies` static class with named policy constants and `AddAppAuthorizationPolicies` extension method; enforcement via `MapControllers().RequireAuthorization()` (FallbackPolicy removed — blocked health/metrics endpoints)
+- [x] Create `PatientResourceRequirement` and `PatientResourceAuthorizationHandler` comparing route patientId against JWT patient_id claim
+- [x] Create `AuditAuthorizationHandler` logging all authorization decisions (granted and denied) with structured fields
+- [x] Create `ForbiddenResultHandler` returning standardized ProblemDetails on 403
+- [x] Register all authorization services, handlers in Program.cs; switched `MapControllers()` to `MapControllers().RequireAuthorization()`
+- [x] Apply `[AllowAnonymous]` to public auth endpoints (AuthController, HealthController, DiagnosticsController ping/error)
+- [x] Verified structured audit log output integrates with OpenTelemetry pipeline (US_007) — AuditAuthorizationHandler uses ILogger with structured fields exported via OTel

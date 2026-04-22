@@ -1,0 +1,57 @@
+@if (showWarning()) {
+  <!-- Backdrop -->
+  <div class="session-modal-backdrop" aria-hidden="true"></div>
+
+  <!-- Dialog -->
+  <div
+    class="session-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="session-timeout-title"
+    aria-describedby="session-timeout-desc"
+    (keydown)="onKeyDown($event)"
+  >
+    <div class="session-modal__icon">
+      <mat-icon aria-hidden="true">schedule</mat-icon>
+    </div>
+
+    <h2 id="session-timeout-title" class="session-modal__title">
+      Session Expiring Soon
+    </h2>
+
+    <p id="session-timeout-desc" class="session-modal__body">
+      Your session will expire in
+    </p>
+
+    <p class="session-modal__countdown" aria-live="off">
+      {{ formattedCountdown() }}
+    </p>
+
+    <!-- Polite announcement for assistive technologies at key intervals (UXR-203) -->
+    <p class="sr-only" aria-live="polite" aria-atomic="true">
+      {{ srAnnouncement() }}
+    </p>
+
+    <div class="session-modal__actions">
+      <button
+        #extendBtn
+        mat-flat-button
+        color="primary"
+        class="session-modal__extend-btn"
+        (click)="onExtendSession()"
+        aria-label="Extend session"
+      >
+        Extend Session
+      </button>
+
+      <button
+        mat-stroked-button
+        class="session-modal__logout-btn"
+        (click)="onLogout()"
+        aria-label="Log out now"
+      >
+        Log Out
+      </button>
+    </div>
+  </div>
+}

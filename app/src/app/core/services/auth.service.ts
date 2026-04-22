@@ -1,18 +1,15 @@
 import { Injectable } from '@angular/core';
+import { TokenStorageService } from './token-storage.service';
 
 /**
- * Authentication state stub — returns authenticated by default.
- * Replace with real JWT / session validation in EP-001 (auth epic).
- * `redirectUrl` stores the attempted URL so the login flow can redirect
- * back after successful authentication.
+ * Thin auth-state facade used by the core auth guard.
+ * Delegates to `TokenStorageService` for token inspection.
  */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  redirectUrl: string | null = null;
+  constructor(private readonly tokenStorage: TokenStorageService) {}
 
   isAuthenticated(): boolean {
-    // Stub: always authenticated during scaffold phase.
-    // EP-001 will inject token validation here.
-    return true;
+    return this.tokenStorage.isAuthenticated() && !this.tokenStorage.isTokenExpired();
   }
 }
