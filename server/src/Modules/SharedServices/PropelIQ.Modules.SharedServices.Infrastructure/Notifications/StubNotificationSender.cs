@@ -17,23 +17,53 @@ internal sealed class StubNotificationSender : INotificationSender
 
     public Task SendEmailAsync(string to, string subject, string htmlBody, CancellationToken ct = default)
     {
-        // Extract the href URL from the HTML body so the developer can copy it
-        // directly from the console without needing a real email provider.
+        // Extract OTP code from OTP emails (strong tag pattern).
+        var otpStart = htmlBody.IndexOf("<strong>", StringComparison.OrdinalIgnoreCase);
+        var otpCode = otpStart >= 0
+            ? htmlBody[(otpStart + 8)..htmlBody.IndexOf("</strong>", otpStart, StringComparison.OrdinalIgnoreCase)]
+            : null;
+
+        // Extract confirmation URL from registration emails (href pattern).
         var urlStart = htmlBody.IndexOf("href='", StringComparison.Ordinal);
         var confirmUrl = urlStart >= 0
             ? htmlBody[(urlStart + 6)..htmlBody.IndexOf("'", urlStart + 6, StringComparison.Ordinal)]
-            : "(no URL found in body)";
+            : null;
 
-        _logger.LogInformation(
-            "[STUB EMAIL] To={To} | Subject={Subject}\n>>> Confirmation URL (copy into browser):\n{Url}",
-            to, subject, confirmUrl);
+        if (otpCode is not null && otpCode.Length <= 10)
+        {
+            _logger.LogWarning(
+                "\n======================================================" +
+                "\n[STUB EMAIL] OTP Code for {To}: {Otp}" +
+                "\n(Configure Email:Smtp in appsettings to send real emails)" +
+                "\n======================================================",
+                to, otpCode);
+        }
+        else if (confirmUrl is not null)
+        {
+            _logger.LogWarning(
+                "\n======================================================" +
+                "\n[STUB EMAIL] Confirmation URL for {To}:" +
+                "\n{Url}" +
+                "\n(Configure Email:Smtp in appsettings to send real emails)" +
+                "\n======================================================",
+                to, confirmUrl);
+        }
+        else
+        {
+            _logger.LogInformation(
+                "[STUB EMAIL] To={To} | Subject={Subject} | Body={Body}",
+                to, subject, htmlBody);
+        }
 
         return Task.CompletedTask;
     }
 
     public Task SendSmsAsync(string phoneNumber, string message, CancellationToken ct = default)
     {
-        _logger.LogInformation("[STUB SMS] To={Phone} | Message={Message}", phoneNumber, message);
+        _logger.LogWarning(
+            "\n[STUB SMS] To={Phone} | Message={Message}" +
+            "\n(No SMS provider configured — OTP is also sent via email)",
+            phoneNumber, message);
         return Task.CompletedTask;
     }
 }

@@ -30,6 +30,7 @@ public sealed class AuthController : BaseApiController
     private readonly ISessionService _sessionService;
     private readonly AccountLockoutHandler _lockoutHandler;
     private readonly string _clientBaseUrl;
+    private readonly string _apiBaseUrl;
     private readonly ILogger<AuthController> _logger;
 
     public AuthController(
@@ -56,6 +57,8 @@ public sealed class AuthController : BaseApiController
         _lockoutHandler = lockoutHandler;
         _clientBaseUrl = configuration.GetValue<string>("App:ClientBaseUrl")
             ?? "http://localhost:4200";
+        _apiBaseUrl = configuration.GetValue<string>("App:ApiBaseUrl")
+            ?? "http://localhost:5000";
         _logger = logger;
     }
 
@@ -104,7 +107,7 @@ public sealed class AuthController : BaseApiController
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         var encodedToken = Uri.EscapeDataString(token);
         var callbackUrl =
-            $"{Request.Scheme}://{Request.Host}/api/v1/auth/confirm-email" +
+            $"{_apiBaseUrl}/api/v1/auth/confirm-email" +
             $"?userId={user.Id}&token={encodedToken}";
 
         // ── DEV SHORTCUT ────────────────────────────────────────────────────
@@ -187,8 +190,11 @@ public sealed class AuthController : BaseApiController
     }
 
     /// <summary>
-    /// Generate a 6-digit OTP and send it to the user's registered phone number.
+    /// Generate a 6-digit OTP and deliver it to the user.
+    /// Primary channel: email (works with any configured SMTP provider).
+    /// Secondary channel: SMS (when a phone number is present and an SMS provider is wired up).
     /// The OTP is stored in Redis with a 10-minute TTL.
+    /// In development the OTP is also returned in the response body.
     /// </summary>
     [AllowAnonymous]
     [HttpPost("send-otp")]
@@ -218,16 +224,50 @@ public sealed class AuthController : BaseApiController
             },
             ct);
 
-        if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
+        // Always attempt email delivery first — works with any SMTP provider
+        // (real or stub). The stub logs the OTP to the console prominently.
+        try
         {
-            await _notifications.SendSmsAsync(
-                user.PhoneNumber,
-                $"Your PropelIQ verification code is: {otp}. It expires in 10 minutes.",
+            await _notifications.SendEmailAsync(
+                user.Email!,
+                "Your PropelIQ verification code",
+                $"<p>Your PropelIQ verification code is: <strong>{otp}</strong></p>" +
+                $"<p>This code expires in <strong>10 minutes</strong>. Do not share it with anyone.</p>",
                 ct);
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send OTP email to {Email}", user.Email);
+        }
 
-        _logger.LogInformation("OTP dispatched for user {UserId}", user.Id);
-        return Accepted(new { message = "OTP sent to the registered phone number." });
+        // Also attempt SMS delivery when a phone number is registered.
+        if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
+        {
+            try
+            {
+                await _notifications.SendSmsAsync(
+                    user.PhoneNumber,
+                    $"Your PropelIQ verification code is: {otp}. It expires in 10 minutes.",
+                    ct);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send OTP SMS to {Phone}", user.PhoneNumber);
+            }
+        }
+
+        _logger.LogWarning(
+            "\n======================================================" +
+            "\n[DEV] OTP for {Email}: {Otp}" +
+            "\n======================================================",
+            user.Email, otp);
+
+        var isDev = HttpContext.RequestServices
+            .GetRequiredService<IHostEnvironment>().IsDevelopment();
+
+        return Accepted(isDev
+            ? new { message = "OTP sent to your email address.", otp }
+            : (object)new { message = "OTP sent to your email address." });
     }
 
     /// <summary>
