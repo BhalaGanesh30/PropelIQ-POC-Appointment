@@ -536,25 +536,25 @@ curl -X POST "http://localhost:5000/api/v1/intake/ai-assist" \
 
 ## Implementation Validation Strategy
 
-- [ ] `POST /api/v1/intake/ai-assist` accepts free-text description and returns structured suggestions within 2.5 seconds (AC-1, AIR-006)
-- [ ] Response includes `aiAssisted: true` and `aiPopulatedFields` list when AI succeeds (AC-1, UXR-405)
-- [ ] Response includes `aiAssisted: false` and `fallbackReason` when AI fails or times out (AIR-005 edge case)
-- [ ] Circuit breaker opens after 3 consecutive failures and stays open for 30 seconds (TR-008)
-- [ ] Timeout policy enforces 2.5-second limit per AIR-006
-- [ ] Prompt template is versioned and loaded from `intake-assist.json`
-- [ ] Patient identifiers are not included in prompts — only symptom description text (AIR-009)
-- [ ] Prompt and response content are logged with confidence values for audit trail (AIR-011)
-- [ ] AI response is validated against expected JSON structure (AIR-008)
-- [ ] Empty or malformed AI responses fall back to manual mode gracefully
-- [ ] Endpoint requires JWT bearer authentication
+- [x] `POST /api/v1/intake/ai-assist` accepts free-text description and returns structured suggestions within 2.5 seconds (AC-1, AIR-006)
+- [x] Response includes `aiAssisted: true` and `aiPopulatedFields` list when AI succeeds (AC-1, UXR-405)
+- [x] Response includes `aiAssisted: false` and `fallbackReason` when AI fails or times out (AIR-005 edge case)
+- [x] Circuit breaker opens after 3 consecutive failures and stays open for 30 seconds (TR-008)
+- [x] Timeout policy enforces 2.5-second limit per AIR-006
+- [x] Prompt template is versioned and loaded from `intake-assist.json`
+- [x] Patient identifiers are not included in prompts — only symptom description text (AIR-009)
+- [x] Prompt and response content are logged with confidence values for audit trail (AIR-011)
+- [x] AI response is validated against expected JSON structure (AIR-008)
+- [x] Empty or malformed AI responses fall back to manual mode gracefully
+- [x] Endpoint requires JWT bearer authentication
 
 ## Implementation Checklist
 
-- [ ] Create `IntakeAssistRequest` and `IntakeAssistResponse` DTOs with `IntakeFieldSuggestions` structure
-- [ ] Create versioned prompt template `intake-assist.json` with system/user prompts and model parameters
-- [ ] Create `IAiGatewayClient` abstraction and `AiGatewayClient` with Polly circuit breaker (3 failures/30s break) and timeout (2.5s)
-- [ ] Create `IntakeAssistService` with prompt construction, PII redaction, AI call, response parsing, and fallback logic
-- [ ] Add `POST /api/v1/intake/ai-assist` endpoint to `IntakeController`
-- [ ] Configure AI gateway HttpClient with base address from `appsettings.json`
-- [ ] Log prompt/response pairs with confidence values for AIR-011 audit compliance
-- [ ] Validate AI JSON response structure and fall back on parse failure
+- [x] Create `IntakeAssistRequest` and `IntakeAssistResponse` DTOs with `IntakeFieldSuggestions` structure
+- [x] Create versioned prompt template `intake-assist.json` with system/user prompts and model parameters
+- [x] Create `IAiGatewayClient` abstraction and `AiGatewayClient` with Polly circuit breaker (3 failures/30s break) and timeout (2.5s)
+- [x] Create `IntakeAssistService` with prompt construction, PII redaction, AI call, response parsing, and fallback logic
+- [x] Add `POST /api/v1/intake/ai-assist` endpoint to `IntakeController`
+- [x] Configure AI gateway HttpClient with base address from `appsettings.json`
+- [x] Log prompt/response pairs with confidence values for AIR-011 audit compliance
+- [x] Validate AI JSON response structure and fall back on parse failure

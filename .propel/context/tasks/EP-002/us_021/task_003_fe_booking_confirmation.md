@@ -794,11 +794,11 @@ ng serve
 
 ## Implementation Checklist
 
-- [ ] Create `BookingResponse`, `SlotConflictResponse`, `CreateBookingRequest` TypeScript interfaces
-- [ ] Create `BookingApiService` with `createBooking`, `getBooking`, `downloadArtifact` methods
-- [ ] Create `SlotConflictDialogComponent` for HTTP 409 conflict handling with next-slot suggestion
-- [ ] Create `BookingConfirmationComponent` with signals for loading, submitting, downloading states
-- [ ] Create template with success banner, detail grid, and PDF/QR/ICS action button row
-- [ ] Create SCSS with 600px max-width card and responsive breakpoints (375px, 768px, 1440px)
-- [ ] Add lazy-loaded booking routes to `app.routes.ts` with auth guard
-- [ ] Verify `aria-label` on all buttons and WCAG 2.1 AA compliance
+- [x] Create `BookingResponse`, `SlotConflictResponse`, `CreateBookingRequest` TypeScript interfaces
+- [x] Create `BookingApiService` with `createBooking`, `getBooking`, `downloadArtifact` methods
+- [x] Create `SlotConflictDialogComponent` for HTTP 409 conflict handling with next-slot suggestion
+- [x] Create `BookingConfirmationComponent` with signals for loading, submitting, downloading states
+- [x] Create template with success banner, detail grid, and PDF/QR/ICS action button row
+- [x] Create SCSS with 600px max-width card and responsive breakpoints (375px, 768px, 1440px)
+- [x] Add lazy-loaded booking routes to `scheduling.routes.ts` (under existing auth-guarded `scheduling` path)
+- [x] Verify `aria-label` on all buttons and WCAG 2.1 AA compliance

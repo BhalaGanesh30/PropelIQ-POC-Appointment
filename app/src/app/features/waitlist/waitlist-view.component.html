@@ -1,0 +1,234 @@
+<div class="waitlist-page">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <h1 class="page-title">My Waitlist</h1>
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="openJoinDialog()"
+      aria-label="Join the waitlist for a preferred slot"
+    >
+      <mat-icon aria-hidden="true">playlist_add</mat-icon>
+      Join Waitlist
+    </button>
+  </div>
+
+  <!-- ── LOADING STATE: Skeleton cards ──────────────────────────────────────── -->
+  @if (isLoading()) {
+    <div class="entry-list" aria-busy="true" aria-label="Loading waitlist entries">
+      @for (n of [1, 2, 3]; track n) {
+        <mat-card class="entry-card skeleton-card">
+          <mat-card-content>
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-line"></div>
+            <div class="skeleton skeleton-line short"></div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  }
+
+  <!-- ── ERROR STATE: Retry banner ──────────────────────────────────────────── -->
+  @if (!isLoading() && hasError()) {
+    <div
+      class="error-banner"
+      role="alert"
+      aria-live="assertive"
+    >
+      <mat-icon color="warn" aria-hidden="true">cloud_off</mat-icon>
+      <span>Could not load your waitlist entries.</span>
+      <button mat-button color="primary" (click)="retry()">Retry</button>
+    </div>
+  }
+
+  <!-- ── EMPTY STATE: Not on any waitlist ───────────────────────────────────── -->
+  @if (!isLoading() && !hasError() && entries().length === 0) {
+    <div class="empty-state" role="status" aria-live="polite">
+      <mat-icon class="empty-icon" aria-hidden="true">event_available</mat-icon>
+      <p class="empty-title">Not on any waitlist</p>
+      <p class="empty-subtitle">
+        Join the waitlist to be notified when a slot matching your preferences
+        becomes available.
+      </p>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="navigateToSearch()"
+        aria-label="Browse available slots"
+      >
+        Browse Slots
+      </button>
+    </div>
+  }
+
+  <!-- ── DEFAULT / VALIDATION STATE: Entry cards ────────────────────────────── -->
+  @if (!isLoading() && !hasError() && entries().length > 0) {
+    <div class="entry-list" aria-live="polite" aria-label="Waitlist entries">
+
+      <!-- Offered entries (AC-3: claim action available) -->
+      @if (offeredEntries().length > 0) {
+        <h2 class="section-heading">
+          <mat-icon aria-hidden="true">notifications_active</mat-icon>
+          Slots Available — Claim Now
+        </h2>
+
+        @for (entry of offeredEntries(); track entry.id) {
+          <mat-card class="entry-card offered-card">
+            <mat-card-content>
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="appointment-type">{{ entry.preferredAppointmentType }}</span>
+                  <mat-chip-set aria-label="Entry status">
+                    <mat-chip color="accent" highlighted>Slot Offered</mat-chip>
+                  </mat-chip-set>
+                </div>
+              </div>
+
+              <div class="card-details">
+                <span>
+                  <mat-icon aria-hidden="true" class="detail-icon">date_range</mat-icon>
+                  Preferred:
+                  {{ entry.preferredDateStart | date:'mediumDate' }}
+                  &ndash;
+                  {{ entry.preferredDateEnd | date:'mediumDate' }}
+                </span>
+                <span>
+                  <mat-icon aria-hidden="true" class="detail-icon">schedule</mat-icon>
+                  {{ entry.preferredDurationMinutes }} min appointment
+                </span>
+              </div>
+
+              <!-- UXR-112 countdown timer — only for Offered entries with a deadline -->
+              @if (entry.claimExpiresAt) {
+                <div class="countdown-row">
+                  <app-countdown-timer [expiresAt]="entry.claimExpiresAt" />
+                </div>
+              }
+
+              <div class="card-actions">
+                <button
+                  mat-flat-button
+                  color="accent"
+                  (click)="claimSlot(entry)"
+                  [disabled]="actionInProgress() !== null"
+                  [attr.aria-label]="'Claim offered slot for ' + entry.preferredAppointmentType"
+                >
+                  @if (actionInProgress() === entry.id) {
+                    <mat-spinner diameter="18" aria-hidden="true" />
+                  } @else {
+                    <mat-icon aria-hidden="true">check_circle</mat-icon>
+                  }
+                  Claim Slot
+                </button>
+                <button
+                  mat-button
+                  (click)="cancelEntry(entry)"
+                  [disabled]="actionInProgress() !== null"
+                  [attr.aria-label]="'Remove offered waitlist entry for ' + entry.preferredAppointmentType"
+                >
+                  Remove
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      }
+
+      <!-- Active entries (waiting in queue) -->
+      @if (activeEntries().length > 0) {
+        <h2 class="section-heading">
+          <mat-icon aria-hidden="true">hourglass_top</mat-icon>
+          Waiting in Queue
+        </h2>
+
+        @for (entry of activeEntries(); track entry.id) {
+          <mat-card class="entry-card">
+            <mat-card-content>
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="appointment-type">{{ entry.preferredAppointmentType }}</span>
+                  <mat-chip-set aria-label="Entry status">
+                    <mat-chip color="primary" highlighted>
+                      #{{ entry.position }} in queue
+                    </mat-chip>
+                  </mat-chip-set>
+                </div>
+              </div>
+
+              <div class="card-details">
+                <span>
+                  <mat-icon aria-hidden="true" class="detail-icon">date_range</mat-icon>
+                  Preferred:
+                  {{ entry.preferredDateStart | date:'mediumDate' }}
+                  &ndash;
+                  {{ entry.preferredDateEnd | date:'mediumDate' }}
+                </span>
+                <span>
+                  <mat-icon aria-hidden="true" class="detail-icon">schedule</mat-icon>
+                  {{ entry.preferredDurationMinutes }} min appointment
+                </span>
+                <span>
+                  <mat-icon aria-hidden="true" class="detail-icon">event_note</mat-icon>
+                  Added {{ entry.createdAt | date:'mediumDate' }}
+                </span>
+              </div>
+
+              <div class="card-actions">
+                <button
+                  mat-button
+                  color="warn"
+                  (click)="cancelEntry(entry)"
+                  [disabled]="actionInProgress() !== null"
+                  [attr.aria-label]="'Remove waitlist entry for ' + entry.preferredAppointmentType"
+                >
+                  <mat-icon aria-hidden="true">remove_circle_outline</mat-icon>
+                  Remove
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      }
+
+      <!-- Expired entries (AC-4: muted, no actions) -->
+      @if (expiredEntries().length > 0) {
+        <h2 class="section-heading expired-heading">
+          <mat-icon aria-hidden="true">timer_off</mat-icon>
+          Expired
+        </h2>
+
+        @for (entry of expiredEntries(); track entry.id) {
+          <mat-card class="entry-card expired-card">
+            <mat-card-content>
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="appointment-type muted">{{ entry.preferredAppointmentType }}</span>
+                  <mat-chip-set aria-label="Entry status">
+                    <mat-chip class="expired-chip">Claim window expired</mat-chip>
+                  </mat-chip-set>
+                </div>
+              </div>
+
+              <div class="card-details muted">
+                <span>
+                  <mat-icon aria-hidden="true" class="detail-icon">date_range</mat-icon>
+                  Preferred:
+                  {{ entry.preferredDateStart | date:'mediumDate' }}
+                  &ndash;
+                  {{ entry.preferredDateEnd | date:'mediumDate' }}
+                </span>
+                <span>
+                  <mat-icon aria-hidden="true" class="detail-icon">schedule</mat-icon>
+                  {{ entry.preferredDurationMinutes }} min appointment
+                </span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      }
+
+    </div>
+  }
+
+</div>

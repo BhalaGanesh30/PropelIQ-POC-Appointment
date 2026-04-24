@@ -584,11 +584,11 @@ ng serve
 
 ## Implementation Checklist
 
-- [ ] Create TypeScript interfaces for filter, item, response, and status constants
-- [ ] Create `AppointmentHistoryApiService` with paginated GET and PDF export blob
-- [ ] Replace local data source with server-side pagination via `filterChange$` Subject
-- [ ] Add debounced filter pipeline (300ms debounce + switchMap) for status and date range
-- [ ] Add "Export PDF" button with loading spinner and blob download
-- [ ] Add mat-paginator connected to server page/totalCount
-- [ ] Add empty state message with booking CTA
-- [ ] Add 44x44px touch target sizing for mobile filter controls and paginator buttons
+- [x] Create TypeScript interfaces for filter, item, response, and status constants
+- [x] Create `AppointmentHistoryApiService` with paginated GET and PDF export blob
+- [x] Replace local data source with server-side pagination via `filterChange$` Subject
+- [x] Add debounced filter pipeline (300ms debounce + switchMap) for status and date range
+- [x] Add "Export PDF" button with loading spinner and blob download
+- [x] Add mat-paginator connected to server page/totalCount
+- [x] Add empty state message with booking CTA
+- [x] Add 44x44px touch target sizing for mobile filter controls and paginator buttons

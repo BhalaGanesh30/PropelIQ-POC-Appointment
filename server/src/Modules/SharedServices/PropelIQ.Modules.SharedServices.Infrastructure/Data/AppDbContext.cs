@@ -35,6 +35,10 @@ public class AppDbContext : DbContext
     public DbSet<Appointment> Appointments => Set<Appointment>();
     public DbSet<WaitlistEntry> WaitlistEntries => Set<WaitlistEntry>();
     public DbSet<ReminderEvent> ReminderEvents => Set<ReminderEvent>();
+    public DbSet<AppointmentSlot> AppointmentSlots => Set<AppointmentSlot>();
+    public DbSet<SlotTemplate> SlotTemplates => Set<SlotTemplate>();
+    public DbSet<IntakeDraft> IntakeDrafts => Set<IntakeDraft>();
+    public DbSet<IntakeRecord> IntakeRecords => Set<IntakeRecord>();
 
     // ClinicalIntelligence module entities
     public DbSet<ClinicalDocument> ClinicalDocuments => Set<ClinicalDocument>();
@@ -43,6 +47,9 @@ public class AppDbContext : DbContext
 
     // SharedServices module entities
     public DbSet<AuditRecord> AuditRecords => Set<AuditRecord>();
+
+    // Scheduling audit
+    public DbSet<AppointmentAuditEntry> AppointmentAuditEntries => Set<AppointmentAuditEntry>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

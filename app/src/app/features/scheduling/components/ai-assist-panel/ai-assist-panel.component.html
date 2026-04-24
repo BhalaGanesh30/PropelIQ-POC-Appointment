@@ -1,0 +1,38 @@
+<div class="ai-assist-panel" role="region" aria-label="AI-assisted intake">
+  <div class="panel-header">
+    <mat-icon class="ai-icon" aria-hidden="true">auto_awesome</mat-icon>
+    <span>Describe your symptoms in your own words</span>
+  </div>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Your symptoms</mat-label>
+    <textarea
+      matInput
+      [ngModel]="freeText()"
+      (ngModelChange)="freeText.set($event)"
+      rows="4"
+      placeholder="Example: I have been having headaches for the past 3 days, mostly on the right side…"
+      [disabled]="isProcessing()"
+      aria-describedby="ai-assist-hint">
+    </textarea>
+    <mat-hint id="ai-assist-hint">
+      The AI will suggest structured intake fields from your description
+    </mat-hint>
+  </mat-form-field>
+
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    (click)="onSubmit()"
+    [disabled]="!freeText().trim() || isProcessing()"
+    aria-label="Generate intake suggestions from description">
+    @if (isProcessing()) {
+      <mat-spinner diameter="20" />
+      <span>Analysing…</span>
+    } @else {
+      <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+      <span>Generate Suggestions</span>
+    }
+  </button>
+</div>

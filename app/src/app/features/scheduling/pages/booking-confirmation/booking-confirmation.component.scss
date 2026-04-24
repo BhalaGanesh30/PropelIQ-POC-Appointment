@@ -1,0 +1,165 @@
+// Shared page wrapper — flex column, centered content
+.confirmation-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px;
+  min-height: 60vh;
+}
+
+.status-text {
+  margin-top: 16px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// SCR-006 Validation state: green success banner
+.success-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-on-tertiary-container);
+  border-radius: 8px;
+  margin-bottom: 24px;
+  width: 100%;
+  max-width: 600px;
+
+  mat-icon {
+    color: #2e7d32;
+    font-size: 28px;
+    height: 28px;
+    width: 28px;
+  }
+
+  span {
+    font-size: 18px;
+    font-weight: 500;
+  }
+}
+
+// SCR-006 layout: single-column centered card (max-width 600px)
+.confirmation-card {
+  width: 100%;
+  max-width: 600px;
+}
+
+.detail-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.detail-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+  }
+}
+
+.detail-value {
+  font-weight: 400;
+  text-align: right;
+}
+
+// UXR-105: PDF / QR / ICS in a single action row
+.action-row {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.navigation-row {
+  margin-top: 24px;
+}
+
+.error-card {
+  max-width: 600px;
+  text-align: center;
+
+  mat-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+    margin-bottom: 16px;
+  }
+}
+
+// ── UXR-301: Responsive breakpoints ──────────────────────────────────────────
+
+// Mobile ≤ 599px (target: 375px)
+@media (max-width: 599px) {
+  .confirmation-container {
+    padding: 16px 12px;
+  }
+
+  .success-banner {
+    padding: 8px 16px;
+
+    span {
+      font-size: 16px;
+    }
+  }
+
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .detail-value {
+    text-align: left;
+    padding-left: 28px;
+  }
+
+  .action-row {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+// Tablet 600–1023px (target: 768px)
+@media (min-width: 600px) and (max-width: 1023px) {
+  .confirmation-container {
+    padding: 24px;
+  }
+}
+
+// Desktop ≥ 1024px (target: 1440px)
+@media (min-width: 1024px) {
+  .confirmation-container {
+    padding: 32px;
+  }
+}

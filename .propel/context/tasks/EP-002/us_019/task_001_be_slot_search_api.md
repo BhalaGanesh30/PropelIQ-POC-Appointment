@@ -683,32 +683,32 @@ curl -X GET "http://localhost:5000/api/v1/appointments/slots?dateFrom=2026-04-17
 
 ## Implementation Validation Strategy
 
-- [ ] `GET /api/v1/appointments/slots` returns available slots grouped by date within 1 second (AC-1)
-- [ ] Redis cache is checked first; on hit, results are served from cache (AC-1, TR-004)
-- [ ] On cache miss, database is queried and results are cached with 5-minute TTL (edge case)
-- [ ] Only future slots with available capacity are returned; booked/past slots are excluded (AC-2)
-- [ ] Empty result set returns `totalAvailableSlots: 0` and `hasResults: false` (AC-3)
-- [ ] Date range exceeding 30 days returns HTTP 400 with "Slot search is limited to the next 30 days." (AC-4)
-- [ ] Duration validates against 15, 30, 60 values only
-- [ ] `AppointmentSlot.RowVersion` is configured for optimistic concurrency (edge case: booking race)
-- [ ] Redis cache failures are logged as warnings and do not break the search flow
-- [ ] OpenTelemetry activity traces cache hit/miss, result count, and search parameters (NFR-011)
-- [ ] Endpoint requires JWT bearer authentication
-- [ ] Composite index on `(StartTime, Type, Duration)` exists for query performance
+- [x] `GET /api/v1/appointments/slots` returns available slots grouped by date within 1 second (AC-1)
+- [x] Redis cache is checked first; on hit, results are served from cache (AC-1, TR-004)
+- [x] On cache miss, database is queried and results are cached with 5-minute TTL (edge case)
+- [x] Only future slots with available capacity are returned; booked/past slots are excluded (AC-2)
+- [x] Empty result set returns `totalAvailableSlots: 0` and `hasResults: false` (AC-3)
+- [x] Date range exceeding 30 days returns HTTP 400 with "Slot search is limited to the next 30 days." (AC-4)
+- [x] Duration validates against 15, 30, 60 values only
+- [x] `AppointmentSlot.RowVersion` is configured for optimistic concurrency (edge case: booking race)
+- [x] Redis cache failures are logged as warnings and do not break the search flow
+- [x] OpenTelemetry activity traces cache hit/miss, result count, and search parameters (NFR-011)
+- [x] Endpoint requires JWT bearer authentication
+- [x] Composite index on `(StartTime, Type, Duration)` exists for query performance
 
 ## Implementation Checklist
 
-- [ ] Create `AppointmentType` enum (General, Specialist, FollowUp, Urgent)
-- [ ] Create `SlotDuration` enum (Fifteen=15, Thirty=30, Sixty=60)
-- [ ] Create `AppointmentSlot` entity with `Id`, `StartTime`, `EndTime`, `Duration`, `Type`, `MaxCapacity`, `CurrentBookings`, `ProviderId`, `ProviderName`, `Location`, `RowVersion`
-- [ ] Create `SlotTemplate` entity for base availability patterns
-- [ ] Create `SlotSearchQuery` and `SlotSearchResponse`/`SlotGroupDto`/`SlotDto` DTOs
-- [ ] Create `SlotSearchQueryValidator` with 30-day window, future date, and enum validation
-- [ ] Create `ISlotRepository` with `SearchAvailableSlotsAsync` filtering past and booked slots
-- [ ] Create `SlotRepository` implementation with EF Core query
-- [ ] Create `SlotCacheService` with cache-aside pattern, 5-minute TTL, and graceful failure
-- [ ] Create `ISlotSearchService` and `SlotSearchService` with cache-first orchestration and OpenTelemetry
-- [ ] Create `AppointmentController` with `GET /api/v1/appointments/slots` endpoint
-- [ ] Add `AppointmentSlot` and `SlotTemplate` DbSets with entity configuration and indexes
-- [ ] Configure `AddStackExchangeRedisCache` in `Program.cs`
-- [ ] Register all scheduling services in `DependencyInjection.cs`
+- [x] Create `AppointmentType` enum (General, Specialist, FollowUp, Urgent)
+- [x] Create `SlotDuration` enum (Fifteen=15, Thirty=30, Sixty=60)
+- [x] Create `AppointmentSlot` entity with `Id`, `StartTime`, `EndTime`, `Duration`, `Type`, `MaxCapacity`, `CurrentBookings`, `ProviderId`, `ProviderName`, `Location`, `RowVersion`
+- [x] Create `SlotTemplate` entity for base availability patterns
+- [x] Create `SlotSearchQuery` and `SlotSearchResponse`/`SlotGroupDto`/`SlotDto` DTOs
+- [x] Create `SlotSearchQueryValidator` with 30-day window, future date, and enum validation
+- [x] Create `ISlotRepository` with `SearchAvailableSlotsAsync` filtering past and booked slots
+- [x] Create `SlotRepository` implementation with EF Core query
+- [x] Create `SlotCacheService` with cache-aside pattern, 5-minute TTL, and graceful failure
+- [x] Create `ISlotSearchService` and `SlotSearchService` with cache-first orchestration and OpenTelemetry
+- [x] Create `AppointmentController` with `GET /api/v1/appointments/slots` endpoint
+- [x] Add `AppointmentSlot` and `SlotTemplate` DbSets with entity configuration and indexes
+- [x] Configure `AddStackExchangeRedisCache` in `Program.cs`
+- [x] Register all scheduling services in `DependencyInjection.cs`

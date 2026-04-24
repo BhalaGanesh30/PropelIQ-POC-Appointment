@@ -697,23 +697,23 @@ curl -X POST "http://localhost:5000/api/v1/bookings/<appointment-guid>/reschedul
 
 ## Implementation Validation Strategy
 
-- [ ] `POST /api/v1/bookings/{id}/cancel` updates status to Cancelled and releases slot (AC-1)
-- [ ] Cancellation dispatches `BookingCancelledEvent` for email notification (AC-1)
-- [ ] `POST /api/v1/bookings/{id}/reschedule` atomically releases old slot and reserves new slot (AC-2)
-- [ ] Reschedule dispatches `BookingRescheduledEvent` for updated confirmation (AC-2)
-- [ ] Patient requests within 24 hours return HTTP 403 with policy message (AC-3)
-- [ ] Staff override within 24 hours succeeds with mandatory reason (AC-4)
-- [ ] `AppointmentAuditEntry` created for every staff override with reason, actor, and state snapshot (AC-4)
-- [ ] Slot release failure triggers 3 retries with exponential backoff (edge case)
-- [ ] After retry exhaustion, critical log alert is raised for operations team (edge case)
+- [x] `POST /api/v1/bookings/{id}/cancel` updates status to Cancelled and releases slot (AC-1)
+- [x] Cancellation dispatches `BookingCancelledEvent` for email notification (AC-1)
+- [x] `POST /api/v1/bookings/{id}/reschedule` atomically releases old slot and reserves new slot (AC-2)
+- [x] Reschedule dispatches `BookingRescheduledEvent` for updated confirmation (AC-2)
+- [x] Patient requests within 24 hours return HTTP 403 with policy message (AC-3)
+- [x] Staff override within 24 hours succeeds with mandatory reason (AC-4)
+- [x] `AppointmentAuditEntry` created for every staff override with reason, actor, and state snapshot (AC-4)
+- [x] Slot release failure triggers 3 retries with exponential backoff (edge case)
+- [x] After retry exhaustion, critical log alert is raised for operations team (edge case)
 
 ## Implementation Checklist
 
-- [ ] Create cancel/reschedule DTOs and FluentValidation validators
-- [ ] Create `BookingCancelledEvent` and `BookingRescheduledEvent` domain events
-- [ ] Create `AppointmentAuditEntry` entity with override tracking fields
-- [ ] Add `CancelAsync` to `BookingService` with 24h gate, slot release, and event dispatch
-- [ ] Add `RescheduleAsync` to `BookingService` with atomic slot swap and concurrency handling
-- [ ] Add `ReleaseSlotWithRetryAsync` with Polly compensating retry and operations alert
-- [ ] Add cancel and reschedule endpoints to `BookingController` with role-based authorization
-- [ ] Add `AppointmentAuditEntry` DbSet with indexes on AppointmentId and PerformedAt
+- [x] Create cancel/reschedule DTOs and FluentValidation validators
+- [x] Create `BookingCancelledEvent` and `BookingRescheduledEvent` domain events
+- [x] Create `AppointmentAuditEntry` entity with override tracking fields
+- [x] Add `CancelAsync` to `BookingService` with 24h gate, slot release, and event dispatch
+- [x] Add `RescheduleAsync` to `BookingService` with atomic slot swap and concurrency handling
+- [x] Add `ReleaseSlotWithRetryAsync` with Polly compensating retry and operations alert
+- [x] Add cancel and reschedule endpoints to `BookingController` with role-based authorization
+- [x] Add `AppointmentAuditEntry` DbSet with indexes on AppointmentId and PerformedAt

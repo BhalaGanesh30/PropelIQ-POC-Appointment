@@ -1014,39 +1014,39 @@ ng test
 
 ## Implementation Validation Strategy
 
-- [ ] Filter bar renders date range pickers, duration dropdown, and type selector (SCR-004 Default)
-- [ ] Date range limited to 30 days max — inline error shown for exceeding range (AC-4)
-- [ ] Search results render under 1 second after API response with grouped day headings (AC-1)
-- [ ] Only future available slots are displayed — no past or fully booked slots visible (AC-2)
-- [ ] Skeleton loading cards appear during API fetch (SCR-004 Loading)
-- [ ] Empty state shows "No Slots Available" with illustration and "Join Waitlist" CTA (AC-3, SCR-004 Empty)
-- [ ] Error state shows retry banner for network failures (SCR-004 Error)
-- [ ] Selecting a slot highlights it with border emphasis (UXR-503)
-- [ ] Sticky footer appears with selection summary and "Continue to Intake" button (UXR-503, SCR-004 Validation)
-- [ ] "Continue to Intake" navigates to `/scheduling/intake?slotId=<id>`
-- [ ] "Join Waitlist" navigates to waitlist with current filter parameters
-- [ ] Desktop: side filter panel with grid results; mobile: stacked filters with vertical cards (UXR-301, UXR-303)
-- [ ] All slot cards keyboard-navigable with Enter/Space to select (UXR-202)
-- [ ] Slot cards have ARIA attributes: `role="option"`, `aria-selected`, descriptive `aria-label` (UXR-202)
-- [ ] Touch targets minimum 44x44px on mobile (UXR-304)
-- [ ] Color contrast meets WCAG 2.1 AA (UXR-201)
-- [ ] Focus indicators visible on all interactive elements
+- [x] Filter bar renders date range pickers, duration dropdown, and type selector (SCR-004 Default)
+- [x] Date range limited to 30 days max — inline error shown for exceeding range (AC-4)
+- [x] Search results render under 1 second after API response with grouped day headings (AC-1)
+- [x] Only future available slots are displayed — no past or fully booked slots visible (AC-2)
+- [x] Skeleton loading cards appear during API fetch (SCR-004 Loading)
+- [x] Empty state shows "No Slots Available" with illustration and "Join Waitlist" CTA (AC-3, SCR-004 Empty)
+- [x] Error state shows retry banner for network failures (SCR-004 Error)
+- [x] Selecting a slot highlights it with border emphasis (UXR-503)
+- [x] Sticky footer appears with selection summary and "Continue to Intake" button (UXR-503, SCR-004 Validation)
+- [x] "Continue to Intake" navigates to `/scheduling/intake?slotId=<id>`
+- [x] "Join Waitlist" navigates to waitlist with current filter parameters
+- [x] Desktop: side filter panel with grid results; mobile: stacked filters with vertical cards (UXR-301, UXR-303)
+- [x] All slot cards keyboard-navigable with Enter/Space to select (UXR-202)
+- [x] Slot cards have ARIA attributes: `role="option"`, `aria-selected`, descriptive `aria-label` (UXR-202)
+- [x] Touch targets minimum 44x44px on mobile (UXR-304)
+- [x] Color contrast meets WCAG 2.1 AA (UXR-201)
+- [x] Focus indicators visible on all interactive elements
 
 ## Implementation Checklist
 
-- [ ] Create TypeScript interfaces for `SlotSearchParams`, `SlotSearchResponse`, `SlotGroup`, `SlotDto`, `AppointmentType`
-- [ ] Create `SlotSearchApiService` with `searchSlots()` HTTP GET method
-- [ ] Create `SlotCardComponent` standalone with selection state, keyboard support, and ARIA attributes
-- [ ] Create `SlotSearchComponent` standalone with filter form, search state signal, and slot selection
-- [ ] Implement Default state: filter bar with date pickers, duration/type dropdowns, search button
-- [ ] Implement Loading state: progress bar and skeleton card grid
-- [ ] Implement Success state: day-grouped results grid with slot cards
-- [ ] Implement Empty state: illustration + "No Slots Available" + "Join Waitlist" CTA (AC-3)
-- [ ] Implement Error state: retry banner with "Retry" button
-- [ ] Implement Validation state: sticky selection footer with slot summary + "Continue to Intake" (UXR-503)
-- [ ] Add client-side 30-day date range validation with inline error message (AC-4)
-- [ ] Create scheduling feature routes with lazy-loaded slot search
-- [ ] Add scheduling route to app routes
-- [ ] Responsive layout: grid on desktop, stacked cards on mobile (UXR-301, UXR-303)
-- [ ] 44x44px minimum touch targets on mobile (UXR-304)
-- [ ] Keyboard navigation for all slot cards and form elements (UXR-202)
+- [x] Create TypeScript interfaces for `SlotSearchParams`, `SlotSearchResponse`, `SlotGroup`, `SlotDto`, `AppointmentType`
+- [x] Create `SlotSearchApiService` with `searchSlots()` HTTP GET method
+- [x] Create `SlotCardComponent` standalone with selection state, keyboard support, and ARIA attributes
+- [x] Create `SlotSearchComponent` standalone with filter form, search state signal, and slot selection
+- [x] Implement Default state: filter bar with date pickers, duration/type dropdowns, search button
+- [x] Implement Loading state: progress bar and skeleton card grid
+- [x] Implement Success state: day-grouped results grid with slot cards
+- [x] Implement Empty state: illustration + "No Slots Available" + "Join Waitlist" CTA (AC-3)
+- [x] Implement Error state: retry banner with "Retry" button
+- [x] Implement Validation state: sticky selection footer with slot summary + "Continue to Intake" (UXR-503)
+- [x] Add client-side 30-day date range validation with inline error message (AC-4)
+- [x] Create scheduling feature routes with lazy-loaded slot search
+- [x] Add scheduling route to app routes
+- [x] Responsive layout: grid on desktop, stacked cards on mobile (UXR-301, UXR-303)
+- [x] 44x44px minimum touch targets on mobile (UXR-304)
+- [x] Keyboard navigation for all slot cards and form elements (UXR-202)

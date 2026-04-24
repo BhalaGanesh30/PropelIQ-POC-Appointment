@@ -62,19 +62,30 @@ builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>()
 builder.Services.AddValidatorsFromAssemblyContaining<PropelIQ.Api.Validators.InviteStaffRequestValidator>();
 
 // ── Rate Limiting (auth endpoints) ───────────────────────────────────────────
-// OWASP A07 / AC-4: cap registration and OTP requests per IP to prevent abuse.
+// OWASP A07 / AC-4: cap auth requests per IP to prevent brute-force abuse.
+// Limits are read from configuration so Development appsettings can set high
+// values (e.g. 1000) to avoid blocking during local testing.
 builder.Services.AddRateLimiter(options =>
 {
+    var isDev = builder.Environment.IsDevelopment();
     options.AddFixedWindowLimiter("register-policy", opt =>
     {
-        opt.PermitLimit = 5;
+        opt.PermitLimit = isDev ? 1000 : 5;
         opt.Window = TimeSpan.FromMinutes(15);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0;
+    });
+    // OWASP A07: cap login attempts per IP — 10 per 5 minutes balances usability vs brute-force.
+    options.AddFixedWindowLimiter("login-policy", opt =>
+    {
+        opt.PermitLimit = isDev ? 1000 : 10;
+        opt.Window = TimeSpan.FromMinutes(5);
         opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
         opt.QueueLimit = 0;
     });
     options.AddFixedWindowLimiter("otp-policy", opt =>
     {
-        opt.PermitLimit = 3;
+        opt.PermitLimit = isDev ? 1000 : 3;
         opt.Window = TimeSpan.FromMinutes(5);
         opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
         opt.QueueLimit = 0;
@@ -82,7 +93,7 @@ builder.Services.AddRateLimiter(options =>
     // NFR-012: max 10 staff invitations per 15 minutes per Admin (us_016).
     options.AddFixedWindowLimiter("invite-policy", opt =>
     {
-        opt.PermitLimit = 10;
+        opt.PermitLimit = isDev ? 1000 : 10;
         opt.Window = TimeSpan.FromMinutes(15);
         opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
         opt.QueueLimit = 0;
@@ -90,7 +101,7 @@ builder.Services.AddRateLimiter(options =>
     // OWASP A07 / us_018 edge case: max 3 password-reset requests per 15 minutes.
     options.AddFixedWindowLimiter("password-reset-policy", opt =>
     {
-        opt.PermitLimit = 3;
+        opt.PermitLimit = isDev ? 1000 : 3;
         opt.Window = TimeSpan.FromMinutes(15);
         opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
         opt.QueueLimit = 0;

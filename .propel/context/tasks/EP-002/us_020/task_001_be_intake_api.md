@@ -682,26 +682,26 @@ curl -X POST "http://localhost:5000/api/v1/intake/submit" \
 
 ## Implementation Validation Strategy
 
-- [ ] `PUT /api/v1/intake/draft` persists partial form data as JSONB within 500 ms p95 (AC-2, NFR-002)
-- [ ] Response includes `savedAt` timestamp for "Saved" indicator (AC-2)
-- [ ] Upsert logic updates existing draft if patient+slot match exists, creates new otherwise
-- [ ] `GET /api/v1/intake/draft?slotId={id}` returns saved draft with form data and AI-populated field list (AC-3)
-- [ ] `GET /api/v1/intake/draft` without slotId returns patient's most recent unsubmitted draft (AC-3)
-- [ ] Returns 204 No Content when no draft exists
-- [ ] `POST /api/v1/intake/submit` validates required fields, transitions draft to Submitted, creates IntakeRecord (AC-4)
-- [ ] IntakeRecord is linked to Appointment by `AppointmentId` (AC-4)
-- [ ] Drafts are scoped to authenticated patient — cannot access another patient's draft
-- [ ] Expired drafts (>7 days) are marked as Expired by background cleanup service (edge case)
-- [ ] `FormData` stored as JSONB with index on `(PatientId, SlotId, Status)` for query performance
-- [ ] `IntakeRecord.AppointmentId` has unique index preventing duplicate submissions
+- [x] `PUT /api/v1/intake/draft` persists partial form data as JSONB within 500 ms p95 (AC-2, NFR-002)
+- [x] Response includes `savedAt` timestamp for "Saved" indicator (AC-2)
+- [x] Upsert logic updates existing draft if patient+slot match exists, creates new otherwise
+- [x] `GET /api/v1/intake/draft?slotId={id}` returns saved draft with form data and AI-populated field list (AC-3)
+- [x] `GET /api/v1/intake/draft` without slotId returns patient's most recent unsubmitted draft (AC-3)
+- [x] Returns 204 No Content when no draft exists
+- [x] `POST /api/v1/intake/submit` validates required fields, transitions draft to Submitted, creates IntakeRecord (AC-4)
+- [x] IntakeRecord is linked to Appointment by `AppointmentId` (AC-4)
+- [x] Drafts are scoped to authenticated patient — cannot access another patient's draft
+- [x] Expired drafts (>7 days) are marked as Expired by background cleanup service (edge case)
+- [x] `FormData` stored as JSONB with index on `(PatientId, SlotId, Status)` for query performance
+- [x] `IntakeRecord.AppointmentId` has unique index preventing duplicate submissions
 
 ## Implementation Checklist
 
-- [ ] Create `IntakeStatus` enum (Draft, Submitted, Expired)
-- [ ] Create `IntakeDraft` entity with JSONB `FormData`, `AiPopulatedFields`, 7-day `ExpiresAt`
-- [ ] Create `IntakeRecord` entity linked to `Appointment` by `AppointmentId`
-- [ ] Create request/response DTOs for save, retrieve, and submit operations
-- [ ] Create `IntakeDraftService` with save (upsert), retrieve (by patient+slot), and submit (validate+finalize) methods
-- [ ] Create `IntakeController` with `PUT /draft`, `GET /draft`, `POST /submit` endpoints scoped to authenticated patient
-- [ ] Create `IntakeDraftCleanupService` background worker expiring drafts older than 7 days
-- [ ] Add `IntakeDraft` and `IntakeRecord` DbSets with JSONB column config and composite indexes
+- [x] Create `IntakeStatus` enum (Draft, Submitted, Expired)
+- [x] Create `IntakeDraft` entity with JSONB `FormData`, `AiPopulatedFields`, 7-day `ExpiresAt`
+- [x] Create `IntakeRecord` entity linked to `Appointment` by `AppointmentId`
+- [x] Create request/response DTOs for save, retrieve, and submit operations
+- [x] Create `IntakeDraftService` with save (upsert), retrieve (by patient+slot), and submit (validate+finalize) methods
+- [x] Create `IntakeController` with `PUT /draft`, `GET /draft`, `POST /submit` endpoints scoped to authenticated patient
+- [x] Create `IntakeDraftCleanupService` background worker expiring drafts older than 7 days
+- [x] Add `IntakeDraft` and `IntakeRecord` DbSets with JSONB column config and composite indexes

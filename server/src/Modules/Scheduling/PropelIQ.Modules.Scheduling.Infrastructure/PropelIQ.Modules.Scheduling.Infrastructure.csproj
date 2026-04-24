@@ -3,11 +3,23 @@
   <ItemGroup>
     <ProjectReference Include="..\PropelIQ.Modules.Scheduling.Domain\PropelIQ.Modules.Scheduling.Domain.csproj" />
     <ProjectReference Include="..\PropelIQ.Modules.Scheduling.Application\PropelIQ.Modules.Scheduling.Application.csproj" />
+    <ProjectReference Include="..\..\SharedServices\PropelIQ.Modules.SharedServices.Infrastructure\PropelIQ.Modules.SharedServices.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\PropelIQ.SharedKernel\PropelIQ.SharedKernel.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="AI\Prompts\intake-assist.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.*" />
+    <PackageReference Include="Ical.Net" Version="4.*" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.6" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.*" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.*" />
+    <PackageReference Include="QRCoder" Version="1.*" />
+    <PackageReference Include="QuestPDF" Version="2024.*" />
   </ItemGroup>
 
   <PropertyGroup>

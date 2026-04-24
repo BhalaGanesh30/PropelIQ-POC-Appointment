@@ -1,0 +1,195 @@
+<div class="slot-search-page">
+
+  <!-- ── Page header ─────────────────────────────────────────────────────── -->
+  <header class="page-header">
+    <h1>Find an Appointment</h1>
+  </header>
+
+  <!-- ── Filter bar (SCR-004 Default state) ─────────────────────────────── -->
+  <section
+    class="filter-bar"
+    [formGroup]="filterForm"
+    role="search"
+    aria-label="Appointment slot search filters">
+
+    <mat-form-field appearance="outline">
+      <mat-label>Start Date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="startPicker"
+        formControlName="dateFrom"
+        [min]="minDate"
+        [max]="maxDate"
+        aria-required="true"
+        aria-describedby="date-range-error" />
+      <mat-datepicker-toggle matIconSuffix [for]="startPicker" />
+      <mat-datepicker #startPicker />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>End Date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="endPicker"
+        formControlName="dateTo"
+        [min]="filterForm.controls.dateFrom.value ?? minDate"
+        [max]="maxDate"
+        aria-required="true"
+        aria-describedby="date-range-error" />
+      <mat-datepicker-toggle matIconSuffix [for]="endPicker" />
+      <mat-datepicker #endPicker />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Duration</mat-label>
+      <mat-select formControlName="duration" aria-label="Appointment duration">
+        <mat-option [value]="null">Any</mat-option>
+        @for (d of durations; track d.value) {
+          <mat-option [value]="d.value">{{ d.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Type</mat-label>
+      <mat-select formControlName="type" aria-label="Appointment type">
+        <mat-option [value]="null">Any</mat-option>
+        @for (t of appointmentTypes; track t.value) {
+          <mat-option [value]="t.value">{{ t.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <button
+      mat-flat-button
+      color="primary"
+      class="search-btn"
+      (click)="onSearch()"
+      [disabled]="isLoading()"
+      aria-label="Search for available appointment slots">
+      <mat-icon>search</mat-icon>
+      Search
+    </button>
+
+  </section>
+
+  <!-- ── Date range validation error (AC-4) ─────────────────────────────── -->
+  @if (dateRangeError(); as error) {
+    <div
+      id="date-range-error"
+      class="validation-error"
+      role="alert"
+      aria-live="polite">
+      <mat-icon aria-hidden="true">error</mat-icon>
+      <span>{{ error }}</span>
+    </div>
+  }
+
+  <!-- ── Loading state — skeleton cards (SCR-004 Loading) ───────────────── -->
+  @if (searchState() === 'loading') {
+    <mat-progress-bar mode="indeterminate" aria-label="Searching for slots" />
+    <div
+      class="results-grid skeleton"
+      aria-busy="true"
+      aria-label="Loading available slots">
+      @for (n of [1, 2, 3, 4, 5, 6]; track n) {
+        <div class="skeleton-card" aria-hidden="true">
+          <div class="skeleton-line wide"></div>
+          <div class="skeleton-line medium"></div>
+          <div class="skeleton-line narrow"></div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ── Success state — grouped slot results (SCR-004 Success) ─────────── -->
+  @if (searchState() === 'success' && searchResult(); as result) {
+    <section
+      class="search-results"
+      role="listbox"
+      aria-label="Available appointment slots"
+      aria-multiselectable="false">
+
+      <p class="result-summary" aria-live="polite">
+        {{ result.totalAvailableSlots }}
+        slot{{ result.totalAvailableSlots !== 1 ? 's' : '' }} available
+      </p>
+
+      @for (day of result.days; track day.date) {
+        <div class="day-group">
+          <h2 class="day-heading">{{ day.date | date:'fullDate' }}</h2>
+          <div class="results-grid">
+            @for (slot of day.slots; track slot.id) {
+              <app-slot-card
+                [slot]="slot"
+                [isSelected]="selectedSlot()?.id === slot.id"
+                (slotSelected)="onSlotSelected($event)" />
+            }
+          </div>
+        </div>
+      }
+
+    </section>
+  }
+
+  <!-- ── Empty state (AC-3, SCR-004 Empty) ──────────────────────────────── -->
+  @if (searchState() === 'empty') {
+    <div class="empty-state" role="status" aria-live="polite">
+      <mat-icon class="empty-icon" aria-hidden="true">event_busy</mat-icon>
+      <h2>No Slots Available</h2>
+      <p>No appointment slots match your search criteria.</p>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="onJoinWaitlist()"
+        aria-label="Join the preferred-slot waitlist for these criteria">
+        <mat-icon>notification_add</mat-icon>
+        Join Waitlist
+      </button>
+    </div>
+  }
+
+  <!-- ── Error state — retry banner (SCR-004 Error, UXR-602) ───────────── -->
+  @if (searchState() === 'error') {
+    <div class="error-state" role="alert" aria-live="assertive">
+      <mat-icon aria-hidden="true">cloud_off</mat-icon>
+      <p>Unable to load available slots. Please try again.</p>
+      <button
+        mat-stroked-button
+        (click)="onRetry()"
+        aria-label="Retry slot search">
+        <mat-icon>refresh</mat-icon>
+        Retry
+      </button>
+    </div>
+  }
+
+  <!-- ── Selection footer — sticky CTA (UXR-503, SCR-004 Validation) ────── -->
+  @if (selectedSlot(); as slot) {
+    <div
+      class="selection-footer"
+      role="status"
+      aria-live="polite"
+      aria-label="Selected slot summary">
+      <div class="selection-summary">
+        <mat-icon aria-hidden="true">event_available</mat-icon>
+        <span>
+          {{ slot.startTime | date:'medium' }} —
+          {{ slot.durationMinutes }} min {{ slot.type }}
+          @if (slot.providerName) {
+            with {{ slot.providerName }}
+          }
+        </span>
+      </div>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="onContinueToIntake()"
+        aria-label="Continue to intake form with selected slot">
+        Continue to Intake
+        <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+      </button>
+    </div>
+  }
+
+</div>

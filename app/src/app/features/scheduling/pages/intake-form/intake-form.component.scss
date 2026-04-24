@@ -1,0 +1,251 @@
+.intake-form-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 24px 108px; // bottom clearance for sticky footer
+}
+
+// ── Progress bar ──────────────────────────────────────────────────────────────
+.progress-section {
+  margin-bottom: 16px;
+
+  .progress-label {
+    display: block;
+    text-align: right;
+    font-size: 0.75rem;
+    color: var(--mat-sys-on-surface-variant, #555);
+    margin-top: 4px;
+  }
+
+  mat-progress-bar.complete ::ng-deep .mdc-linear-progress__bar-inner {
+    border-color: var(--mat-sys-tertiary, #4caf50);
+  }
+}
+
+// ── Page header ───────────────────────────────────────────────────────────────
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--mat-sys-on-surface, #1a1a1a);
+  }
+}
+
+.ai-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+    color: var(--mat-sys-tertiary, #5c6bc0);
+  }
+}
+
+// ── Form sections ─────────────────────────────────────────────────────────────
+.form-section {
+  margin-bottom: 32px;
+  padding: 20px;
+  border-radius: 12px;
+  background: var(--mat-sys-surface, #fff);
+  border: 1px solid var(--mat-sys-outline-variant, #e0e0e0);
+
+  h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 16px;
+    color: var(--mat-sys-on-surface, #333);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .section-check {
+      color: var(--mat-sys-tertiary, #4caf50);
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  mat-form-field {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}
+
+// ── AI badge (UXR-405) ────────────────────────────────────────────────────────
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: var(--mat-sys-tertiary-container, #e8eaf6);
+  color: var(--mat-sys-on-tertiary-container, #1a237e);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.ai-filled {
+  background-color: var(--mat-sys-tertiary-container, #e8eaf6) !important;
+}
+
+// ── Error state ───────────────────────────────────────────────────────────────
+.error-state {
+  text-align: center;
+  padding: 48px 24px;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: var(--mat-sys-error, #dc2626);
+    margin-bottom: 16px;
+    display: block;
+    margin-inline: auto;
+  }
+
+  p {
+    color: var(--mat-sys-on-surface-variant, #555);
+    margin: 0 0 16px;
+  }
+}
+
+// ── Skeleton loading ──────────────────────────────────────────────────────────
+.skeleton-form {
+  .skeleton-section {
+    background: var(--mat-sys-surface, #fff);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    border: 1px solid var(--mat-sys-outline-variant, #e0e0e0);
+  }
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--mat-sys-surface-variant, #e0e0e0) 25%,
+    var(--mat-sys-surface-container, #eee) 50%,
+    var(--mat-sys-surface-variant, #e0e0e0) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  margin-bottom: 12px;
+
+  &.wide   { width: 60%; }
+  &.medium { width: 100%; height: 40px; }
+}
+
+@keyframes shimmer {
+  0%   { background-position:  200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ── Sticky footer ─────────────────────────────────────────────────────────────
+.sticky-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: var(--mat-sys-surface, #fff);
+  border-top: 1px solid var(--mat-sys-outline-variant, #e0e0e0);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+}
+
+.autosave-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant, #777);
+
+  .saved-icon {
+    color: var(--mat-sys-tertiary, #4caf50);
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.footer-actions {
+  display: flex;
+  gap: 12px;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    mat-spinner {
+      display: inline-block;
+    }
+  }
+}
+
+// ── Inline validation errors (UXR-205, UXR-601) ───────────────────────────────
+mat-error {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// ── Responsive (UXR-301) ──────────────────────────────────────────────────────
+@media (max-width: 767px) {
+  .intake-form-page {
+    padding: 16px 16px 120px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .form-section {
+    padding: 16px;
+  }
+
+  .sticky-footer {
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 16px;
+
+    .footer-actions {
+      width: 100%;
+
+      button {
+        flex: 1;
+      }
+    }
+  }
+}

@@ -2,6 +2,7 @@ import { ApplicationConfig } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withRouterConfig } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 
@@ -16,5 +17,7 @@ export const appConfig: ApplicationConfig = {
     // animations is rendered — reduces initial bundle size (NFR-001).
     provideAnimationsAsync(),
     provideHttpClient(withInterceptors([authInterceptor])),
+    // Required by MatDatepickerModule — provides the native JS Date adapter.
+    provideNativeDateAdapter(),
   ],
 };

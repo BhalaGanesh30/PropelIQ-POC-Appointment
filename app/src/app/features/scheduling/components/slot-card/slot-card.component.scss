@@ -1,0 +1,97 @@
+// =============================================================================
+// SlotCardComponent Styles
+// UXR-503: selected border emphasis
+// UXR-202: visible focus ring
+// UXR-304: min 44x44px touch target
+// Design tokens from styles.scss / designsystem.md
+// =============================================================================
+
+:host {
+  display: block;
+}
+
+.slot-card {
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  border: 2px solid transparent;
+  border-radius: 8px; // UXR-403
+  min-height: 44px;   // UXR-304
+
+  // UXR-202: visible focus indicator
+  &:focus-visible {
+    outline: 3px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
+
+  &:hover {
+    border-color: var(--color-neutral-400);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  // UXR-503: selection emphasis
+  &.selected {
+    border-color: var(--color-primary-500);
+    background-color: var(--color-primary-50);
+    box-shadow: 0 2px 12px rgba(25, 118, 210, 0.16);
+  }
+}
+
+// ── Time display ─────────────────────────────────────────────────────────────
+
+.slot-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin-bottom: 8px;
+
+  .time-separator {
+    color: var(--color-neutral-700);
+  }
+}
+
+// ── Metadata row ─────────────────────────────────────────────────────────────
+
+.slot-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.875rem;
+  color: var(--color-neutral-700);
+  margin-bottom: 4px;
+
+  .slot-duration,
+  .slot-type {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+  }
+}
+
+// ── Provider / location ───────────────────────────────────────────────────────
+
+.slot-provider,
+.slot-location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8125rem;
+  color: var(--color-neutral-700);
+  margin-top: 4px;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+  }
+}
