@@ -1033,11 +1033,11 @@ ng serve
 
 ## Implementation Checklist
 
-- [ ] Create appointment list, cancel/reschedule TypeScript interfaces
-- [ ] Create `AppointmentApiService` with list, cancel, and reschedule methods
-- [ ] Create `CancelDialogComponent` with UXR-111 confirmation pattern and optional override reason
-- [ ] Create `AppointmentHistoryComponent` with all 5 SCR-007 states (Default, Loading, Empty, Error, Validation)
-- [ ] Create template with desktop table and mobile card list views
-- [ ] Create SCSS with responsive breakpoints (375px, 768px, 1440px) and skeleton animation
-- [ ] Add lazy-loaded appointment history route to `app.routes.ts`
-- [ ] Verify `aria-label` on all buttons, tooltips, and form fields
+- [x] Create appointment list, cancel/reschedule TypeScript interfaces
+- [x] Create `AppointmentApiService` with list, cancel, and reschedule methods
+- [x] Create `CancelDialogComponent` with UXR-111 confirmation pattern and optional override reason
+- [x] Create `AppointmentHistoryComponent` with all 5 SCR-007 states (Default, Loading, Empty, Error, Validation)
+- [x] Create template with desktop table and mobile card list views
+- [x] Create SCSS with responsive breakpoints (375px, 768px, 1440px) and skeleton animation
+- [x] Add lazy-loaded appointment history route to `app.routes.ts`
+- [x] Verify `aria-label` on all buttons, tooltips, and form fields

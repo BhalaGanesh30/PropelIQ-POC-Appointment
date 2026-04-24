@@ -1,0 +1,291 @@
+// Appointment History — SCR-007
+// UXR-301: responsive breakpoints 375px / 768px / 1440px
+
+.history-container {
+  padding: 24px 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  h1 {
+    margin-bottom: 24px;
+  }
+}
+
+// ── Filter bar (SCR-007 Default) ─────────────────────────────────────────────
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--mat-sys-surface-container-low);
+  border-radius: 12px;
+}
+
+.filter-field {
+  flex: 1;
+  min-width: 160px;
+}
+
+// Clear + Export PDF grouped at the end of the filter bar
+.filter-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+
+  // UXR-304: minimum 44 × 44px touch target
+  button {
+    min-height: 44px;
+  }
+}
+
+// Export PDF button — slightly wider to fit icon + label
+.export-btn {
+  min-width: 120px;
+}
+
+// ── Skeleton loading (SCR-007 Loading) ───────────────────────────────────────
+.skeleton-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.skeleton-row {
+  height: 48px;
+  background: linear-gradient(
+    90deg,
+    var(--mat-sys-surface-variant) 25%,
+    var(--mat-sys-surface) 50%,
+    var(--mat-sys-surface-variant) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// ── Error banner (SCR-007 Error) ─────────────────────────────────────────────
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--mat-sys-error-container);
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+// ── Empty state (SCR-007 Empty) ──────────────────────────────────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 64px 16px;
+  text-align: center;
+
+  .empty-icon {
+    font-size: 64px;
+    height: 64px;
+    width: 64px;
+    color: var(--mat-sys-on-surface-variant);
+    margin-bottom: 16px;
+  }
+
+  p {
+    margin-bottom: 24px;
+  }
+}
+
+// ── Desktop table ────────────────────────────────────────────────────────────
+.table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 8px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 4px;
+  // UXR-304: ensure 44×44px minimum touch target per button
+  button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+// ── Status chip colours ──────────────────────────────────────────────────────
+.status-chip {
+  font-size: 12px;
+  font-weight: 500;
+  min-height: 24px;
+  padding: 0 8px;
+}
+
+.status-confirmed {
+  background: var(--mat-sys-tertiary-container) !important;
+  color: var(--mat-sys-on-tertiary-container) !important;
+}
+
+.status-cancelled {
+  background: var(--mat-sys-error-container) !important;
+  color: var(--mat-sys-on-error-container) !important;
+}
+
+.status-completed {
+  background: var(--mat-sys-surface-variant) !important;
+  color: var(--mat-sys-on-surface-variant) !important;
+}
+
+.status-noshow {
+  background: var(--mat-sys-outline-variant) !important;
+  color: var(--mat-sys-on-surface-variant) !important;
+}
+
+// ── Mobile card list ─────────────────────────────────────────────────────────
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.appointment-card {
+  mat-card-actions {
+    display: flex;
+    gap: 8px;
+    padding: 8px 16px 16px;
+    flex-wrap: wrap;
+
+    // UXR-304: 44px minimum touch target
+    button {
+      min-height: 44px;
+    }
+  }
+}
+
+.card-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  span:first-child {
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 14px;
+  }
+}
+
+// ── UXR-301: Responsive breakpoints ─────────────────────────────────────────
+
+// Default: desktop table visible, card list hidden
+.desktop-only {
+  display: block;
+}
+
+.mobile-only {
+  display: none;
+}
+
+// Mobile — 375 px
+@media (max-width: 599px) {
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-only {
+    display: block;
+  }
+
+  .history-container {
+    padding: 16px 12px;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .filter-field {
+    width: 100%;
+    min-width: unset;
+  }
+
+  // UXR-304: full-width touch targets on mobile
+  .filter-actions {
+    width: 100%;
+    flex-direction: column;
+
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  // UXR-304: paginator navigation buttons ≥ 44px
+  mat-paginator {
+    ::ng-deep .mat-mdc-paginator-container {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    ::ng-deep .mat-mdc-icon-button {
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
+}
+
+// Tablet — 768 px
+@media (min-width: 600px) and (max-width: 1023px) {
+  .history-container {
+    padding: 24px;
+  }
+}
+
+// Desktop — 1440 px
+@media (min-width: 1024px) {
+  .history-container {
+    padding: 32px;
+  }
+}
+
+// ── Calendar export button (US_024) ──────────────────────────────────────────
+
+// Desktop: calendar icon-button sits inline with reschedule/cancel in .action-buttons.
+// No extra positioning needed — inherits .action-buttons flex gap.
+
+// Mobile card: calendar button adopts the same min-height as other card actions
+// and spans full width at the 375px breakpoint.
+.calendar-btn {
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    margin-right: 4px;
+  }
+}
+
+@media (max-width: 599px) {
+  .calendar-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

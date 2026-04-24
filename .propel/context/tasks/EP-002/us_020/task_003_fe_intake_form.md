@@ -1300,31 +1300,31 @@ ng serve
 
 ## Implementation Validation Strategy
 
-- [ ] AI toggle in header switches between manual and AI-assisted modes (UXR-104)
-- [ ] In AI mode, free-text textarea appears with "Generate Suggestions" button (AC-1)
-- [ ] AI suggestions pre-populate form fields within 2.5 seconds of submission (AC-1)
-- [ ] AI-populated fields display labeled badge distinguishing them from manual entry (UXR-405)
-- [ ] AI failure reverts toggle to manual mode with snackbar notification (edge case)
-- [ ] Blur event on any field triggers autosave via debounced PUT /draft (AC-2)
-- [ ] "Saved" indicator with timestamp appears in sticky footer within 1 second (AC-2)
-- [ ] Autosave failure shows warning toast but does not block form usage (SCR-005 Error)
-- [ ] On page load, existing draft is restored from GET /draft?slotId (AC-3)
-- [ ] Four form sections: personal info, reason for visit, medical history, insurance (SCR-005)
-- [ ] Section completion checkmarks and green progress bar track completion (SCR-005 Validation)
-- [ ] Required fields show inline errors with error icon on touch+invalid (UXR-205, UXR-601)
-- [ ] Submit button shows loading spinner and disables during submission (UXR-501)
-- [ ] Successful submission navigates to confirmation page with appointmentId (AC-4)
-- [ ] Full keyboard navigation with visible focus indicators on all fields (UXR-202)
-- [ ] Color contrast meets WCAG 2.1 AA (UXR-201)
-- [ ] Responsive layout across 375px/768px/1440px breakpoints (UXR-301)
+- [x] AI toggle in header switches between manual and AI-assisted modes (UXR-104)
+- [x] In AI mode, free-text textarea appears with "Generate Suggestions" button (AC-1)
+- [x] AI suggestions pre-populate form fields within 2.5 seconds of submission (AC-1)
+- [x] AI-populated fields display labeled badge distinguishing them from manual entry (UXR-405)
+- [x] AI failure reverts toggle to manual mode with snackbar notification (edge case)
+- [x] Blur event on any field triggers autosave via debounced PUT /draft (AC-2)
+- [x] "Saved" indicator with timestamp appears in sticky footer within 1 second (AC-2)
+- [x] Autosave failure shows warning toast but does not block form usage (SCR-005 Error)
+- [x] On page load, existing draft is restored from GET /draft?slotId (AC-3)
+- [x] Four form sections: personal info, reason for visit, medical history, insurance (SCR-005)
+- [x] Section completion checkmarks and green progress bar track completion (SCR-005 Validation)
+- [x] Required fields show inline errors with error icon on touch+invalid (UXR-205, UXR-601)
+- [x] Submit button shows loading spinner and disables during submission (UXR-501)
+- [x] Successful submission navigates to confirmation page with appointmentId (AC-4)
+- [x] Full keyboard navigation with visible focus indicators on all fields (UXR-202)
+- [x] Color contrast meets WCAG 2.1 AA (UXR-201)
+- [x] Responsive layout across 375px/768px/1440px breakpoints (UXR-301)
 
 ## Implementation Checklist
 
-- [ ] Create TypeScript interfaces for all intake DTOs (draft, submit, AI-assist request/response)
-- [ ] Create `IntakeApiService` with `saveDraft()`, `getDraft()`, `submitIntake()`, `aiAssist()` methods
-- [ ] Create `AiAssistPanelComponent` with free-text textarea, processing spinner, and submit output
-- [ ] Create `IntakeFormComponent` with four reactive form sections and AI toggle signal
-- [ ] Implement autosave on blur with 500ms debounce and "Saved" indicator timestamp (AC-2)
-- [ ] Implement draft restore on page load from `GET /draft?slotId` (AC-3)
-- [ ] Implement AI-assist flow: toggle → free-text → API call → field population with AI badges (AC-1, UXR-405)
-- [ ] Implement submit with validation, loading spinner, double-submit prevention, and navigation (AC-4, UXR-501)
+- [x] Create TypeScript interfaces for all intake DTOs (draft, submit, AI-assist request/response)
+- [x] Create `IntakeApiService` with `saveDraft()`, `getDraft()`, `submitIntake()`, `aiAssist()` methods
+- [x] Create `AiAssistPanelComponent` with free-text textarea, processing spinner, and submit output
+- [x] Create `IntakeFormComponent` with four reactive form sections and AI toggle signal
+- [x] Implement autosave on blur with 500ms debounce and "Saved" indicator timestamp (AC-2)
+- [x] Implement draft restore on page load from `GET /draft?slotId` (AC-3)
+- [x] Implement AI-assist flow: toggle → free-text → API call → field population with AI badges (AC-1, UXR-405)
+- [x] Implement submit with validation, loading spinner, double-submit prevention, and navigation (AC-4, UXR-501)

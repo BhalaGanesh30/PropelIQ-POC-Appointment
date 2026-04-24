@@ -1,0 +1,45 @@
+<mat-card
+  class="slot-card"
+  [class.selected]="isSelected()"
+  (click)="onSelect()"
+  (keydown)="onKeyDown($event)"
+  role="option"
+  [attr.aria-selected]="isSelected()"
+  tabindex="0"
+  [attr.aria-label]="
+    slot().durationMinutes + ' minute ' + slot().type +
+    ' appointment at ' + (slot().startTime | date:'shortTime') +
+    (slot().providerName ? ' with ' + slot().providerName : '')
+  ">
+  <mat-card-content>
+
+    <div class="slot-time">
+      <span class="time-start">{{ slot().startTime | date:'shortTime' }}</span>
+      <span class="time-separator" aria-hidden="true">–</span>
+      <span class="time-end">{{ slot().endTime | date:'shortTime' }}</span>
+    </div>
+
+    <div class="slot-meta">
+      <span class="slot-duration">
+        <mat-icon aria-hidden="true">schedule</mat-icon>
+        {{ slot().durationMinutes }} min
+      </span>
+      <span class="slot-type">{{ slot().type }}</span>
+    </div>
+
+    @if (slot().providerName) {
+      <div class="slot-provider">
+        <mat-icon aria-hidden="true">person</mat-icon>
+        {{ slot().providerName }}
+      </div>
+    }
+
+    @if (slot().location) {
+      <div class="slot-location">
+        <mat-icon aria-hidden="true">location_on</mat-icon>
+        {{ slot().location }}
+      </div>
+    }
+
+  </mat-card-content>
+</mat-card>

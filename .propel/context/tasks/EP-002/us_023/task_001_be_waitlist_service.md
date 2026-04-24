@@ -963,11 +963,11 @@ curl -X GET "http://localhost:5000/api/v1/waitlist" \
 
 ## Implementation Checklist
 
-- [ ] Create `WaitlistEntry` entity with preferred slot parameters and offer tracking
-- [ ] Create `WaitlistStatus` enum (Active, Offered, Claimed, Expired, Cancelled)
-- [ ] Create `WaitlistService` with join, match, claim, and expire-rotate methods
-- [ ] Create `WaitlistMatchingWorker` consuming slot-released channel for 5-min matching SLA
-- [ ] Create `ClaimWindowExpiryWorker` with 1-min polling interval for 2-hour expiry
-- [ ] Create `WaitlistController` with POST join, GET entries, POST claim endpoints
-- [ ] Add `WaitlistEntry` DbSet with composite indexes for status+position and status+expiry
-- [ ] Reuse `BookingService.CreateBookingAsync` for atomic claim reservation
+- [x] Create `WaitlistEntry` entity with preferred slot parameters and offer tracking
+- [x] Create `WaitlistStatus` enum (Active, Offered, Claimed, Expired, Cancelled)
+- [x] Create `WaitlistService` with join, match, claim, and expire-rotate methods
+- [x] Create `WaitlistMatchingWorker` consuming slot-released channel for 5-min matching SLA
+- [x] Create `ClaimWindowExpiryWorker` with 1-min polling interval for 2-hour expiry
+- [x] Create `WaitlistController` with POST join, GET entries, POST claim endpoints
+- [x] Add `WaitlistEntry` DbSet with composite indexes for status+position and status+expiry
+- [x] Reuse `BookingService.CreateBookingAsync` for atomic claim reservation

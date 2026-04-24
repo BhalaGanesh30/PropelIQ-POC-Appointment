@@ -288,9 +288,9 @@ ng serve
 
 ## Implementation Checklist
 
-- [ ] Add `downloadCalendarEvent` method using existing `BookingApiService.downloadArtifact`
-- [ ] Add `canDownloadIcs` guard for Confirmed and Rescheduled status only
-- [ ] Add calendar icon-button to desktop mat-table action column
-- [ ] Add calendar stroked-button to mobile card actions
-- [ ] Add loading spinner and download-in-progress guard
-- [ ] Add responsive styles for calendar button at 3 breakpoints
+- [x] Add `downloadCalendarEvent` method using existing `BookingApiService.downloadArtifact`
+- [x] Add `canDownloadIcs` guard for Confirmed and Rescheduled status only
+- [x] Add calendar icon-button to desktop mat-table action column
+- [x] Add calendar stroked-button to mobile card actions
+- [x] Add loading spinner and download-in-progress guard
+- [x] Add responsive styles for calendar button at 3 breakpoints

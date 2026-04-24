@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiBaseUrl: 'http://localhost:5000/api/v1',
+  apiBaseUrl: 'https://localhost:44397/api/v1',
   features: {
     aiCodingSuggestions: true,
     clinicalExtraction: true,

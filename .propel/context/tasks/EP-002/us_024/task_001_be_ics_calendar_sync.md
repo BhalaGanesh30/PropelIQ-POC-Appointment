@@ -474,11 +474,11 @@ curl -X GET "http://localhost:5000/api/v1/bookings/<booking-id>/artifacts/ics" \
 
 ## Implementation Checklist
 
-- [ ] Add `SequenceNumber` property to `Appointment` entity with default 0
-- [ ] Create `IcsOptions` configuration class for PRODID, default timezone, organizer
-- [ ] Enhance `IcsGenerator` with TZID, PRODID, METHOD, SEQUENCE, and Organizer
-- [ ] Add `GenerateUpdateIcs` method with SEQUENCE increment for reschedule (AC-3)
-- [ ] Add `GenerateCancellationIcs` method with STATUS:CANCELLED and METHOD:CANCEL (AC-4)
-- [ ] Integrate updated ICS into `BookingRescheduledEventHandler` email delivery
-- [ ] Integrate cancellation ICS into `BookingCancelledEventHandler` email delivery
-- [ ] Add ICS generation failure retry with follow-up email delivery (edge case)
+- [x] Add `SequenceNumber` property to `Appointment` entity with default 0
+- [x] Create `IcsOptions` configuration class for PRODID, default timezone, organizer
+- [x] Enhance `IcsGenerator` with TZID, PRODID, METHOD, SEQUENCE, and Organizer
+- [x] Add `GenerateUpdateIcs` method with SEQUENCE increment for reschedule (AC-3)
+- [x] Add `GenerateCancellationIcs` method with STATUS:CANCELLED and METHOD:CANCEL (AC-4)
+- [x] Integrate updated ICS into `BookingRescheduledEventHandler` email delivery
+- [x] Integrate cancellation ICS into `BookingCancelledEventHandler` email delivery
+- [x] Add ICS generation failure retry with follow-up email delivery (edge case)

@@ -654,11 +654,11 @@ curl -X GET "http://localhost:5000/api/v1/appointments/history/export?status=Com
 
 ## Implementation Checklist
 
-- [ ] Create `AppointmentHistoryDto` with filter, item, and paginated response records
-- [ ] Create `HistoryFilterValidator` with status enum check and date range validation
-- [ ] Create `AppointmentHistoryRepository` with filtered query and async stream
-- [ ] Create `AppointmentHistoryPdfGenerator` with QuestPDF table layout
-- [ ] Create `AppointmentHistoryService` with pagination and PDF export orchestration
-- [ ] Create `AppointmentHistoryController` with GET history and GET export endpoints
-- [ ] Add composite index `(PatientId, AppointmentDate, Status)` to AppDbContext
-- [ ] Register services in DependencyInjection.cs
+- [x] Create `AppointmentHistoryDto` with filter, item, and paginated response records
+- [x] Create `HistoryFilterValidator` with status enum check and date range validation
+- [x] Create `AppointmentHistoryRepository` with filtered query and async stream
+- [x] Create `AppointmentHistoryPdfGenerator` with QuestPDF table layout
+- [x] Create `AppointmentHistoryService` with pagination and PDF export orchestration
+- [x] Create `AppointmentHistoryController` with GET history and GET export endpoints
+- [x] Add composite index `(PatientId, ScheduledAt DESC, Status)` to AppointmentConfiguration
+- [x] Register services in SchedulingServiceRegistration.cs

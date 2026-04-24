@@ -610,24 +610,24 @@ curl -X POST "http://localhost:5000/api/v1/bookings" \
 
 ## Implementation Validation Strategy
 
-- [ ] `POST /api/v1/bookings` atomically reserves slot and creates Appointment record (AC-1)
-- [ ] Booking completes within 500 ms p95 (NFR-002)
-- [ ] Unique 8-character confirmation code is generated per booking
-- [ ] `AppointmentSlot.CurrentBookings` is incremented within the same transaction as Appointment creation
-- [ ] `DbUpdateConcurrencyException` is caught and returns HTTP 409 with next available slot (AC-4)
-- [ ] `Appointment.SlotId` has unique index preventing double-booking at DB level
-- [ ] `BookingConfirmedEvent` is dispatched for async artifact generation after successful booking
-- [ ] Booking persists even if event dispatch fails (edge case: email failure)
-- [ ] Endpoint requires JWT bearer authentication
-- [ ] Patient ID is extracted from JWT claims — cannot book for another patient
+- [x] `POST /api/v1/bookings` atomically reserves slot and creates Appointment record (AC-1)
+- [x] Booking completes within 500 ms p95 (NFR-002)
+- [x] Unique 8-character confirmation code is generated per booking
+- [x] `AppointmentSlot.CurrentBookings` is incremented within the same transaction as Appointment creation
+- [x] `DbUpdateConcurrencyException` is caught and returns HTTP 409 with next available slot (AC-4)
+- [x] `Appointment.SlotId` has unique index preventing double-booking at DB level
+- [x] `BookingConfirmedEvent` is dispatched for async artifact generation after successful booking
+- [x] Booking persists even if event dispatch fails (edge case: email failure)
+- [x] Endpoint requires JWT bearer authentication
+- [x] Patient ID is extracted from JWT claims — cannot book for another patient
 
 ## Implementation Checklist
 
-- [ ] Create `AppointmentStatus` enum (Confirmed, Cancelled, Completed, NoShow)
-- [ ] Create `Appointment` entity with slot, patient, intake references and confirmation code
-- [ ] Create `BookingConfirmedEvent` domain event for async artifact/notification processing
-- [ ] Create `BookingService` with atomic reservation, `DbUpdateConcurrencyException` handling, and next-slot suggestion
-- [ ] Create `BookingController` with `POST /api/v1/bookings` returning 201 or 409
-- [ ] Create `BookingRepository` with transactional slot increment and appointment persist
-- [ ] Add `Appointment` DbSet with unique indexes on `SlotId` and `ConfirmationCode`
-- [ ] Generate cryptographically random 8-character confirmation codes
+- [x] Create `AppointmentStatus` enum (Confirmed, Cancelled, Completed, NoShow)
+- [x] Create `Appointment` entity with slot, patient, intake references and confirmation code
+- [x] Create `BookingConfirmedEvent` domain event for async artifact/notification processing
+- [x] Create `BookingService` with atomic reservation, `DbUpdateConcurrencyException` handling, and next-slot suggestion
+- [x] Create `BookingController` with `POST /api/v1/bookings` returning 201 or 409
+- [x] Create `BookingRepository` with transactional slot increment and appointment persist
+- [x] Add `Appointment` DbSet with unique indexes on `SlotId` and `ConfirmationCode`
+- [x] Generate cryptographically random 8-character confirmation codes

@@ -1,0 +1,274 @@
+// ── SCR-008 Waitlist View ────────────────────────────────────────────────────
+// UXR-301: 375px / 768px / 1440px breakpoints
+// UXR-112: urgency colours handled in countdown-timer.component.ts
+
+.waitlist-page {
+  padding: 24px 16px;
+  max-width: 960px;
+  margin: 0 auto;
+
+  @media (min-width: 768px) {
+    padding: 32px 24px;
+  }
+
+  @media (min-width: 1440px) {
+    padding: 40px 32px;
+  }
+}
+
+// ── Page header ──────────────────────────────────────────────────────────────
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 28px;
+
+  .page-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface, #1c1b1f);
+
+    @media (min-width: 768px) {
+      font-size: 28px;
+    }
+  }
+}
+
+// ── Section headings ─────────────────────────────────────────────────────────
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface, #1c1b1f);
+  margin: 24px 0 12px;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &.expired-heading {
+    color: var(--mat-sys-outline, #79747e);
+  }
+}
+
+// ── Entry list ───────────────────────────────────────────────────────────────
+
+.entry-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// ── Entry cards ──────────────────────────────────────────────────────────────
+
+.entry-card {
+  border-radius: 12px;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  mat-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+  }
+}
+
+.offered-card {
+  border: 2px solid var(--mat-sys-tertiary-container, #e8def8);
+  background: var(--mat-sys-surface-container-low, #f7f2fa);
+}
+
+.expired-card {
+  opacity: 0.75;
+  background: var(--mat-sys-surface-container, #f3edf7);
+}
+
+// ── Card content layout ───────────────────────────────────────────────────────
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.card-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.appointment-type {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface, #1c1b1f);
+
+  &.muted {
+    color: var(--mat-sys-outline, #79747e);
+  }
+}
+
+.card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant, #49454f);
+
+  &.muted {
+    color: var(--mat-sys-outline, #79747e);
+  }
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.detail-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+}
+
+.countdown-row {
+  display: flex;
+  align-items: center;
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.expired-chip {
+  background: var(--mat-sys-surface-container, #ece6f0) !important;
+  color: var(--mat-sys-outline, #79747e) !important;
+}
+
+// ── Error banner ──────────────────────────────────────────────────────────────
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #ffebee;
+  color: #c62828;
+  border-radius: 8px;
+  font-size: 14px;
+
+  button {
+    margin-left: auto;
+  }
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 48px 24px;
+
+  .empty-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: var(--mat-sys-outline, #79747e);
+  }
+
+  .empty-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface, #1c1b1f);
+  }
+
+  .empty-subtitle {
+    margin: 0;
+    font-size: 14px;
+    color: var(--mat-sys-on-surface-variant, #49454f);
+    max-width: 380px;
+  }
+}
+
+// ── Skeleton loading cards ────────────────────────────────────────────────────
+
+.skeleton-card {
+  pointer-events: none;
+
+  mat-card-content {
+    gap: 16px;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #e0e0e0 25%,
+    #eeeeee 50%,
+    #e0e0e0 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 4px;
+}
+
+.skeleton-title {
+  height: 20px;
+  width: 55%;
+}
+
+.skeleton-line {
+  height: 14px;
+  width: 85%;
+
+  &.short {
+    width: 60%;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// ── Mobile card adjustments (375px) ───────────────────────────────────────────
+
+@media (max-width: 599px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card-actions {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}

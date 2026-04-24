@@ -706,11 +706,11 @@ curl -X GET "http://localhost:5000/api/v1/bookings/<appointment-guid>/artifacts/
 
 ## Implementation Checklist
 
-- [ ] Add artifact storage path fields to `Appointment` entity
-- [ ] Create `PdfGenerator` with QuestPDF producing appointment summary PDF
-- [ ] Create `QrCodeGenerator` encoding appointment ID and confirmation code
-- [ ] Create `IcsGenerator` with Ical.Net producing calendar event with alarm
-- [ ] Create `ConfirmationArtifactService` orchestrating generation with per-artifact error isolation
-- [ ] Create `ConfirmationEmailService` with Polly 3-retry exponential backoff
-- [ ] Create `BookingConfirmedEventHandler` background worker consuming event channel
-- [ ] Add artifact download endpoint `GET /api/v1/bookings/{id}/artifacts/{type}`
+- [x] Add artifact storage path fields to `Appointment` entity
+- [x] Create `PdfGenerator` with QuestPDF producing appointment summary PDF
+- [x] Create `QrCodeGenerator` encoding appointment ID and confirmation code
+- [x] Create `IcsGenerator` with Ical.Net producing calendar event with alarm
+- [x] Create `ConfirmationArtifactService` orchestrating generation with per-artifact error isolation
+- [x] Create `ConfirmationEmailService` with Polly 3-retry exponential backoff
+- [x] Create `BookingConfirmedEventHandler` background worker consuming event channel
+- [x] Add artifact download endpoint `GET /api/v1/bookings/{id}/artifacts/{type}`

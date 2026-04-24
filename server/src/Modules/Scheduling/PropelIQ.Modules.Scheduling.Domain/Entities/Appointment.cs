@@ -1,17 +1,89 @@
+using PropelIQ.Modules.Scheduling.Domain.Enums;
 using PropelIQ.SharedKernel;
 
 namespace PropelIQ.Modules.Scheduling.Domain.Entities;
 
+/// <summary>
+/// Booking record created when a patient confirms a slot reservation.
+/// Extends the base Appointment with atomic slot reference, intake linkage,
+/// and a cryptographically-generated confirmation code.
+///
+/// AC-1: AtomicReservation — SlotId FK + RowVersion on AppointmentSlot ensure
+///       exactly-once booking even under concurrent requests.
+/// AC-4: DbUpdateConcurrencyException signals a race; the slot's RowVersion
+///       mismatch causes the second booking to receive HTTP 409.
+/// NFR-010: CreatedAt / UpdatedAt inherited from BaseEntity for audit.
+/// </summary>
 public sealed class Appointment : BaseEntity
 {
     public required Guid PatientId { get; set; }
-    public required Guid StaffUserId { get; set; }
+
+    /// <summary>
+    /// Nullable — populated from the slot's ProviderId when known;
+    /// may be assigned later for walk-in or external referrals.
+    /// </summary>
+    public Guid? StaffUserId { get; set; }
+
     public required DateTimeOffset ScheduledAt { get; set; }
     public required int DurationMinutes { get; set; }
     public required string AppointmentType { get; set; }
-    public string Status { get; set; } = "Scheduled";
+
+    /// <summary>
+    /// Lifecycle status stored as a string for readability in the DB.
+    /// Use <see cref="AppointmentStatus"/> enum values via <c>.ToString()</c>.
+    /// </summary>
+    public string Status { get; set; } = AppointmentStatus.Confirmed.ToString();
+
     public string QueueState { get; set; } = "NotQueued";
+
+    // ── Booking-specific fields ───────────────────────────────────────────────
+
+    /// <summary>Slot that was atomically reserved for this appointment (AC-1).</summary>
+    public Guid? SlotId { get; set; }
+
+    /// <summary>Finalized intake record attached at booking time (US_020).</summary>
+    public Guid? IntakeRecordId { get; set; }
+
+    /// <summary>Cryptographically random 8-character alphanumeric code (DR-002).</summary>
+    public string? ConfirmationCode { get; set; }
+
+    /// <summary>True once the PDF / QR / ICS artifacts have been generated (task_002).</summary>
+    public bool ArtifactsGenerated { get; set; } = false;
+
+    /// <summary>Storage path of the generated PDF confirmation (task_002).</summary>
+    public string? PdfStoragePath { get; set; }
+
+    /// <summary>Storage path of the generated QR code PNG (task_002).</summary>
+    public string? QrCodeStoragePath { get; set; }
+
+    /// <summary>Storage path of the generated ICS calendar file (task_002).</summary>
+    public string? IcsStoragePath { get; set; }
+
+    /// <summary>
+    /// RFC 5545 SEQUENCE counter — incremented on each reschedule so calendar clients
+    /// recognise updates rather than creating duplicate events (AC-3, US_024 task_001).
+    /// </summary>
+    public int SequenceNumber { get; set; } = 0;
+
+    /// <summary>UTC timestamp when all artifacts were successfully generated.</summary>
+    public DateTimeOffset? ArtifactsGeneratedAt { get; set; }
+
+    /// <summary>True once the confirmation email with artifacts has been sent (AC-2).</summary>
+    public bool EmailSent { get; set; } = false;
+
+    /// <summary>Number of email delivery attempts (retried up to 3 times — edge case).</summary>
+    public int EmailRetryCount { get; set; } = 0;
+
+    /// <summary>UTC timestamp when the booking was committed.</summary>
+    public DateTimeOffset BookedAt { get; set; } = DateTimeOffset.UtcNow;
+
+    /// <summary>Denormalized provider name from the slot for display without a join.</summary>
+    public string? ProviderName { get; set; }
+
+    /// <summary>Denormalized location from the slot for display without a join.</summary>
+    public string? Location { get; set; }
 
     public WaitlistEntry? WaitlistEntry { get; set; }
     public ICollection<ReminderEvent> ReminderEvents { get; set; } = [];
 }
+

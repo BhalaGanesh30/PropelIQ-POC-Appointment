@@ -1,0 +1,295 @@
+// =============================================================================
+// SlotSearchComponent Styles — SCR-004
+// UXR-301: responsive at 375px / 768px / 1440px
+// UXR-303: grid on desktop, vertical cards on mobile
+// UXR-304: 44×44px touch targets
+// UXR-503: sticky selection footer
+// Design tokens from styles.scss / designsystem.md
+// =============================================================================
+
+:host {
+  display: block;
+}
+
+// ── Page wrapper ──────────────────────────────────────────────────────────────
+
+.slot-search-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  // Leave space at bottom for sticky selection footer
+  padding-bottom: 100px;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+.page-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 24px;
+  color: var(--color-neutral-900);
+}
+
+// ── Filter bar ────────────────────────────────────────────────────────────────
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: var(--color-neutral-50);
+  border-radius: 12px;
+  margin-bottom: 24px;
+
+  mat-form-field {
+    flex: 1 1 180px;
+    min-width: 160px;
+  }
+
+  .search-btn {
+    height: 56px;       // Matches mat-form-field height
+    min-width: 120px;
+    min-height: 44px;   // UXR-304
+    flex: 0 0 auto;
+    align-self: flex-start;
+    margin-top: 4px;    // Visual alignment with form fields
+  }
+}
+
+// ── Validation error (AC-4) ───────────────────────────────────────────────────
+
+.validation-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: rgba(244, 67, 54, 0.08); // semantic.error light tint
+  color: #c62828;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: var(--color-error);
+  }
+}
+
+// ── Results grid ──────────────────────────────────────────────────────────────
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.result-summary {
+  font-size: 0.875rem;
+  color: var(--color-neutral-700);
+  margin: 0 0 16px;
+}
+
+// ── Day groups ────────────────────────────────────────────────────────────────
+
+.day-group {
+  margin-bottom: 28px;
+}
+
+.day-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+// ── Skeleton loading cards ────────────────────────────────────────────────────
+
+.skeleton .skeleton-card {
+  background: var(--color-bg-surface);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid var(--color-neutral-200);
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200) 25%,
+    var(--color-neutral-100) 50%,
+    var(--color-neutral-200) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+
+  &.wide   { width: 80%; }
+  &.medium { width: 60%; }
+  &.narrow { width: 40%; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ── Empty state (AC-3) ────────────────────────────────────────────────────────
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px;
+
+  .empty-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: var(--color-neutral-400);
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-neutral-900);
+    margin: 0 0 8px;
+  }
+
+  p {
+    color: var(--color-neutral-700);
+    margin: 0 0 24px;
+  }
+
+  button {
+    min-height: 44px; // UXR-304
+  }
+}
+
+// ── Error state (UXR-602) ─────────────────────────────────────────────────────
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: var(--color-error);
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: var(--color-neutral-700);
+    margin: 0 0 16px;
+  }
+
+  button {
+    min-height: 44px; // UXR-304
+  }
+}
+
+// ── Selection footer (UXR-503) ────────────────────────────────────────────────
+
+.selection-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  background: var(--color-bg-surface);
+  border-top: 1px solid var(--color-neutral-200);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+
+  button {
+    min-height: 44px; // UXR-304
+    white-space: nowrap;
+  }
+}
+
+.selection-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: var(--color-neutral-900);
+  min-width: 0;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  mat-icon {
+    color: var(--color-primary-500);
+    flex-shrink: 0;
+  }
+}
+
+// ── Responsive: mobile (UXR-301, UXR-303) ────────────────────────────────────
+
+@media (max-width: 767px) {
+  .slot-search-page {
+    padding: 16px;
+    padding-bottom: 120px;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+
+    mat-form-field {
+      flex: 1 1 100%;
+      min-width: 0;
+    }
+
+    .search-btn {
+      width: 100%;
+      margin-top: 0;
+    }
+  }
+
+  // UXR-303: single column on mobile
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .selection-footer {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+// ── Responsive: tablet ────────────────────────────────────────────────────────
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .results-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .filter-bar mat-form-field {
+    flex: 1 1 200px;
+  }
+}

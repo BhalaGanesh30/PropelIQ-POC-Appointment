@@ -326,7 +326,7 @@ public sealed class AuthController : BaseApiController
     /// </summary>
     [AllowAnonymous]
     [HttpPost("login")]
-    [EnableRateLimiting("register-policy")]
+    [EnableRateLimiting("login-policy")]
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login(
@@ -354,12 +354,43 @@ public sealed class AuthController : BaseApiController
             });
         }
 
+        // DEV SHORTCUT: auto-confirm email so local testing is not blocked by the
+        // email confirmation step when no real mail provider is configured.
+        var env = HttpContext.RequestServices.GetRequiredService<IHostEnvironment>();
+        if (env.IsDevelopment() && !user.EmailConfirmed)
+        {
+            var confirmToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            await _userManager.ConfirmEmailAsync(user, confirmToken);
+            _logger.LogWarning(
+                "[DEV] Auto-confirmed email for {Email} to allow login without real email provider.",
+                user.Email);
+        }
+
         // CheckPasswordSignInAsync increments lockout counter and respects RequireConfirmedEmail.
         var result = await _signInManager.CheckPasswordSignInAsync(
             user, request.Password, lockoutOnFailure: true);
 
         if (!result.Succeeded)
         {
+            // Email not confirmed (production path — dev auto-confirms above).
+            if (result.IsNotAllowed)
+            {
+                await WriteAuditAsync(
+                    eventType: "auth.login_failed",
+                    actorUserId: user.Id,
+                    targetEntityId: user.Id,
+                    targetEntityType: nameof(ApplicationUser),
+                    description: "Login failed — email not confirmed.",
+                    ct);
+
+                return Unauthorized(new ProblemDetails
+                {
+                    Title = "Email not confirmed",
+                    Detail = "Please confirm your email address before logging in. Check your inbox for the confirmation link.",
+                    Status = StatusCodes.Status401Unauthorized
+                });
+            }
+
             var detail = result.IsLockedOut
                 ? "Account locked out after too many failed attempts"
                 : "Invalid credentials";

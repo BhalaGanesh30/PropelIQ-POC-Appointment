@@ -1,0 +1,35 @@
+.ai-assist-panel {
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--mat-sys-tertiary-container, #e8eaf6);
+  border: 1px solid var(--mat-sys-outline-variant, #c5cae9);
+  margin-bottom: 24px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-weight: 500;
+  color: var(--mat-sys-on-tertiary-container, #1a237e);
+
+  .ai-icon {
+    color: var(--mat-sys-tertiary, #5c6bc0);
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+
+  mat-spinner {
+    display: inline-block;
+  }
+}

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Npgsql;
 using PropelIQ.DbMigrator;
 using PropelIQ.Modules.SharedServices.Infrastructure.Data;
+using PropelIQ.Modules.SharedServices.Infrastructure.Identity;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PropelIQ.DbMigrator
@@ -108,6 +109,39 @@ var applied = (await dbContext.Database.GetAppliedMigrationsAsync()).ToList();
 log.LogInformation("Applied migrations total: {Count}", applied.Count);
 foreach (var m in applied) log.LogInformation("  ✓ {Migration}", m);
 
+// ── AuthDbContext migrations (auth schema — ASP.NET Core Identity) ───────────
+var authServices = new ServiceCollection();
+
+authServices.AddDbContext<AuthDbContext>(options =>
+    options.UseNpgsql(
+        connectionString,
+        npgsql => npgsql.MigrationsHistoryTable("__auth_migrations_history", "auth"))
+    .UseSnakeCaseNamingConvention()
+    .UseLoggerFactory(loggerFactory));
+
+await using var authServiceProvider = authServices.BuildServiceProvider();
+await using var authScope = authServiceProvider.CreateAsyncScope();
+var authDbContext = authScope.ServiceProvider.GetRequiredService<AuthDbContext>();
+
+var pendingAuth = (await authDbContext.Database.GetPendingMigrationsAsync()).ToList();
+if (pendingAuth.Count == 0)
+{
+    log.LogInformation("[Auth] No pending migrations. Auth schema is up to date.");
+}
+else
+{
+    log.LogInformation("[Auth] Applying {Count} pending migration(s):", pendingAuth.Count);
+    foreach (var m in pendingAuth) log.LogInformation("  → {Migration}", m);
+
+    await authDbContext.Database.MigrateAsync();
+
+    log.LogInformation("[Auth] All migrations applied successfully.");
+}
+
+var appliedAuth = (await authDbContext.Database.GetAppliedMigrationsAsync()).ToList();
+log.LogInformation("[Auth] Applied migrations total: {Count}", appliedAuth.Count);
+foreach (var m in appliedAuth) log.LogInformation("  ✓ {Migration}", m);
+
 log.LogInformation("PropelIQ DbMigrator complete.");
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -120,10 +154,11 @@ static async Task EnsurePrerequisitesAsync(string connectionString, ILogger log)
     await conn.OpenAsync();
 
     // ── Schemas ───────────────────────────────────────────────────────────────
-    log.LogInformation("Ensuring schemas: app, audit, compliance…");
+    log.LogInformation("Ensuring schemas: app, audit, auth, compliance…");
     await ExecAsync(conn, """
         CREATE SCHEMA IF NOT EXISTS app;
         CREATE SCHEMA IF NOT EXISTS audit;
+        CREATE SCHEMA IF NOT EXISTS auth;
         CREATE SCHEMA IF NOT EXISTS compliance;
         """);
 

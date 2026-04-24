@@ -996,11 +996,11 @@ ng serve
 
 ## Implementation Checklist
 
-- [ ] Create waitlist entry, join request, claim response TypeScript interfaces
-- [ ] Create `WaitlistApiService` with join, getEntries, claim, cancel methods
-- [ ] Create `CountdownTimerComponent` with 1-second interval, urgency color computation, and aria-live
-- [ ] Create `JoinWaitlistDialogComponent` for preferred slot parameter capture
-- [ ] Create `WaitlistViewComponent` with all 5 SCR-008 states and 30s auto-refresh
-- [ ] Create template with card list, countdown timers, claim buttons, and expired labels
-- [ ] Create SCSS with urgency colors, card emphasis, skeleton loading, responsive breakpoints
-- [ ] Add lazy-loaded waitlist route to `app.routes.ts` with auth guard
+- [x] Create waitlist entry, join request, claim response TypeScript interfaces
+- [x] Create `WaitlistApiService` with join, getEntries, claim, cancel methods
+- [x] Create `CountdownTimerComponent` with 1-second interval, urgency color computation, and aria-live
+- [x] Create `JoinWaitlistDialogComponent` for preferred slot parameter capture
+- [x] Create `WaitlistViewComponent` with all 5 SCR-008 states and 30s auto-refresh
+- [x] Create template with card list, countdown timers, claim buttons, and expired labels
+- [x] Create SCSS with urgency colors, card emphasis, skeleton loading, responsive breakpoints
+- [x] Add lazy-loaded waitlist route to `app.routes.ts` with auth guard
