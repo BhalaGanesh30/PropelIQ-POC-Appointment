@@ -161,6 +161,37 @@ public sealed class BookingRepository : IBookingRepository
             .Select(p => p.Id)
             .FirstOrDefaultAsync(ct);
 
-        return id == Guid.Empty ? null : id;
+        if (id != Guid.Empty) return id;
+
+        // No patient yet — auto-provision a minimal record from the domain user projection.
+        var domainUser = await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == userId, ct);
+
+        if (domainUser is null) return null;
+
+        var mrn = $"AUTO-{userId.ToString("N")[..8].ToUpperInvariant()}";
+
+        // Guard against a race condition where two concurrent requests both reach here.
+        var mrnExists = await _context.Patients.AnyAsync(p => p.MRN == mrn, ct);
+        if (mrnExists)
+        {
+            return await _context.Patients
+                .Where(p => p.UserId == userId)
+                .Select(p => (Guid?)p.Id)
+                .FirstOrDefaultAsync(ct);
+        }
+
+        var patient = new PropelIQ.Modules.Administration.Domain.Entities.Patient
+        {
+            UserId      = userId,
+            FirstName   = domainUser.FirstName ?? "Unknown",
+            LastName    = domainUser.LastName  ?? "Unknown",
+            DateOfBirth = new DateOnly(1900, 1, 1), // Placeholder — updated when intake form is submitted.
+            MRN         = mrn,
+        };
+
+        _context.Patients.Add(patient);
+        await _context.SaveChangesAsync(ct);
+        return patient.Id;
     }
 }

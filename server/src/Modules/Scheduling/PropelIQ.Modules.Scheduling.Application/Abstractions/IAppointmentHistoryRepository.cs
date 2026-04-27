@@ -17,12 +17,12 @@ namespace PropelIQ.Modules.Scheduling.Application.Abstractions;
 public interface IAppointmentHistoryRepository
 {
     /// <summary>
-    /// Returns a paginated, filtered list of appointments for the given patient
-    /// together with the total count for pagination controls.
+    /// Returns a paginated, filtered list of appointments for the given user.
+    /// Resolves the auth user ID to the corresponding patient record internally.
     /// Results are sorted by <c>ScheduledAt</c> descending (AC-1).
     /// </summary>
     Task<(List<Appointment> Items, int TotalCount)> GetFilteredAsync(
-        Guid patientId,
+        Guid userId,
         AppointmentHistoryFilter filter,
         CancellationToken ct);
 
@@ -32,7 +32,7 @@ public interface IAppointmentHistoryRepository
     /// stays within the 5-second PDF generation budget even for large datasets.
     /// </summary>
     IAsyncEnumerable<Appointment> StreamFilteredAsync(
-        Guid patientId,
+        Guid userId,
         AppointmentHistoryFilter filter,
         CancellationToken ct);
 }
