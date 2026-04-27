@@ -1,353 +1,430 @@
-<div class="register-container" role="main" aria-label="Patient Registration">
+﻿<div class="auth-shell" role="main" aria-label="Patient Registration">
+  <div class="auth-card">
 
-  <!-- ── Branded header ─────────────────────────────────────────────────── -->
-  <header class="register-header">
-    <span class="brand-mark" aria-hidden="true">IQ</span>
-    <h1 id="register-heading">Create Your Account</h1>
-  </header>
-
-  <!-- ── Registration complete ─────────────────────────────────────────── -->
-  @if (registrationComplete()) {
-    <section class="complete-panel" role="status" aria-live="polite">
-      <mat-icon class="complete-icon" aria-hidden="true">check_circle</mat-icon>
-      <h2>You're all set!</h2>
-      <p>Your account has been verified. You can now log in.</p>
-      <a mat-raised-button color="primary" routerLink="/login"
-         class="submit-btn">
-        Go to Login
-      </a>
-    </section>
-  } @else {
-
-  <!-- ── 3-step stepper ────────────────────────────────────────────────── -->
-  <mat-stepper
-    [linear]="true"
-    [selectedIndex]="currentStep()"
-    aria-label="Registration steps"
-    class="register-stepper">
-
-    <!-- ══ Step 1 — Contact ═══════════════════════════════════════════════ -->
-    <mat-step [stepControl]="contactForm" label="Contact">
-      <form [formGroup]="contactForm"
-            (ngSubmit)="onContactNext()"
-            aria-labelledby="register-heading"
-            novalidate>
-
-        <!-- Verification method toggle -->
-        <fieldset class="method-fieldset">
-          <legend class="method-legend">How would you like to verify?</legend>
-          <mat-radio-group formControlName="verificationMethod"
-                           class="method-radio-group"
-                           aria-label="Choose verification method">
-            <mat-radio-button value="email">Email link</mat-radio-button>
-            <mat-radio-button value="phone">Phone OTP</mat-radio-button>
-          </mat-radio-group>
-        </fieldset>
-
-        <!-- Email field (always required) -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Email Address</mat-label>
-          <input matInput
-                 formControlName="email"
-                 type="email"
-                 autocomplete="email"
-                 inputmode="email"
-                 aria-required="true"
-                 [attr.aria-invalid]="
-                   contactForm.controls.email.invalid &&
-                   contactForm.controls.email.touched"
-                 aria-describedby="email-hint email-error" />
-          <mat-hint id="email-hint">Used to log in and receive communications</mat-hint>
-          @if (contactForm.controls.email.touched && contactForm.controls.email.invalid) {
-            <mat-error id="email-error" role="alert">
-              @if (contactForm.controls.email.errors?.['required']) {
-                Email address is required.
-              } @else if (contactForm.controls.email.errors?.['email']) {
-                Please enter a valid email address.
-              } @else if (contactForm.controls.email.errors?.['maxlength']) {
-                Email must be 256 characters or fewer.
-              }
-            </mat-error>
-          }
-        </mat-form-field>
-
-        <!-- Phone field (visible + required when method = phone) -->
-        @if (isPhoneMethod) {
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Phone Number</mat-label>
-            <input matInput
-                   formControlName="phoneNumber"
-                   type="tel"
-                   autocomplete="tel"
-                   inputmode="tel"
-                   placeholder="+1 555 123 4567"
-                   aria-required="true"
-                   [attr.aria-invalid]="
-                     contactForm.controls.phoneNumber.invalid &&
-                     contactForm.controls.phoneNumber.touched"
-                   aria-describedby="phone-hint phone-error" />
-            <mat-hint id="phone-hint">E.164 format, e.g. +15551234567</mat-hint>
-            @if (contactForm.controls.phoneNumber.touched &&
-                 contactForm.controls.phoneNumber.invalid) {
-              <mat-error id="phone-error" role="alert">
-                Please enter a valid phone number in E.164 format.
-              </mat-error>
-            }
-          </mat-form-field>
-        }
-
-        <!-- Server error (409 duplicate / other) -->
-        @if (serverError()) {
-          <div class="server-error" role="alert" aria-live="assertive">
-            <mat-icon aria-hidden="true">error_outline</mat-icon>
-            <span>{{ serverError() }}</span>
-            @if (serverError()?.includes('already exists')) {
-              — <a routerLink="/login" class="inline-link">Log in instead</a>
-            }
-          </div>
-        }
-
-        <button mat-raised-button
-                color="primary"
-                type="submit"
-                class="submit-btn"
-                [disabled]="isSubmitting()">
-          Continue
-          <mat-icon aria-hidden="true" iconPositionEnd>arrow_forward</mat-icon>
-        </button>
-
-        <p class="login-prompt">
-          Already have an account?
-          <a routerLink="/login" class="inline-link">Log in</a>
+    <!-- â•â• Left hero column â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section class="auth-hero" aria-hidden="true">
+      <div class="brand">
+        <strong>Unified Patient Access</strong>
+        <small>Patient onboarding</small>
+      </div>
+      <div class="auth-hero-stack">
+        <span class="eyebrow">SCR-001</span>
+        <h2>Register in under 30&nbsp;seconds.</h2>
+        <p>
+          Progressive disclosure keeps the flow short while preserving
+          inline validation, accessible focus states, and clear recovery paths.
         </p>
-      </form>
-    </mat-step>
+      </div>
+      <div class="chip-row">
+        <span class="pill success">UXR-101 rapid completion</span>
+        <span class="pill">UXR-205 inline errors</span>
+      </div>
+    </section>
 
-    <!-- ══ Step 2 — Profile & Password ═══════════════════════════════════ -->
-    <mat-step [stepControl]="profileForm" label="Profile">
-      <form [formGroup]="profileForm"
-            (ngSubmit)="onProfileSubmit()"
-            novalidate>
+    <!-- â•â• Right form column â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section class="auth-form">
+      <h1 class="sr-only" id="register-heading">Create Your Account</h1>
 
-        <div class="name-row">
-          <!-- First name -->
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>First Name</mat-label>
-            <input matInput
-                   formControlName="firstName"
-                   type="text"
-                   autocomplete="given-name"
-                   aria-required="true"
-                   [attr.aria-invalid]="
-                     profileForm.controls.firstName.invalid &&
-                     profileForm.controls.firstName.touched"
-                   aria-describedby="first-name-error" />
-            @if (profileForm.controls.firstName.touched &&
-                 profileForm.controls.firstName.invalid) {
-              <mat-error id="first-name-error" role="alert">
-                First name is required.
-              </mat-error>
-            }
-          </mat-form-field>
+      <!-- Step indicator -->
+      <nav class="steps" aria-label="Registration progress">
+        <span class="step"
+              [class.done]="currentStep() > 0"
+              [class.active]="currentStep() === 0">
+          1 Contact
+        </span>
+        <span class="step"
+              [class.done]="currentStep() > 1"
+              [class.active]="currentStep() === 1">
+          2 Verify
+        </span>
+        <span class="step"
+              [class.active]="currentStep() === 2">
+          3 Profile
+        </span>
+      </nav>
 
-          <!-- Last name -->
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Last Name</mat-label>
-            <input matInput
-                   formControlName="lastName"
-                   type="text"
-                   autocomplete="family-name"
-                   aria-required="true"
-                   [attr.aria-invalid]="
-                     profileForm.controls.lastName.invalid &&
-                     profileForm.controls.lastName.touched"
-                   aria-describedby="last-name-error" />
-            @if (profileForm.controls.lastName.touched &&
-                 profileForm.controls.lastName.invalid) {
-              <mat-error id="last-name-error" role="alert">
-                Last name is required.
-              </mat-error>
-            }
-          </mat-form-field>
-        </div>
-
-        <!-- Password -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Password</mat-label>
-          <input matInput
-                 formControlName="password"
-                 [type]="showPassword() ? 'text' : 'password'"
-                 autocomplete="new-password"
-                 aria-required="true"
-                 [attr.aria-invalid]="
-                   profileForm.controls.password.invalid &&
-                   profileForm.controls.password.touched"
-                 aria-describedby="password-hint password-error" />
-          <button mat-icon-button
-                  matSuffix
-                  type="button"
-                  (click)="togglePasswordVisibility()"
-                  [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'">
-            <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-          </button>
-          <mat-hint id="password-hint">
-            At least 8 characters with uppercase, lowercase, digit, and symbol
-          </mat-hint>
-          @if (profileForm.controls.password.touched &&
-               profileForm.controls.password.invalid) {
-            <mat-error id="password-error" role="alert">
-              @if (profileForm.controls.password.errors?.['required']) {
-                Password is required.
-              } @else if (profileForm.controls.password.errors?.['minlength']) {
-                Password must be at least 8 characters.
-              } @else if (profileForm.controls.password.errors?.['passwordStrength']) {
-                Password must include uppercase, lowercase, a number, and a special character.
-              }
-            </mat-error>
-          }
-        </mat-form-field>
-
-        <!-- Confirm password -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Confirm Password</mat-label>
-          <input matInput
-                 formControlName="confirmPassword"
-                 [type]="showConfirmPassword() ? 'text' : 'password'"
-                 autocomplete="new-password"
-                 aria-required="true"
-                 [attr.aria-invalid]="
-                   (profileForm.controls.confirmPassword.touched &&
-                    profileForm.errors?.['passwordMismatch']) || false"
-                 aria-describedby="confirm-password-error" />
-          <button mat-icon-button
-                  matSuffix
-                  type="button"
-                  (click)="toggleConfirmPasswordVisibility()"
-                  [attr.aria-label]="showConfirmPassword() ? 'Hide password' : 'Show password'">
-            <mat-icon>{{ showConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-          </button>
-          @if (profileForm.controls.confirmPassword.touched &&
-               profileForm.errors?.['passwordMismatch']) {
-            <mat-error id="confirm-password-error" role="alert">
-              Passwords do not match.
-            </mat-error>
-          }
-        </mat-form-field>
-
-        <!-- Server error -->
-        @if (serverError()) {
-          <div class="server-error" role="alert" aria-live="assertive">
-            <mat-icon aria-hidden="true">error_outline</mat-icon>
-            <span>{{ serverError() }}</span>
-            @if (serverError()?.includes('already exists')) {
-              — <a routerLink="/login" class="inline-link">Log in instead</a>
-            }
-          </div>
-        }
-
-        <button mat-raised-button
-                color="primary"
-                type="submit"
-                class="submit-btn"
-                [disabled]="isSubmitting()">
-          @if (isSubmitting()) {
-            <mat-spinner diameter="20" aria-label="Creating account…"></mat-spinner>
-          } @else {
-            Create Account
-          }
-        </button>
-      </form>
-    </mat-step>
-
-    <!-- ══ Step 3 — Verification ══════════════════════════════════════════ -->
-    <mat-step label="Verify">
-      @if (isPhoneMethod) {
-        <!-- Phone OTP path (AC-3) -->
-        <form [formGroup]="verificationForm"
-              (ngSubmit)="onOtpSubmit()"
+      <!-- â”€â”€ Step 1: Contact â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+      @if (currentStep() === 0) {
+        <form [formGroup]="contactForm"
+              (ngSubmit)="onContactNext()"
+              aria-labelledby="register-heading"
               novalidate>
 
-          <p class="instruction-text">
-            We sent a 6-digit code to your phone number.
-            Enter it below to complete your registration.
-          </p>
+          <fieldset class="method-fieldset">
+            <legend class="method-legend">How would you like to verify?</legend>
+            <mat-radio-group formControlName="verificationMethod"
+                             class="method-radio-group"
+                             aria-label="Choose verification method">
+              <mat-radio-button value="email">Email link</mat-radio-button>
+              <mat-radio-button value="phone">Phone OTP</mat-radio-button>
+            </mat-radio-group>
+          </fieldset>
 
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Verification Code</mat-label>
-            <input matInput
-                   formControlName="otp"
-                   type="text"
-                   inputmode="numeric"
-                   maxlength="6"
-                   autocomplete="one-time-code"
+          <!-- Email field -->
+          <div class="wf-field">
+            <label for="reg-email" class="wf-label">Email Address</label>
+            <input id="reg-email"
+                   formControlName="email"
+                   type="email"
+                   autocomplete="email"
+                   inputmode="email"
+                   class="wf-input"
+                   [class.is-invalid]="contactForm.controls.email.invalid &&
+                                        contactForm.controls.email.touched"
                    aria-required="true"
-                   [attr.aria-invalid]="
-                     verificationForm.controls.otp.invalid &&
-                     verificationForm.controls.otp.touched"
-                   aria-describedby="otp-error" />
-            @if (verificationForm.controls.otp.touched &&
-                 verificationForm.controls.otp.invalid) {
-              <mat-error id="otp-error" role="alert">
-                Please enter the 6-digit code sent to your phone.
-              </mat-error>
+                   aria-describedby="email-hint email-error"
+                   placeholder="you@example.com" />
+            <small id="email-hint" class="wf-hint">Used to log in and receive communications</small>
+            @if (contactForm.controls.email.touched && contactForm.controls.email.invalid) {
+              <span id="email-error" class="wf-error" role="alert">
+                @if (contactForm.controls.email.errors?.['required']) {
+                  Email address is required.
+                } @else if (contactForm.controls.email.errors?.['email']) {
+                  Please enter a valid email address.
+                } @else if (contactForm.controls.email.errors?.['maxlength']) {
+                  Email must be 256 characters or fewer.
+                }
+              </span>
             }
-          </mat-form-field>
+          </div>
 
-          @if (serverError()) {
-            <div class="server-error" role="alert" aria-live="assertive">
-              <mat-icon aria-hidden="true">error_outline</mat-icon>
-              <span>{{ serverError() }}</span>
+          <!-- Phone field (phone method only) -->
+          @if (isPhoneMethod) {
+            <div class="wf-field">
+              <label for="reg-phone" class="wf-label">Phone Number</label>
+              <input id="reg-phone"
+                     formControlName="phoneNumber"
+                     type="tel"
+                     autocomplete="tel"
+                     inputmode="tel"
+                     class="wf-input"
+                     [class.is-invalid]="contactForm.controls.phoneNumber.invalid &&
+                                          contactForm.controls.phoneNumber.touched"
+                     aria-required="true"
+                     placeholder="+1 555 123 4567"
+                     aria-describedby="phone-hint phone-error" />
+              <small id="phone-hint" class="wf-hint">E.164 format, e.g. +15551234567</small>
+              @if (contactForm.controls.phoneNumber.touched &&
+                   contactForm.controls.phoneNumber.invalid) {
+                <span id="phone-error" class="wf-error" role="alert">
+                  Please enter a valid phone number in E.164 format.
+                </span>
+              }
             </div>
           }
 
-          <button mat-raised-button
-                  color="primary"
-                  type="submit"
-                  class="submit-btn"
-                  [disabled]="isSubmitting()">
-            @if (isSubmitting()) {
-              <mat-spinner diameter="20" aria-label="Verifying code…"></mat-spinner>
-            } @else {
-              Verify Code
-            }
-          </button>
+          @if (serverError()) {
+            <div class="banner banner-error" role="alert" aria-live="assertive">
+              <strong>Error</strong>
+              <p>
+                {{ serverError() }}
+                @if (serverError()?.includes('already exists')) {
+                  â€” <a routerLink="/login" class="inline-link">Log in instead</a>
+                }
+              </p>
+            </div>
+          }
 
-          <button mat-button
-                  type="button"
-                  class="resend-btn"
-                  [disabled]="isResending()"
-                  (click)="resendOtp()">
-            @if (isResending()) {
-              Resending…
-            } @else {
-              Resend code
-            }
-          </button>
+          <div class="footer-bar">
+            <p class="login-prompt">
+              Already have an account?
+              <a routerLink="/login" class="inline-link">Log in</a>
+            </p>
+            <div class="btn-row">
+              <button type="submit"
+                      mat-raised-button
+                      color="primary"
+                      class="btn-primary"
+                      [disabled]="isSubmitting()">
+                Continue
+                <mat-icon iconPositionEnd aria-hidden="true">arrow_forward</mat-icon>
+              </button>
+            </div>
+          </div>
+
         </form>
-      } @else {
-        <!-- Email confirmation path (AC-1/AC-2) -->
-        <section class="email-check-panel" role="status" aria-live="polite">
-          <mat-icon class="email-icon" aria-hidden="true">mark_email_read</mat-icon>
-          <h2>Check your inbox</h2>
-          <p>
-            We sent a confirmation link to
-            <strong>{{ emailValue }}</strong>.
-            Click the link to activate your account.
-          </p>
-          <p class="hint-text">
+      }
+
+      <!-- â”€â”€ Step 2: Verify â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+      @if (currentStep() === 1) {
+
+        <!-- Phase A: profile + password (before account creation) -->
+        @if (!accountCreated()) {
+          <div class="banner banner-success" role="status" aria-live="polite">
+            <strong>Completed step 1.</strong>
+            <p>Fill in your details to create your account.</p>
+          </div>
+
+          <form [formGroup]="profileForm"
+                (ngSubmit)="onProfileSubmit()"
+                novalidate>
+
+            <!-- Full name -->
+            <div class="wf-field">
+              <label for="reg-fullname" class="wf-label">Full name</label>
+              <input id="reg-fullname"
+                     formControlName="fullName"
+                     type="text"
+                     autocomplete="name"
+                     class="wf-input"
+                     [class.is-invalid]="profileForm.controls.fullName.invalid &&
+                                          profileForm.controls.fullName.touched"
+                     aria-required="true"
+                     placeholder="First and last name"
+                     aria-describedby="fullname-error" />
+              @if (profileForm.controls.fullName.touched &&
+                   profileForm.controls.fullName.invalid) {
+                <span id="fullname-error" class="wf-error" role="alert">
+                  @if (profileForm.controls.fullName.errors?.['required']) {
+                    Full name is required.
+                  } @else if (profileForm.controls.fullName.errors?.['maxlength']) {
+                    Name must be 200 characters or fewer.
+                  }
+                </span>
+              }
+            </div>
+
+            <!-- Create password -->
+            <div class="wf-field">
+              <label for="reg-password" class="wf-label">Create password</label>
+              <div class="wf-input-wrap">
+                <input id="reg-password"
+                       formControlName="password"
+                       [type]="showPassword() ? 'text' : 'password'"
+                       autocomplete="new-password"
+                       class="wf-input"
+                       [class.is-invalid]="profileForm.controls.password.invalid &&
+                                            profileForm.controls.password.touched"
+                       aria-required="true"
+                       placeholder="Minimum 12 characters with one number and symbol"
+                       aria-describedby="password-hint password-error" />
+                <button type="button"
+                        class="wf-toggle-pw"
+                        (click)="togglePasswordVisibility()"
+                        [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'">
+                  <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+              </div>
+              <small id="password-hint" class="wf-hint">
+                Minimum 12 characters with one number and symbol
+              </small>
+              @if (profileForm.controls.password.touched &&
+                   profileForm.controls.password.invalid) {
+                <span id="password-error" class="wf-error" role="alert">
+                  @if (profileForm.controls.password.errors?.['required']) {
+                    Password is required.
+                  } @else if (profileForm.controls.password.errors?.['minlength']) {
+                    Password must be at least 12 characters.
+                  } @else if (profileForm.controls.password.errors?.['passwordStrength']) {
+                    Password must include uppercase, lowercase, a number, and a special character.
+                  }
+                </span>
+              }
+            </div>
+
+            <!-- Confirm password -->
+            <div class="wf-field">
+              <label for="reg-confirm-pw" class="wf-label">Confirm password</label>
+              <div class="wf-input-wrap">
+                <input id="reg-confirm-pw"
+                       formControlName="confirmPassword"
+                       [type]="showConfirmPassword() ? 'text' : 'password'"
+                       autocomplete="new-password"
+                       class="wf-input"
+                       [class.is-invalid]="profileForm.controls.confirmPassword.touched &&
+                                            !!profileForm.errors?.['passwordMismatch']"
+                       aria-required="true"
+                       aria-describedby="confirm-pw-error" />
+                <button type="button"
+                        class="wf-toggle-pw"
+                        (click)="toggleConfirmPasswordVisibility()"
+                        [attr.aria-label]="showConfirmPassword() ? 'Hide password' : 'Show password'">
+                  <mat-icon>{{ showConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+              </div>
+              @if (profileForm.controls.confirmPassword.touched &&
+                   profileForm.errors?.['passwordMismatch']) {
+                <span id="confirm-pw-error" class="wf-error" role="alert">
+                  Passwords do not match.
+                </span>
+              }
+            </div>
+
+            <!-- Validation status chips (SCR-001 wireframe) -->
+            <div class="chip-row status-chips">
+              @if (contactForm.controls.email.valid) {
+                <span class="pill pill-success">Email valid</span>
+              }
+              @if (isPhoneMethod &&
+                   contactForm.controls.phoneNumber.valid &&
+                   contactForm.controls.phoneNumber.value) {
+                <span class="pill pill-success">Phone valid</span>
+              }
+              @if (passwordStrength) {
+                <span class="pill"
+                      [class.pill-success]="passwordStrength === 'strong'"
+                      [class.pill-warning]="passwordStrength === 'medium'"
+                      [class.pill-error]="passwordStrength === 'weak'">
+                  Password strength: {{ passwordStrength }}
+                </span>
+              }
+            </div>
+
+            @if (serverError()) {
+              <div class="banner banner-error" role="alert" aria-live="assertive">
+                <strong>Error</strong>
+                <p>
+                  {{ serverError() }}
+                  @if (serverError()?.includes('already exists')) {
+                    â€” <a routerLink="/login" class="inline-link">Log in instead</a>
+                  }
+                </p>
+              </div>
+            }
+
+            <div class="footer-bar">
+              <small>Terms, privacy, and accessibility links remain visible in the footer.</small>
+              <div class="btn-row">
+                <button type="button"
+                        mat-button
+                        class="btn-ghost"
+                        (click)="goBack()">
+                  Back
+                </button>
+                <button type="submit"
+                        mat-raised-button
+                        color="primary"
+                        class="btn-primary"
+                        [disabled]="isSubmitting()">
+                  @if (isSubmitting()) {
+                    <mat-spinner diameter="20" aria-label="Creating accountâ€¦"></mat-spinner>
+                  } @else {
+                    Create account
+                  }
+                </button>
+              </div>
+            </div>
+
+          </form>
+        }
+
+        <!-- Phase B: OTP verification (phone path, after account creation) -->
+        @if (accountCreated() && isPhoneMethod) {
+          <div class="banner banner-success" role="status" aria-live="polite">
+            <strong>Completed step 1.</strong>
+            <p>Verification code sent to {{ emailValue }}.</p>
+          </div>
+
+          <form [formGroup]="verificationForm"
+                (ngSubmit)="onOtpSubmit()"
+                novalidate>
+
+            <div class="wf-field">
+              <label for="reg-otp" class="wf-label">Verification code</label>
+              <input id="reg-otp"
+                     formControlName="otp"
+                     type="text"
+                     inputmode="numeric"
+                     maxlength="6"
+                     autocomplete="one-time-code"
+                     class="wf-input otp-input"
+                     [class.is-invalid]="verificationForm.controls.otp.invalid &&
+                                          verificationForm.controls.otp.touched"
+                     aria-required="true"
+                     placeholder="_ _ _ _ _ _"
+                     aria-describedby="otp-hint otp-error" />
+              <small id="otp-hint" class="wf-hint" aria-live="polite">
+                Code expires in {{ otpCountdownDisplay() }}.
+                @if (resendCooldownLeft() > 0) {
+                  Resend is available after {{ resendCooldownLeft() }} seconds.
+                } @else {
+                  <button type="button"
+                          class="link-btn"
+                          [disabled]="isResending()"
+                          (click)="resendOtp()">
+                    {{ isResending() ? 'Resendingâ€¦' : 'Resend code' }}
+                  </button>
+                }
+              </small>
+              @if (verificationForm.controls.otp.touched &&
+                   verificationForm.controls.otp.invalid) {
+                <span id="otp-error" class="wf-error" role="alert">
+                  Please enter the 6-digit code sent to your phone.
+                </span>
+              }
+            </div>
+
+            @if (serverError()) {
+              <div class="banner banner-error" role="alert" aria-live="assertive">
+                <strong>Error</strong>
+                <p>{{ serverError() }}</p>
+              </div>
+            }
+
+            <div class="footer-bar">
+              <small>Terms, privacy, and accessibility links remain visible in the footer.</small>
+              <div class="btn-row">
+                <button type="submit"
+                        mat-raised-button
+                        color="primary"
+                        class="btn-primary"
+                        [disabled]="isSubmitting()">
+                  @if (isSubmitting()) {
+                    <mat-spinner diameter="20" aria-label="Verifying codeâ€¦"></mat-spinner>
+                  } @else {
+                    Verify
+                  }
+                </button>
+              </div>
+            </div>
+
+          </form>
+        }
+
+        <!-- Email path: after account creation (async email flow) -->
+        @if (accountCreated() && !isPhoneMethod) {
+          <div class="banner banner-success" role="status" aria-live="polite">
+            <strong>Account created!</strong>
+            <p>
+              A confirmation link was sent to <strong>{{ emailValue }}</strong>.
+              Click it to activate your account.
+            </p>
+          </div>
+          <p class="wf-hint">
             Didn't receive it? Check your spam folder or
             <a routerLink="/login" class="inline-link">return to login</a>.
           </p>
-        </section>
+        }
+
       }
-    </mat-step>
 
-  </mat-stepper>
-  }<!-- end @else registrationComplete -->
+      <!-- â”€â”€ Step 3: Profile complete â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+      @if (currentStep() === 2) {
+        <div class="banner banner-success" role="status" aria-live="polite">
+          <strong>You're all set!</strong>
+          <p>Your account has been verified. You can now log in.</p>
+        </div>
+        <div class="footer-bar">
+          <small>Welcome to Unified Patient Access.</small>
+          <div class="btn-row">
+            <a mat-raised-button
+               color="primary"
+               routerLink="/login"
+               class="btn-primary">
+              Go to Login
+            </a>
+          </div>
+        </div>
+      }
 
-  <footer class="register-footer">
-    <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
-    <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
-  </footer>
+      <!-- Footer links -->
+      <footer class="auth-footer-links">
+        <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+        <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        <a href="/accessibility" target="_blank" rel="noopener noreferrer">Accessibility</a>
+      </footer>
 
+    </section>
+  </div>
 </div>
+

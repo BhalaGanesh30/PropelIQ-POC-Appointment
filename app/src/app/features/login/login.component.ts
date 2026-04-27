@@ -8,9 +8,7 @@ import {
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../auth/services/auth.service';
 import { TokenStorageService } from '../../core/services/token-storage.service';
@@ -24,9 +22,7 @@ import { TokenStorageService } from '../../core/services/token-storage.service';
     RouterLink,
     MatButtonModule,
     MatCheckboxModule,
-    MatFormFieldModule,
     MatIconModule,
-    MatInputModule,
     MatProgressSpinnerModule,
   ],
   templateUrl: './login.component.html',
