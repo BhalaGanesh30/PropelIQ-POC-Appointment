@@ -1,13 +1,24 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { InactivityTimerService } from '../../core/services/inactivity-timer.service';
 import { SessionSignalRService } from '../../core/services/session-signalr.service';
 import { SessionTimeoutModalComponent } from '../../shared/components/session-timeout-modal/session-timeout-modal.component';
+import { AuthService } from '../../features/auth/services/auth.service';
+import { TokenStorageService } from '../../core/services/token-storage.service';
 
 interface NavItem {
   readonly label: string;
@@ -27,6 +38,8 @@ interface NavItem {
     MatListModule,
     MatIconModule,
     MatButtonModule,
+    MatDividerModule,
+    MatTooltipModule,
     SessionTimeoutModalComponent,
   ],
   templateUrl: './main-layout.component.html',
@@ -36,20 +49,65 @@ interface NavItem {
 export class MainLayoutComponent implements OnInit {
   private readonly inactivityTimer = inject(InactivityTimerService);
   private readonly sessionSignalR = inject(SessionSignalRService);
+  private readonly authService = inject(AuthService);
+  private readonly tokenStorage = inject(TokenStorageService);
 
   protected readonly sidenavOpen = signal(true);
 
   protected readonly navItems: readonly NavItem[] = [
-    { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
+    { label: 'Dashboard',        icon: 'dashboard',     route: '/dashboard' },
+    { label: 'Find Appointment', icon: 'calendar_today', route: '/scheduling/search' },
+    { label: 'My Appointments',  icon: 'event_note',    route: '/appointments' },
+    { label: 'My Waitlist',      icon: 'queue',         route: '/waitlist' },
   ];
 
+  protected readonly adminNavItems: readonly NavItem[] = [
+    { label: 'User Management', icon: 'manage_accounts', route: '/admin/users' },
+  ];
+
+  protected readonly isAdmin = computed(() => {
+    // Re-evaluates when isAuthenticated signal changes (login/logout).
+    if (!this.tokenStorage.isAuthenticated()) return false;
+    const role = this.tokenStorage.getUserRole();
+    return role === 'Admin' || role === 'SuperAdmin';
+  });
+
+  protected readonly userInitials = computed(() => {
+    if (!this.tokenStorage.isAuthenticated()) return 'U';
+    const decoded = this.tokenStorage.getDecodedToken();
+    const first = (decoded?.['given_name'] as string | undefined) ?? '';
+    const last  = (decoded?.['family_name'] as string | undefined) ?? '';
+    if (first && last) return `${first[0]}${last[0]}`.toUpperCase();
+    if (first) return first.substring(0, 2).toUpperCase();
+    const email = (decoded?.['email'] as string | undefined) ?? '';
+    return email ? email[0].toUpperCase() : 'U';
+  });
+
+  protected readonly userDisplayName = computed(() => {
+    if (!this.tokenStorage.isAuthenticated()) return '';
+    const decoded = this.tokenStorage.getDecodedToken();
+    const first = (decoded?.['given_name'] as string | undefined) ?? '';
+    const last  = (decoded?.['family_name'] as string | undefined) ?? '';
+    return ([first, last].filter(Boolean).join(' ') ||
+      (decoded?.['email'] as string | undefined)) ?? 'User';
+  });
+
+  protected readonly userRole = computed(() => {
+    if (!this.tokenStorage.isAuthenticated()) return null;
+    return this.tokenStorage.getUserRole();
+  });
+
   ngOnInit(): void {
-    // Start session-tracking services when authenticated layout is active (us_017).
     this.inactivityTimer.start();
     this.sessionSignalR.start();
   }
 
   protected toggleSidenav(): void {
     this.sidenavOpen.update((open) => !open);
+  }
+
+  protected logout(): void {
+    this.inactivityTimer.stop();
+    this.authService.forceLogout('session-ended');
   }
 }
