@@ -86,4 +86,11 @@ public interface IBookingRepository
     /// Appends an immutable audit entry for staff override actions (AC-4, DR-005).
     /// </summary>
     Task CreateAuditEntryAsync(AppointmentAuditEntry entry, CancellationToken ct);
+
+    /// <summary>
+    /// Resolves the <c>app.patients.id</c> (domain PK) from the authenticated
+    /// user's identity ID (<c>auth.application_users.id</c> / JWT <c>sub</c>).
+    /// Returns <see langword="null"/> when no matching patient record exists.
+    /// </summary>
+    Task<Guid?> ResolvePatientIdAsync(Guid userId, CancellationToken ct);
 }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Npgsql;
 using PropelIQ.Modules.SharedServices.Infrastructure.Caching;
 using PropelIQ.Modules.SharedServices.Infrastructure.Data;
 using PropelIQ.Modules.SharedServices.Infrastructure.Data.Seed;
@@ -33,9 +34,21 @@ public static class SharedServicesServiceRegistration
                 "Connection string 'Default' is missing from configuration. " +
                 "Ensure appsettings.Development.json or environment variables are configured.");
 
+        // Npgsql 8+ requires an explicit opt-in for dynamic JSON serialization of
+        // complex types such as List<string> written to jsonb columns (e.g. AiPopulatedFields).
+        // Build a shared NpgsqlDataSource with EnableDynamicJson() and pass it to UseNpgsql
+        // instead of the raw connection string so the type mapping is applied globally.
+        var appDataSource = new NpgsqlDataSourceBuilder(connectionString)
+            .EnableDynamicJson()
+            .Build();
+
+        // Register as singleton so the data source lifetime is managed by the container
+        // and disposed cleanly on application shutdown.
+        services.AddSingleton(appDataSource);
+
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(
-                connectionString,
+                appDataSource,
                 npgsqlOptions =>
                 {
                     npgsqlOptions.UseVector();

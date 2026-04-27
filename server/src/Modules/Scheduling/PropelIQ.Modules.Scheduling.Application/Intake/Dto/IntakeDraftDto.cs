@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 
 namespace PropelIQ.Modules.Scheduling.Application.Intake.Dto;
@@ -11,6 +12,7 @@ public record SaveDraftRequest
     public Guid? SlotId { get; init; }
 
     /// <summary>Partial form field values as a JSON object.</summary>
+    [Required]
     public JsonDocument FormData { get; init; } = default!;
 
     /// <summary>Field names pre-populated by the AI assistant (may be null when no AI assist).</summary>
@@ -61,5 +63,9 @@ public record SubmitIntakeRequest
 public record SubmitIntakeResponse
 {
     public Guid IntakeRecordId { get; init; }
+
+    /// <summary>The appointment this intake record was attached to.</summary>
+    public Guid AppointmentId { get; init; }
+
     public DateTimeOffset SubmittedAt { get; init; }
 }

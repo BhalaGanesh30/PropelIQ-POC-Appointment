@@ -24,8 +24,7 @@ public sealed class AppointmentHistoryController : BaseApiController
     public AppointmentHistoryController(AppointmentHistoryService historyService)
         => _historyService = historyService;
 
-    private Guid GetPatientId() =>
-        Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    private Guid GetPatientId() => TryGetCurrentUserId() ?? Guid.Empty;
 
     /// <summary>
     /// Returns a paginated, filtered appointment history for the authenticated patient.

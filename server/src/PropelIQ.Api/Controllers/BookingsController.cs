@@ -25,8 +25,7 @@ public sealed class BookingsController : BaseApiController
     public BookingsController(BookingService bookingService)
         => _bookingService = bookingService;
 
-    private Guid GetPatientId() =>
-        Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    private Guid GetPatientId() => TryGetCurrentUserId() ?? Guid.Empty;
 
     /// <summary>
     /// Atomically reserve a slot and create a confirmed appointment (AC-1).
@@ -141,7 +140,7 @@ public sealed class BookingsController : BaseApiController
         [FromBody] CancelBookingRequest request,
         CancellationToken ct)
     {
-        var userId  = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var userId  = TryGetCurrentUserId() ?? Guid.Empty;
         var isStaff = User.IsInRole("Staff") || User.IsInRole("Admin");
         var result  = await _bookingService.CancelAsync(id, userId, isStaff, request, ct);
 
@@ -178,7 +177,7 @@ public sealed class BookingsController : BaseApiController
         [FromBody] RescheduleBookingRequest request,
         CancellationToken ct)
     {
-        var userId  = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var userId  = TryGetCurrentUserId() ?? Guid.Empty;
         var isStaff = User.IsInRole("Staff") || User.IsInRole("Admin");
         var result  = await _bookingService.RescheduleAsync(id, userId, isStaff, request, ct);
 

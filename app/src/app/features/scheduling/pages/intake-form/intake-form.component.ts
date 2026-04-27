@@ -23,10 +23,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Subject, debounceTime, takeUntil } from 'rxjs';
+import { Subject, debounceTime, map, switchMap, takeUntil } from 'rxjs';
 import { AiAssistPanelComponent } from '../../components/ai-assist-panel/ai-assist-panel.component';
 import { IntakeAssistResponse } from '../../models/intake.model';
 import { IntakeApiService } from '../../services/intake.service';
+import { BookingApiService } from '../../services/booking-api.service';
 
 type FormState = 'loading' | 'empty' | 'default' | 'error' | 'submitting';
 
@@ -83,7 +84,6 @@ export class IntakeFormComponent implements OnInit, OnDestroy {
   isSubmitting = signal(false);
 
   slotId: string | null = null;
-  appointmentId: string | null = null;
 
   readonly severityOptions = ['Mild', 'Moderate', 'Severe'] as const;
 
@@ -131,6 +131,7 @@ export class IntakeFormComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly intakeApi: IntakeApiService,
+    private readonly bookingApi: BookingApiService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly snackBar: MatSnackBar,
@@ -138,7 +139,6 @@ export class IntakeFormComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.slotId = this.route.snapshot.queryParamMap.get('slotId');
-    this.appointmentId = this.route.snapshot.queryParamMap.get('appointmentId');
 
     this.loadDraft(); // AC-3
 
@@ -274,8 +274,15 @@ export class IntakeFormComponent implements OnInit, OnDestroy {
     if (this.intakeForm.invalid || this.isSubmitting()) return;
 
     const draftId = this.draftId();
-    if (!draftId || !this.appointmentId) {
-      this.snackBar.open('Missing draft or appointment. Please try again.', 'Dismiss', {
+    if (!draftId) {
+      this.snackBar.open('Please wait — form is still saving. Try again in a moment.', 'Dismiss', {
+        duration: 5000, panelClass: 'error-snackbar',
+      });
+      return;
+    }
+
+    if (!this.slotId) {
+      this.snackBar.open('No appointment slot selected. Please go back and choose a slot.', 'Dismiss', {
         duration: 5000, panelClass: 'error-snackbar',
       });
       return;
@@ -284,24 +291,36 @@ export class IntakeFormComponent implements OnInit, OnDestroy {
     this.isSubmitting.set(true);
     this.formState.set('submitting');
 
-    this.intakeApi
-      .submitIntake({ draftId, appointmentId: this.appointmentId })
-      .subscribe({
-        next: () => {
-          this.isSubmitting.set(false);
-          this.router.navigate(['/scheduling/confirmation'], {
-            queryParams: { appointmentId: this.appointmentId },
-          });
-        },
-        error: (err) => {
-          this.isSubmitting.set(false);
-          this.formState.set('default');
+    // Step 1: Create the booking (reserves the slot atomically).
+    this.bookingApi.createBooking({ slotId: this.slotId }).pipe(
+      switchMap((booking) =>
+        // Step 2: Submit the intake form attached to the new appointment.
+        this.intakeApi.submitIntake({ draftId, appointmentId: booking.appointmentId }).pipe(
+          map(() => booking.appointmentId),
+        )
+      ),
+    ).subscribe({
+      next: (appointmentId) => {
+        this.isSubmitting.set(false);
+        this.router.navigate(['/scheduling/booking/confirmation', appointmentId]);
+      },
+      error: (err) => {
+        this.isSubmitting.set(false);
+        this.formState.set('default');
+        if (err?.status === 409) {
+          this.snackBar.open(
+            'This slot was just taken. Please go back and select another.',
+            'Dismiss',
+            { duration: 6000, panelClass: 'error-snackbar' },
+          );
+        } else {
           const message = err?.error?.title ?? 'Submission failed. Please try again.';
           this.snackBar.open(message, 'Dismiss', {
             duration: 5000, panelClass: 'error-snackbar',
           });
-        },
-      });
+        }
+      },
+    });
   }
 
   onBack(): void {

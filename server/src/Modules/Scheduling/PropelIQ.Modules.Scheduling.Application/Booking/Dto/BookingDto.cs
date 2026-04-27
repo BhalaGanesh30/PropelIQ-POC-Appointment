@@ -6,8 +6,11 @@ public record CreateBookingRequest
     /// <summary>ID of the slot to atomically reserve (AC-1).</summary>
     public Guid SlotId { get; init; }
 
-    /// <summary>Finalized intake record ID created in US_020 (AC-4).</summary>
-    public Guid IntakeRecordId { get; init; }
+    /// <summary>
+    /// Finalized intake record ID (AC-4).
+    /// Optional — may be linked after intake submission completes.
+    /// </summary>
+    public Guid? IntakeRecordId { get; init; }
 }
 
 /// <summary>

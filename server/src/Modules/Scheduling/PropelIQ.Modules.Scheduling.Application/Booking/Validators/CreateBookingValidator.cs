@@ -14,9 +14,5 @@ public sealed class CreateBookingValidator : AbstractValidator<CreateBookingRequ
         RuleFor(x => x.SlotId)
             .NotEmpty()
             .WithMessage("Slot ID is required.");
-
-        RuleFor(x => x.IntakeRecordId)
-            .NotEmpty()
-            .WithMessage("Intake record ID is required.");
     }
 }

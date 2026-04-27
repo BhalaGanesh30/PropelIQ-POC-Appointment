@@ -27,8 +27,7 @@ public sealed class WaitlistController : BaseApiController
     public WaitlistController(WaitlistService waitlistService)
         => _waitlistService = waitlistService;
 
-    private Guid GetPatientId() =>
-        Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    private Guid GetPatientId() => TryGetCurrentUserId() ?? Guid.Empty;
 
     /// <summary>
     /// Join the waitlist with preferred slot parameters (AC-1).

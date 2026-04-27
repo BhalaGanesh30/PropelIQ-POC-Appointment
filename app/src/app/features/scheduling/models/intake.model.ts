@@ -30,6 +30,7 @@ export interface SubmitIntakeRequest {
 /** POST /api/v1/intake/submit response */
 export interface SubmitIntakeResponse {
   intakeRecordId: string;
+  appointmentId: string;
   submittedAt: string;
 }
 

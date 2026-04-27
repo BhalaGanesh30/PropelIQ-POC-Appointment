@@ -7,37 +7,57 @@
   [attr.aria-selected]="isSelected()"
   tabindex="0"
   [attr.aria-label]="
-    slot().durationMinutes + ' minute ' + slot().type +
+    slot().durationMinutes + '-minute ' + slot().type +
     ' appointment at ' + (slot().startTime | date:'shortTime') +
     (slot().providerName ? ' with ' + slot().providerName : '')
   ">
+
+  <!-- Selected checkmark (UXR-503) -->
+  @if (isSelected()) {
+    <div class="selected-check" aria-hidden="true">
+      <mat-icon>check</mat-icon>
+    </div>
+  }
+
   <mat-card-content>
 
+    <!-- Time block -->
     <div class="slot-time">
-      <span class="time-start">{{ slot().startTime | date:'shortTime' }}</span>
-      <span class="time-separator" aria-hidden="true">–</span>
-      <span class="time-end">{{ slot().endTime | date:'shortTime' }}</span>
+      <span class="time-start">{{ slot().startTime | date:'h:mm a' }}</span>
+      <span class="time-divider" aria-hidden="true">&ndash;</span>
+      <span class="time-end">{{ slot().endTime | date:'h:mm a' }}</span>
     </div>
 
-    <div class="slot-meta">
-      <span class="slot-duration">
+    <!-- Type badge + duration chip -->
+    <div class="slot-tags">
+      <span class="tag type-tag">{{ slot().type }}</span>
+      <span class="tag duration-tag">
         <mat-icon aria-hidden="true">schedule</mat-icon>
         {{ slot().durationMinutes }} min
       </span>
-      <span class="slot-type">{{ slot().type }}</span>
     </div>
 
+    <!-- Provider -->
     @if (slot().providerName) {
-      <div class="slot-provider">
-        <mat-icon aria-hidden="true">person</mat-icon>
-        {{ slot().providerName }}
+      <div class="slot-meta-row">
+        <mat-icon aria-hidden="true">person_outline</mat-icon>
+        <span>{{ slot().providerName }}</span>
       </div>
     }
 
+    <!-- Location -->
     @if (slot().location) {
-      <div class="slot-location">
+      <div class="slot-meta-row">
         <mat-icon aria-hidden="true">location_on</mat-icon>
-        {{ slot().location }}
+        <span>{{ slot().location }}</span>
+      </div>
+    }
+
+    <!-- Capacity (when more than 1 slot open) -->
+    @if (slot().availableCapacity > 1) {
+      <div class="capacity-row">
+        <mat-icon aria-hidden="true">people_outline</mat-icon>
+        <span>{{ slot().availableCapacity }} spots left</span>
       </div>
     }
 
