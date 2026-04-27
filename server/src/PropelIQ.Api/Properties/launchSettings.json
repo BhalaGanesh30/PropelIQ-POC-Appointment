@@ -16,7 +16,11 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5015",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionStrings__Default": "Host=localhost;Port=5432;Database=propeliq;Username=propeliq_user;Password=admin;Search Path=app",
+        "ConnectionStrings__AppApi": "Host=localhost;Port=5432;Database=propeliq;Username=propeliq_user;Password=admin;Search Path=app",
+        "ConnectionStrings__AppAnalytics": "Host=localhost;Port=5432;Database=propeliq;Username=propeliq_user;Password=admin;Search Path=app",
+        "ConnectionStrings__AppAdmin": "Host=localhost;Port=5432;Database=propeliq;Username=propeliq_user;Password=admin;Search Path=app"
       }
     },
     "https": {
@@ -26,7 +30,11 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7254;http://localhost:5015",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionStrings__Default": "Host=localhost;Port=5432;Database=propeliq;Username=propeliq_user;Password=admin;Search Path=app",
+        "ConnectionStrings__AppApi": "Host=localhost;Port=5432;Database=propeliq;Username=propeliq_user;Password=admin;Search Path=app",
+        "ConnectionStrings__AppAnalytics": "Host=localhost;Port=5432;Database=propeliq;Username=propeliq_user;Password=admin;Search Path=app",
+        "ConnectionStrings__AppAdmin": "Host=localhost;Port=5432;Database=propeliq;Username=propeliq_user;Password=admin;Search Path=app"
       }
     },
     "IIS Express": {
@@ -34,7 +42,11 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionStrings__Default": "Host=localhost;Port=5432;Database=propeliq;Username=propeliq_user;Password=admin;Search Path=app",
+        "ConnectionStrings__AppApi": "Host=localhost;Port=5432;Database=propeliq;Username=propeliq_user;Password=admin;Search Path=app",
+        "ConnectionStrings__AppAnalytics": "Host=localhost;Port=5432;Database=propeliq;Username=propeliq_user;Password=admin;Search Path=app",
+        "ConnectionStrings__AppAdmin": "Host=localhost;Port=5432;Database=propeliq;Username=propeliq_user;Password=admin;Search Path=app"
       }
     }
   }

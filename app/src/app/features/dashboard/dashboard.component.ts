@@ -1,15 +1,18 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
-/**
- * Dashboard placeholder component.
- * Replace with the real dashboard feature implementation once EP-XXX tasks are complete.
- */
 @Component({
   selector: 'app-dashboard',
   standalone: true,
+  imports: [RouterLink],
   template: `
     <h1>Dashboard</h1>
     <p>Welcome to PropelIQ.</p>
+    <a routerLink="/scheduling/search">Find an Appointment</a>
+    <br />
+    <a routerLink="/appointments">My Appointments</a>
+    <br />
+    <a routerLink="/waitlist">My Waitlist</a>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

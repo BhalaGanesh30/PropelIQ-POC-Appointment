@@ -104,6 +104,9 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         this.isSubmitting.set(false);
+        const traceId: string | undefined = err.error?.traceId;
+        const correlationId: string | null = err.headers?.get('X-Correlation-Id') ?? null;
+
         if (err.status === 401) {
           const title: string = err.error?.title ?? '';
           // AC-3 (us_018): locked account returns a distinct title — surface dedicated banner.
@@ -118,6 +121,13 @@ export class LoginComponent implements OnInit {
         } else if (err.status === 429) {
           this.serverError.set(
             'Too many login attempts. Please try again later.'
+          );
+        } else if (err.status === 500) {
+          const ref = traceId || correlationId;
+          this.serverError.set(
+            ref
+              ? `Server error during login. Please contact support with reference: ${ref}`
+              : 'Server error during login. Please try again later.'
           );
         } else {
           this.serverError.set('An unexpected error occurred. Please try again.');

@@ -3,6 +3,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using PropelIQ.Api.Authorization;
@@ -22,6 +23,7 @@ using PropelIQ.Modules.ClinicalIntelligence.Infrastructure;
 using PropelIQ.Modules.Administration.Infrastructure;
 using PropelIQ.Modules.SharedServices.Infrastructure;
 using PropelIQ.Modules.SharedServices.Infrastructure.Data;
+using PropelIQ.Modules.SharedServices.Infrastructure.Identity;
 using System.Threading.RateLimiting;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -190,6 +192,32 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new() { Title = "PropelIQ API", Version = "v1" });
+
+    // Enable JWT Bearer auth in Swagger UI — paste the token from /api/v1/auth/login.
+    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Enter your JWT access token from POST /api/v1/auth/login.\nExample: eyJhbG..."
+    });
+
+    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
 });
 // ── AI Gateway Client ──────────────────────────────────────────────────────
 // AIR-005/AC-2: typed HttpClient with Polly retry + circuit breaker pointing at
@@ -225,6 +253,30 @@ builder.Services.AddScoped<PropelIQ.Api.AccountLockoutHandler>();
 // ─────────────────────────────────────────────────────────────────────────────
 var app = builder.Build();
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ── Database Migrations (NFR-005: auto-migration on startup for dev/test)
+// Apply all pending EF Core migrations during startup. This ensures the schema
+// is ready before the first request arrives. In production, run migrations
+// explicitly via DbMigrator or CI/CD pipeline instead.
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var authDb = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+    try
+    {
+        await db.Database.MigrateAsync();
+        await authDb.Database.MigrateAsync();
+        app.Logger.LogInformation("Database migrations applied successfully");
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Failed to apply database migrations. API will fail on first request.");
+        if (!app.Environment.IsDevelopment())
+        {
+            throw; // Fail fast in production
+        }
+    }
+}
 
 // ── Middleware Pipeline Order ─────────────────────────────────────────────────
 // 1. Exception handler — MUST be first to catch all downstream exceptions.

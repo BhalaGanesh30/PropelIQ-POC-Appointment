@@ -39,20 +39,27 @@ public sealed class BookingRescheduledEventHandler : BackgroundService
     {
         _logger.LogInformation("BookingRescheduledEventHandler started.");
 
-        await foreach (var evt in _channel.Reader.ReadAllAsync(ct))
+        try
         {
-            try
+            await foreach (var evt in _channel.Reader.ReadAllAsync(ct))
             {
-                await ProcessAsync(evt, ct);
+                try
+                {
+                    await ProcessAsync(evt, ct);
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    // Edge case: email / ICS failure must never affect the confirmed reschedule.
+                    _logger.LogError(ex,
+                        "Failed to process BookingRescheduledEvent for appointment {AppointmentId}. " +
+                        "Reschedule remains valid.",
+                        evt.AppointmentId);
+                }
             }
-            catch (Exception ex)
-            {
-                // Edge case: email / ICS failure must never affect the confirmed reschedule.
-                _logger.LogError(ex,
-                    "Failed to process BookingRescheduledEvent for appointment {AppointmentId}. " +
-                    "Reschedule remains valid.",
-                    evt.AppointmentId);
-            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected during graceful shutdown — host cancellation token fired.
         }
 
         _logger.LogInformation("BookingRescheduledEventHandler stopped.");

@@ -13,7 +13,7 @@ public sealed class SlotSearchQueryValidator : AbstractValidator<SlotSearchQuery
     public SlotSearchQueryValidator()
     {
         RuleFor(x => x.DateFrom)
-            .GreaterThanOrEqualTo(DateTimeOffset.UtcNow.Date)
+            .GreaterThanOrEqualTo(DateTimeOffset.UtcNow.ToOffset(TimeSpan.Zero).Date)
             .WithMessage("Start date cannot be in the past.");
 
         RuleFor(x => x.DateTo)
@@ -27,7 +27,7 @@ public sealed class SlotSearchQueryValidator : AbstractValidator<SlotSearchQuery
             .WithName("DateRange");
 
         RuleFor(x => x.DateTo)
-            .LessThanOrEqualTo(DateTimeOffset.UtcNow.Date.AddDays(MaxSearchWindowDays))
+            .LessThanOrEqualTo(DateTimeOffset.UtcNow.ToOffset(TimeSpan.Zero).Date.AddDays(MaxSearchWindowDays))
             .WithMessage("Slot search is limited to the next 30 days.");
 
         RuleFor(x => x.Duration)

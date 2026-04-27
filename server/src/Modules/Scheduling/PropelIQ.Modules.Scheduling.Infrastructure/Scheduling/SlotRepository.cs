@@ -24,11 +24,13 @@ public sealed class SlotRepository : ISlotRepository
         CancellationToken ct)
     {
         var now = DateTimeOffset.UtcNow;
+        var dateFromUtc = dateFrom.ToUniversalTime();
+        var dateToUtc = dateTo.ToUniversalTime();
 
         var query = _context.AppointmentSlots
             .AsNoTracking()
-            .Where(s => s.StartTime >= dateFrom
-                     && s.StartTime <= dateTo
+            .Where(s => s.StartTime >= dateFromUtc
+                     && s.StartTime <= dateToUtc
                      && s.StartTime > now              // Future only (AC-2)
                      && s.CurrentBookings < s.MaxCapacity); // Exclude fully-booked (AC-2)
 

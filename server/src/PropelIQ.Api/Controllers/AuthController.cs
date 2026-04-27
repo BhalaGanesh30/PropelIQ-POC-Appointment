@@ -452,9 +452,9 @@ public sealed class AuthController : BaseApiController
         // Role-appropriate dashboard redirect (AC-1).
         var redirectUrl = roles.FirstOrDefault() switch
         {
-            "Admin" => "/admin/dashboard",
-            "Staff" => "/staff/queue",
-            "Clinician" => "/clinician/queue",
+            "Admin" => "/admin/users",
+            "Staff" => "/dashboard",
+            "Clinician" => "/dashboard",
             _ => "/dashboard"
         };
 

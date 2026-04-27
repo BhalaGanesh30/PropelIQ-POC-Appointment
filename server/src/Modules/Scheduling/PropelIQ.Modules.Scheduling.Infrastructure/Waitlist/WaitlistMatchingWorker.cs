@@ -50,6 +50,8 @@ public sealed class WaitlistMatchingWorker : BackgroundService
     {
         _logger.LogInformation("WaitlistMatchingWorker started.");
 
+        try
+        {
         await foreach (var msg in _channel.Reader.ReadAllAsync(ct))
         {
             try
@@ -65,12 +67,17 @@ public sealed class WaitlistMatchingWorker : BackgroundService
                     msg.ProviderName,
                     ct);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 // Log and continue — a single failed match must not halt the worker.
                 _logger.LogError(ex,
                     "Failed to match released slot {SlotId} to waitlist.", msg.SlotId);
             }
+        }
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected during graceful shutdown — host cancellation token fired.
         }
 
         _logger.LogInformation("WaitlistMatchingWorker stopped.");

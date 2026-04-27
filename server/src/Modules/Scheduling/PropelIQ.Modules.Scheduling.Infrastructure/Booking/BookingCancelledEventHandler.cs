@@ -41,20 +41,27 @@ public sealed class BookingCancelledEventHandler : BackgroundService
     {
         _logger.LogInformation("BookingCancelledEventHandler started.");
 
-        await foreach (var evt in _channel.Reader.ReadAllAsync(ct))
+        try
         {
-            try
+            await foreach (var evt in _channel.Reader.ReadAllAsync(ct))
             {
-                await ProcessAsync(evt, ct);
+                try
+                {
+                    await ProcessAsync(evt, ct);
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    // Edge case: email / ICS failure must never affect the committed cancellation.
+                    _logger.LogError(ex,
+                        "Failed to process BookingCancelledEvent for appointment {AppointmentId}. " +
+                        "Cancellation remains valid.",
+                        evt.AppointmentId);
+                }
             }
-            catch (Exception ex)
-            {
-                // Edge case: email / ICS failure must never affect the committed cancellation.
-                _logger.LogError(ex,
-                    "Failed to process BookingCancelledEvent for appointment {AppointmentId}. " +
-                    "Cancellation remains valid.",
-                    evt.AppointmentId);
-            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected during graceful shutdown — host cancellation token fired.
         }
 
         _logger.LogInformation("BookingCancelledEventHandler stopped.");

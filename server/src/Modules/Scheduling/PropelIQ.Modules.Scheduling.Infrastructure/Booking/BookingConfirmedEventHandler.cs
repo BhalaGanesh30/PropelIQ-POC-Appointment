@@ -40,20 +40,27 @@ public sealed class BookingConfirmedEventHandler : BackgroundService
     {
         _logger.LogInformation("BookingConfirmedEventHandler started.");
 
-        await foreach (var evt in _channel.Reader.ReadAllAsync(ct))
+        try
         {
-            try
+            await foreach (var evt in _channel.Reader.ReadAllAsync(ct))
             {
-                await ProcessEventAsync(evt, ct);
+                try
+                {
+                    await ProcessEventAsync(evt, ct);
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    // Edge case: booking persists even if the entire pipeline fails.
+                    _logger.LogError(ex,
+                        "Failed to process BookingConfirmedEvent for appointment " +
+                        "{AppointmentId}. Booking remains valid.",
+                        evt.AppointmentId);
+                }
             }
-            catch (Exception ex)
-            {
-                // Edge case: booking persists even if the entire pipeline fails.
-                _logger.LogError(ex,
-                    "Failed to process BookingConfirmedEvent for appointment " +
-                    "{AppointmentId}. Booking remains valid.",
-                    evt.AppointmentId);
-            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected during graceful shutdown — host cancellation token fired.
         }
 
         _logger.LogInformation("BookingConfirmedEventHandler stopped.");
