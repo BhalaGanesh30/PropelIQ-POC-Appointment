@@ -56,6 +56,17 @@ public sealed class BookingService
             CreateBookingRequest request,
             CancellationToken ct)
     {
+        // patientId from JWT is the auth user ID; appointments.patient_id FK requires app.patients.id.
+        var resolvedPatientId = await _bookingRepo.ResolvePatientIdAsync(patientId, ct);
+        if (resolvedPatientId is null)
+        {
+            _logger.LogWarning("No patient record found for user {UserId}.", patientId);
+            return (false, null, new SlotConflictResponse
+            {
+                Message = "Patient record not found for the authenticated user."
+            });
+        }
+
         var slot = await _bookingRepo.GetSlotForBookingAsync(request.SlotId, ct);
 
         if (slot is null)
@@ -68,7 +79,7 @@ public sealed class BookingService
 
         var appointment = new Appointment
         {
-            PatientId       = patientId,
+            PatientId       = resolvedPatientId.Value,
             StaffUserId     = slot.ProviderId,
             SlotId          = slot.Id,
             IntakeRecordId  = request.IntakeRecordId,
@@ -90,11 +101,11 @@ public sealed class BookingService
             _logger.LogInformation(
                 "Booking created: AppointmentId={AppointmentId} PatientId={PatientId} " +
                 "SlotId={SlotId} ConfirmationCode={ConfirmationCode}",
-                created.Id, patientId, request.SlotId, confirmationCode);
+                created.Id, resolvedPatientId, request.SlotId, confirmationCode);
 
             // Dispatch domain event for async artifact + notification processing (edge case).
             // Fire-and-forget after the commit — booking is NOT rolled back on failure.
-            DispatchBookingConfirmedEvent(created, patientId);
+            DispatchBookingConfirmedEvent(created, resolvedPatientId.Value);
 
             var response = new BookingResponse
             {
@@ -115,7 +126,7 @@ public sealed class BookingService
             // AC-4: slot was taken by a concurrent request — RowVersion mismatch.
             _logger.LogWarning(
                 "Booking concurrency conflict: SlotId={SlotId} PatientId={PatientId}",
-                request.SlotId, patientId);
+                request.SlotId, resolvedPatientId);
 
             var conflict = await BuildConflictAsync(slot.StartTime, slot.Type, ct);
             return (false, null, conflict);

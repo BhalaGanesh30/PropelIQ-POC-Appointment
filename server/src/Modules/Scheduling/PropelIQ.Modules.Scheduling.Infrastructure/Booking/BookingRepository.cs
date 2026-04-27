@@ -152,4 +152,15 @@ public sealed class BookingRepository : IBookingRepository
         _context.AppointmentAuditEntries.Add(entry);
         await _context.SaveChangesAsync(ct);
     }
+
+    /// <inheritdoc />
+    public async Task<Guid?> ResolvePatientIdAsync(Guid userId, CancellationToken ct)
+    {
+        var id = await _context.Patients
+            .Where(p => p.UserId == userId)
+            .Select(p => p.Id)
+            .FirstOrDefaultAsync(ct);
+
+        return id == Guid.Empty ? null : id;
+    }
 }

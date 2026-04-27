@@ -1,0 +1,15 @@
+{
+  "/api": {
+    "target": "https://localhost:44397",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "info"
+  },
+  "/hubs": {
+    "target": "https://localhost:44397",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "info",
+    "ws": true
+  }
+}

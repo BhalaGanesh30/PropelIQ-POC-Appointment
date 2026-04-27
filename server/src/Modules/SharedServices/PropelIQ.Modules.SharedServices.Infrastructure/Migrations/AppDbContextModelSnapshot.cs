@@ -495,6 +495,12 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("slot_id");
 
+                    b.Property<int>("SequenceNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("sequence_number");
+
                     b.Property<Guid?>("StaffUserId")
                         .HasColumnType("uuid")
                         .HasColumnName("staff_user_id");

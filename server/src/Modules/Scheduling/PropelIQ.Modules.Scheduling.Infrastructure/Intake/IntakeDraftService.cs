@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PropelIQ.Modules.Scheduling.Application.Abstractions;
@@ -42,7 +43,7 @@ public sealed class IntakeDraftService
         {
             PatientId = patientId,
             SlotId = request.SlotId,
-            FormData = request.FormData,
+            FormData = request.FormData ?? JsonDocument.Parse("{}"),
             AiPopulatedFields = request.AiPopulatedFields ?? [],
             ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
         };
@@ -115,6 +116,14 @@ public sealed class IntakeDraftService
         };
 
         _context.IntakeRecords.Add(record);
+
+        // Back-link: update the appointment's IntakeRecordId so both sides of the
+        // relationship are populated (Appointment was created first without the intake record).
+        var appointment = await _context.Appointments
+            .FirstOrDefaultAsync(a => a.Id == request.AppointmentId, ct);
+        if (appointment is not null)
+            appointment.IntakeRecordId = record.Id;
+
         await _context.SaveChangesAsync(ct);
 
         _logger.LogInformation(
@@ -126,6 +135,7 @@ public sealed class IntakeDraftService
         return new SubmitIntakeResponse
         {
             IntakeRecordId = record.Id,
+            AppointmentId = record.AppointmentId,
             SubmittedAt = record.SubmittedAt,
         };
     }

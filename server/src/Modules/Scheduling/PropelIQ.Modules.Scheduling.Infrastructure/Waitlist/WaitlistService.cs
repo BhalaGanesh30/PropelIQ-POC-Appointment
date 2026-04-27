@@ -59,11 +59,16 @@ public sealed class WaitlistService
         JoinWaitlistRequest request,
         CancellationToken ct)
     {
+        // patientId from JWT is the auth user ID; waitlist_entries.patient_id FK requires app.patients.id.
+        var resolvedPatientId = await _bookingRepo.ResolvePatientIdAsync(patientId, ct)
+            ?? throw new InvalidOperationException(
+                $"No patient record found for user {patientId}.");
+
         var position = await _waitlistRepo.GetNextPositionAsync(ct);
 
         var entry = new WaitlistEntry
         {
-            PatientId                 = patientId,
+            PatientId                 = resolvedPatientId,
             Status                    = WaitlistStatus.Active,
             PreferredDateStart        = request.PreferredDateStart,
             PreferredDateEnd          = request.PreferredDateEnd,
@@ -77,7 +82,7 @@ public sealed class WaitlistService
         _logger.LogInformation(
             "Patient {PatientId} joined waitlist at position {Position} " +
             "for {Type} {Duration}min between {Start:s} and {End:s}",
-            patientId, position, request.PreferredAppointmentType,
+            resolvedPatientId, position, request.PreferredAppointmentType,
             request.PreferredDurationMinutes,
             request.PreferredDateStart, request.PreferredDateEnd);
 

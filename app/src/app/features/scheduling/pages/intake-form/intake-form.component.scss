@@ -12,12 +12,12 @@
     display: block;
     text-align: right;
     font-size: 0.75rem;
-    color: var(--mat-sys-on-surface-variant, #555);
+    color: #757575;
     margin-top: 4px;
   }
 
   mat-progress-bar.complete ::ng-deep .mdc-linear-progress__bar-inner {
-    border-color: var(--mat-sys-tertiary, #4caf50);
+    border-color: #4caf50;
   }
 }
 
@@ -34,7 +34,7 @@
     font-size: 1.5rem;
     font-weight: 600;
     margin: 0;
-    color: var(--mat-sys-on-surface, #1a1a1a);
+    color: #212121;
   }
 }
 
@@ -48,7 +48,16 @@
     width: 18px;
     height: 18px;
     vertical-align: middle;
-    color: var(--mat-sys-tertiary, #5c6bc0);
+    color: #7e57c2;
+  }
+
+  // Purple accent for the AI slide toggle when active
+  ::ng-deep .mdc-switch.mdc-switch--selected .mdc-switch__track {
+    background-color: #7e57c2 !important;
+  }
+
+  ::ng-deep .mdc-switch.mdc-switch--selected .mdc-switch__handle {
+    background-color: #4527a0 !important;
   }
 }
 
@@ -57,20 +66,21 @@
   margin-bottom: 32px;
   padding: 20px;
   border-radius: 12px;
-  background: var(--mat-sys-surface, #fff);
-  border: 1px solid var(--mat-sys-outline-variant, #e0e0e0);
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-left: 4px solid #1976d2;
 
   h2 {
     font-size: 1.125rem;
     font-weight: 600;
     margin: 0 0 16px;
-    color: var(--mat-sys-on-surface, #333);
+    color: #212121;
     display: flex;
     align-items: center;
     gap: 8px;
 
     .section-check {
-      color: var(--mat-sys-tertiary, #4caf50);
+      color: #4caf50;
       font-size: 20px;
       width: 20px;
       height: 20px;
@@ -81,6 +91,10 @@
     width: 100%;
     margin-bottom: 8px;
   }
+
+  &.section-reason    { border-left-color: #f57c00; }
+  &.section-history   { border-left-color: #00897b; }
+  &.section-insurance { border-left-color: #7b1fa2; }
 }
 
 // ── AI badge (UXR-405) ────────────────────────────────────────────────────────
@@ -90,8 +104,8 @@
   gap: 2px;
   padding: 2px 8px;
   border-radius: 12px;
-  background: var(--mat-sys-tertiary-container, #e8eaf6);
-  color: var(--mat-sys-on-tertiary-container, #1a237e);
+  background: #ede7f6;
+  color: #4527a0;
   font-size: 0.6875rem;
   font-weight: 600;
   white-space: nowrap;
@@ -104,7 +118,7 @@
 }
 
 .ai-filled {
-  background-color: var(--mat-sys-tertiary-container, #e8eaf6) !important;
+  background-color: #ede7f6 !important;
 }
 
 // ── Error state ───────────────────────────────────────────────────────────────
@@ -116,14 +130,14 @@
     font-size: 48px;
     width: 48px;
     height: 48px;
-    color: var(--mat-sys-error, #dc2626);
+    color: #d32f2f;
     margin-bottom: 16px;
     display: block;
     margin-inline: auto;
   }
 
   p {
-    color: var(--mat-sys-on-surface-variant, #555);
+    color: #757575;
     margin: 0 0 16px;
   }
 }
@@ -131,23 +145,18 @@
 // ── Skeleton loading ──────────────────────────────────────────────────────────
 .skeleton-form {
   .skeleton-section {
-    background: var(--mat-sys-surface, #fff);
+    background: #ffffff;
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 16px;
-    border: 1px solid var(--mat-sys-outline-variant, #e0e0e0);
+    border: 1px solid #eeeeee;
   }
 }
 
 .skeleton-line {
   height: 14px;
   border-radius: 4px;
-  background: linear-gradient(
-    90deg,
-    var(--mat-sys-surface-variant, #e0e0e0) 25%,
-    var(--mat-sys-surface-container, #eee) 50%,
-    var(--mat-sys-surface-variant, #e0e0e0) 75%
-  );
+  background: linear-gradient(90deg, #eeeeee 25%, #f5f5f5 50%, #eeeeee 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   margin-bottom: 12px;
@@ -165,14 +174,14 @@
 .sticky-footer {
   position: fixed;
   bottom: 0;
-  left: 0;
+  left: 260px; // accounts for sidebar width
   right: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px 24px;
-  background: var(--mat-sys-surface, #fff);
-  border-top: 1px solid var(--mat-sys-outline-variant, #e0e0e0);
+  background: #ffffff;
+  border-top: 1px solid #e0e0e0;
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
   z-index: 10;
 }
@@ -182,10 +191,10 @@
   align-items: center;
   gap: 4px;
   font-size: 0.8125rem;
-  color: var(--mat-sys-on-surface-variant, #777);
+  color: #757575;
 
   .saved-icon {
-    color: var(--mat-sys-tertiary, #4caf50);
+    color: #4caf50;
     font-size: 18px;
     width: 18px;
     height: 18px;
@@ -236,6 +245,7 @@ mat-error {
   }
 
   .sticky-footer {
+    left: 0; // full-width on mobile (no sidebar)
     flex-direction: column;
     gap: 8px;
     padding: 12px 16px;

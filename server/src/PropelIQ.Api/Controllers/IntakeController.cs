@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PropelIQ.Modules.Scheduling.Application.AI.Dto;
@@ -33,8 +32,7 @@ public sealed class IntakeController : BaseApiController
         _assistService = assistService;
     }
 
-    private Guid GetPatientId() =>
-        Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    private Guid? TryGetPatientId() => TryGetCurrentUserId();
 
     /// <summary>
     /// Autosave partial form data on each blur event (AC-2).
@@ -51,7 +49,8 @@ public sealed class IntakeController : BaseApiController
         [FromBody] SaveDraftRequest request,
         CancellationToken ct)
     {
-        var result = await _intakeService.SaveDraftAsync(GetPatientId(), request, ct);
+        if (TryGetPatientId() is not { } patientId) return Unauthorized();
+        var result = await _intakeService.SaveDraftAsync(patientId, request, ct);
         return Ok(result);
     }
 
@@ -72,7 +71,8 @@ public sealed class IntakeController : BaseApiController
         [FromQuery] Guid? slotId,
         CancellationToken ct)
     {
-        var draft = await _intakeService.GetDraftAsync(GetPatientId(), slotId, ct);
+        if (TryGetPatientId() is not { } patientId) return Unauthorized();
+        var draft = await _intakeService.GetDraftAsync(patientId, slotId, ct);
         return draft is null ? NoContent() : Ok(draft);
     }
 
@@ -97,8 +97,9 @@ public sealed class IntakeController : BaseApiController
     {
         try
         {
+            if (TryGetPatientId() is not { } patientId) return Unauthorized();
             var result = await _intakeService.SubmitIntakeAsync(
-                GetPatientId(), request, ct);
+                patientId, request, ct);
             return Ok(result);
         }
         catch (InvalidOperationException ex)

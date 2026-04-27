@@ -1,7 +1,7 @@
 /** POST /api/v1/bookings request body */
 export interface CreateBookingRequest {
   slotId: string;
-  intakeRecordId: string;
+  intakeRecordId?: string;
 }
 
 /** POST /api/v1/bookings — success (HTTP 201) */

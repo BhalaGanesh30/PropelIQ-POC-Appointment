@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import {
   ArtifactType,
   BookingResponse,
@@ -17,7 +18,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class BookingApiService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = '/api/v1/bookings';
+  private readonly baseUrl = `${environment.apiBaseUrl}/bookings`;
 
   createBooking(request: CreateBookingRequest): Observable<BookingResponse> {
     return this.http.post<BookingResponse>(this.baseUrl, request);

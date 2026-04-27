@@ -13,6 +13,7 @@ using PropelIQ.Api.Hubs;
 using PropelIQ.Api.Infrastructure.Auth;
 using PropelIQ.Api.Infrastructure.HealthChecks;
 using PropelIQ.Api.Infrastructure.Tenancy;
+using PropelIQ.Api.Infrastructure;
 using PropelIQ.Api.Sessions;
 using PropelIQ.Modules.Administration.Application.Auth.Validators;
 using PropelIQ.SharedKernel.AiGateway;
@@ -57,11 +58,11 @@ builder.Services.AddControllers();
 
 // ── FluentValidation ─────────────────────────────────────────────────────────
 // Auto-validation: invalid [FromBody] payloads return 400 before the action runs.
-// Validators are discovered from Administration.Application assembly and the API assembly.
-// Two assembly scans are needed because staff management validators live in PropelIQ.Api.
+// Validators are discovered from each module's Application assembly and the API assembly.
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<PropelIQ.Api.Validators.InviteStaffRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<PropelIQ.Modules.Scheduling.Application.Intake.Validators.SaveDraftRequestValidator>();
 
 // ── Rate Limiting (auth endpoints) ───────────────────────────────────────────
 // OWASP A07 / AC-4: cap auth requests per IP to prevent brute-force abuse.
@@ -125,6 +126,15 @@ builder.Services.AddProblemDetails(options =>
                 .GetRequiredService<IHostEnvironment>().IsDevelopment())
         {
             ctx.ProblemDetails.Detail = null;
+        }
+        else
+        {
+            // In Development, expose the full exception so failing requests can
+            // be diagnosed without attaching a debugger.
+            var ex = ctx.HttpContext.Features
+                .Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()?.Error;
+            if (ex is not null)
+                ctx.ProblemDetails.Extensions["exception"] = ex.ToString();
         }
     };
 });
@@ -223,6 +233,12 @@ builder.Services.AddSwaggerGen(options =>
 // AIR-005/AC-2: typed HttpClient with Polly retry + circuit breaker pointing at
 // the LiteLLM proxy. Config validated at startup; malformed section = fast fail.
 builder.Services.AddAiGateway(builder.Configuration);
+
+// Development override: replace LiteLlmGatewayClient with a local keyword-based
+// mock so AI-assist works without a running LiteLLM proxy or Azure OpenAI credentials.
+// The last IAiGatewayClient registration wins in ASP.NET Core DI.
+if (builder.Environment.IsDevelopment())
+    builder.Services.AddSingleton<IAiGatewayClient, DevMockAiGatewayClient>();
 // ── Module Infrastructure Registrations ──────────────────────────────────────
 builder.Services
     .AddSchedulingInfrastructure(builder.Configuration)

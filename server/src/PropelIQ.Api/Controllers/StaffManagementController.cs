@@ -77,7 +77,7 @@ public sealed class StaffManagementController : BaseApiController
         [FromBody] InviteStaffRequest request,
         CancellationToken ct)
     {
-        var adminId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var adminId = TryGetCurrentUserId() ?? Guid.Empty;
         var now = DateTimeOffset.UtcNow;
 
         var existing = await _userManager.FindByEmailAsync(request.Email);
@@ -256,7 +256,7 @@ public sealed class StaffManagementController : BaseApiController
         Guid userId,
         CancellationToken ct)
     {
-        var adminId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var adminId = TryGetCurrentUserId() ?? Guid.Empty;
 
         // Edge-1: prevent self-deactivation.
         if (userId == adminId)

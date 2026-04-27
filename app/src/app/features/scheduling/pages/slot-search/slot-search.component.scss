@@ -1,10 +1,11 @@
 // =============================================================================
 // SlotSearchComponent Styles — SCR-004
+// Layout: side filter panel (left) + results area (right) per figma_spec.md
 // UXR-301: responsive at 375px / 768px / 1440px
 // UXR-303: grid on desktop, vertical cards on mobile
 // UXR-304: 44×44px touch targets
 // UXR-503: sticky selection footer
-// Design tokens from styles.scss / designsystem.md
+// Design tokens: designsystem.md
 // =============================================================================
 
 :host {
@@ -16,81 +17,181 @@
 .slot-search-page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
-  // Leave space at bottom for sticky selection footer
-  padding-bottom: 100px;
+  padding-bottom: 100px; // room for sticky footer
 }
 
 // ── Header ────────────────────────────────────────────────────────────────────
 
-.page-header h1 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0 0 24px;
-  color: var(--color-neutral-900);
-}
-
-// ── Filter bar ────────────────────────────────────────────────────────────────
-
-.filter-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px;
-  background: var(--color-neutral-50);
-  border-radius: 12px;
+.page-header {
   margin-bottom: 24px;
 
-  mat-form-field {
-    flex: 1 1 180px;
-    min-width: 160px;
+  h1 {
+    font-size: 24px;       // designsystem.md heading1
+    font-weight: 600;
+    line-height: 32px;
+    letter-spacing: -0.25px;
+    color: #212121;         // neutral-900
+    margin: 0 0 4px;
   }
 
-  .search-btn {
-    height: 56px;       // Matches mat-form-field height
-    min-width: 120px;
-    min-height: 44px;   // UXR-304
-    flex: 0 0 auto;
-    align-self: flex-start;
-    margin-top: 4px;    // Visual alignment with form fields
+  .page-subtitle {
+    font-size: 14px;        // body
+    color: #757575;         // neutral-600
+    margin: 0;
   }
+}
+
+// ── Two-column layout ─────────────────────────────────────────────────────────
+
+.search-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+// ── Filter panel (sticky left column) ────────────────────────────────────────
+
+.filter-panel {
+  width: 272px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 24px;
+  background: #ffffff;        // surface
+  border: 1px solid #eeeeee;  // neutral-200
+  border-radius: 12px;        // lg
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06); // elevation level_1
+  overflow: hidden;
+}
+
+.filter-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  background: #fafafa;        // neutral-50
+  border-bottom: 1px solid #eeeeee;
+  font-size: 14px;
+  font-weight: 600;
+  color: #424242;             // neutral-800
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #1976d2;           // primary-500
+  }
+}
+
+.filter-form {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 0;
+}
+
+.filter-field {
+  width: 100%;
 }
 
 // ── Validation error (AC-4) ───────────────────────────────────────────────────
 
 .validation-error {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  background: rgba(244, 67, 54, 0.08); // semantic.error light tint
-  color: #c62828;
-  margin-bottom: 16px;
-  font-size: 0.875rem;
+  padding: 10px 12px;
+  border-radius: 8px;         // md
+  background: #ffebee;        // semantic.error.light
+  color: #c62828;             // semantic.error.dark
+  margin-bottom: 8px;
+  font-size: 12px;
+  line-height: 16px;
 
   mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
     flex-shrink: 0;
-    color: var(--color-error);
+    margin-top: 1px;
   }
 }
 
-// ── Results grid ──────────────────────────────────────────────────────────────
+.search-btn {
+  width: 100%;
+  height: 48px;
+  min-height: 44px; // UXR-304
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
 
-.results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 12px;
+// ── Results area (right column) ───────────────────────────────────────────────
+
+.results-area {
+  flex: 1;
+  min-width: 0;
+}
+
+.results-progress {
+  margin-bottom: 16px;
+  border-radius: 4px;
+}
+
+// ── Idle hint ─────────────────────────────────────────────────────────────────
+
+.idle-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 64px 24px;
+  background: #ffffff;
+  border: 2px dashed #eeeeee; // neutral-200
+  border-radius: 12px;
+  color: #9e9e9e;             // neutral-500
+
+  mat-icon {
+    font-size: 52px;
+    width: 52px;
+    height: 52px;
+    color: #bdbdbd;           // neutral-400
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 14px;
+    line-height: 20px;
+    margin: 0;
+    max-width: 300px;
+
+    strong {
+      color: #1976d2;         // primary-500
+    }
+  }
+}
+
+// ── Results header ────────────────────────────────────────────────────────────
+
+.results-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .result-summary {
-  font-size: 0.875rem;
-  color: var(--color-neutral-700);
-  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2e7d32;             // semantic.success.dark
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
 }
 
 // ── Day groups ────────────────────────────────────────────────────────────────
@@ -100,32 +201,54 @@
 }
 
 .day-heading {
-  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
   font-weight: 600;
-  color: var(--color-neutral-900);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #616161;             // neutral-700
   margin: 0 0 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--color-neutral-200);
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eeeeee;
+
+  .day-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #1976d2;      // primary-500
+    flex-shrink: 0;
+  }
+}
+
+// ── Results grid ──────────────────────────────────────────────────────────────
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px;
 }
 
 // ── Skeleton loading cards ────────────────────────────────────────────────────
 
-.skeleton .skeleton-card {
-  background: var(--color-bg-surface);
-  border-radius: 8px;
+.skeleton-card {
+  background: #ffffff;
+  border-radius: 8px;         // md
   padding: 16px;
-  border: 1px solid var(--color-neutral-200);
+  border: 1px solid #eeeeee;
+  min-height: 100px;
 }
 
 .skeleton-line {
-  height: 14px;
+  height: 13px;
   border-radius: 4px;
   margin-bottom: 10px;
   background: linear-gradient(
     90deg,
-    var(--color-neutral-200) 25%,
-    var(--color-neutral-100) 50%,
-    var(--color-neutral-200) 75%
+    #eeeeee 25%,              // neutral-200
+    #f5f5f5 50%,              // neutral-100
+    #eeeeee 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
@@ -140,156 +263,217 @@
   100% { background-position: -200% 0; }
 }
 
-// ── Empty state (AC-3) ────────────────────────────────────────────────────────
+// ── Empty state (AC-3, SCR-004 Empty) ────────────────────────────────────────
 
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 48px 24px;
+  padding: 64px 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #eeeeee;
 
-  .empty-icon {
-    font-size: 64px;
-    width: 64px;
-    height: 64px;
-    color: var(--color-neutral-400);
-    margin-bottom: 16px;
+  .empty-illustration {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: #fafafa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    border: 2px solid #eeeeee;
+
+    mat-icon {
+      font-size: 44px;
+      width: 44px;
+      height: 44px;
+      color: #bdbdbd;         // neutral-400
+    }
   }
 
   h2 {
-    font-size: 1.25rem;
+    font-size: 18px;
     font-weight: 600;
-    color: var(--color-neutral-900);
+    color: #212121;           // neutral-900
     margin: 0 0 8px;
   }
 
   p {
-    color: var(--color-neutral-700);
+    font-size: 14px;
+    color: #757575;           // neutral-600
     margin: 0 0 24px;
+    max-width: 320px;
   }
 
-  button {
-    min-height: 44px; // UXR-304
+  .waitlist-btn {
+    min-height: 44px;         // UXR-304
   }
 }
 
-// ── Error state (UXR-602) ─────────────────────────────────────────────────────
+// ── Error banner (SCR-004 Error, UXR-602) ─────────────────────────────────────
 
-.error-state {
+.error-banner {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 48px 24px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #ffebee;        // semantic.error.light
+  border: 1px solid #ffcdd2;
+  border-left: 4px solid #f44336; // semantic.error.main
+  border-radius: 8px;
 
-  mat-icon {
-    font-size: 48px;
-    width: 48px;
-    height: 48px;
-    color: var(--color-error);
-    margin-bottom: 16px;
-  }
+  .error-banner-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
 
-  p {
-    color: var(--color-neutral-700);
-    margin: 0 0 16px;
+    mat-icon {
+      color: #c62828;         // semantic.error.dark
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #c62828;
+      margin-bottom: 3px;
+    }
+
+    p {
+      font-size: 13px;
+      color: #7f3535;
+      margin: 0;
+    }
   }
 
   button {
-    min-height: 44px; // UXR-304
+    min-height: 44px;         // UXR-304
+    flex-shrink: 0;
   }
 }
 
-// ── Selection footer (UXR-503) ────────────────────────────────────────────────
+// ── Selection footer — sticky (UXR-503, SCR-004 Validation) ──────────────────
 
 .selection-footer {
   position: fixed;
   bottom: 0;
-  left: 0;
+  left: 260px; // accounts for the 260px app sidebar (main-layout.component.scss)
   right: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 16px 24px;
-  background: var(--color-bg-surface);
-  border-top: 1px solid var(--color-neutral-200);
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
-  z-index: 100;
-
-  button {
-    min-height: 44px; // UXR-304
-    white-space: nowrap;
-  }
+  padding: 14px 32px;
+  background: #ffffff;
+  border-top: 2px solid #1976d2; // primary-500
+  box-shadow: 0 -4px 20px rgba(25, 118, 210, 0.12);
+  z-index: 1020; // z_index.sticky
 }
 
 .selection-summary {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.875rem;
-  color: var(--color-neutral-900);
+  gap: 12px;
   min-width: 0;
 
-  span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  mat-icon {
-    color: var(--color-primary-500);
+  .selection-badge {
     flex-shrink: 0;
-  }
-}
 
-// ── Responsive: mobile (UXR-301, UXR-303) ────────────────────────────────────
-
-@media (max-width: 767px) {
-  .slot-search-page {
-    padding: 16px;
-    padding-bottom: 120px;
-  }
-
-  .filter-bar {
-    flex-direction: column;
-
-    mat-form-field {
-      flex: 1 1 100%;
-      min-width: 0;
-    }
-
-    .search-btn {
-      width: 100%;
-      margin-top: 0;
-    }
-  }
-
-  // UXR-303: single column on mobile
-  .results-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .selection-footer {
-    flex-direction: column;
-    align-items: stretch;
-    text-align: center;
-
-    button {
-      width: 100%;
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      color: #4caf50;         // semantic.success.main
     }
   }
 }
 
-// ── Responsive: tablet ────────────────────────────────────────────────────────
+.selection-detail {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
 
+.selection-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9e9e9e;             // neutral-500
+  line-height: 1;
+  margin-bottom: 3px;
+}
+
+.selection-info {
+  font-size: 14px;
+  font-weight: 500;
+  color: #212121;             // neutral-900
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.continue-btn {
+  min-height: 44px;           // UXR-304
+  min-width: 180px;
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+
+// Tablet (768–1023px)
 @media (min-width: 768px) and (max-width: 1023px) {
+  .filter-panel {
+    width: 232px;
+  }
+
   .results-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}
 
-  .filter-bar mat-form-field {
-    flex: 1 1 200px;
+// Mobile (<768px): stack filter above results (UXR-303)
+@media (max-width: 767px) {
+  .search-layout {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .filter-panel {
+    width: 100%;
+    position: static; // no sticky on mobile
+  }
+
+  .results-grid {
+    grid-template-columns: 1fr; // vertical cards (UXR-303)
+  }
+
+  .selection-footer {
+    left: 0;
+    padding: 12px 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+
+    .continue-btn {
+      width: 100%;
+    }
+  }
+}
+
+// Reduced motion (WCAG 2.1 2.3.3 / designsystem.md)
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-line {
+    animation: none;
   }
 }

@@ -31,8 +31,10 @@
       <mat-spinner diameter="20" />
       <span>Analysing…</span>
     } @else {
-      <mat-icon aria-hidden="true">auto_awesome</mat-icon>
-      <span>Generate Suggestions</span>
+      <ng-container>
+        <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+        <span>Generate Suggestions</span>
+      </ng-container>
     }
   </button>
 </div>

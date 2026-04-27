@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using PropelIQ.SharedKernel.Auth;
 
@@ -45,6 +47,23 @@ public static class AuthenticationSetup
 
                 options.Events = new JwtBearerEvents
                 {
+                    // .NET 8 uses JsonWebTokenHandler by default which does NOT apply
+                    // JwtSecurityTokenHandler.DefaultInboundClaimTypeMap automatically.
+                    // Explicitly copy the 'sub' claim to ClaimTypes.NameIdentifier so that
+                    // all controllers can rely on FindFirstValue(ClaimTypes.NameIdentifier).
+                    OnTokenValidated = context =>
+                    {
+                        if (context.Principal?.Identity is ClaimsIdentity identity
+                            && identity.FindFirst(ClaimTypes.NameIdentifier) is null)
+                        {
+                            var sub = identity.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+                                   ?? identity.FindFirst("sub")?.Value;
+                            if (sub is not null)
+                                identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, sub));
+                        }
+                        return Task.CompletedTask;
+                    },
+
                     // Surface token expiry to clients via header so they can refresh silently.
                     OnAuthenticationFailed = context =>
                     {

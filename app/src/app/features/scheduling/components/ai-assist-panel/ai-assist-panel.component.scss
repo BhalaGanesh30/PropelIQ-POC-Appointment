@@ -1,8 +1,8 @@
 .ai-assist-panel {
   padding: 16px;
   border-radius: 12px;
-  background: var(--mat-sys-tertiary-container, #e8eaf6);
-  border: 1px solid var(--mat-sys-outline-variant, #c5cae9);
+  background: #ede7f6;
+  border: 1px solid #d1c4e9;
   margin-bottom: 24px;
 }
 
@@ -12,10 +12,10 @@
   gap: 8px;
   margin-bottom: 12px;
   font-weight: 500;
-  color: var(--mat-sys-on-tertiary-container, #1a237e);
+  color: #4527a0;
 
   .ai-icon {
-    color: var(--mat-sys-tertiary, #5c6bc0);
+    color: #7e57c2;
   }
 }
 
