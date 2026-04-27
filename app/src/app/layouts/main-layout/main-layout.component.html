@@ -10,6 +10,18 @@
   </button>
 
   <span class="app-title">PropelIQ</span>
+
+  <span class="toolbar-spacer"></span>
+
+  @if (userDisplayName()) {
+    <div
+      class="toolbar-avatar"
+      [matTooltip]="userDisplayName()"
+      aria-hidden="true"
+    >
+      {{ userInitials() }}
+    </div>
+  }
 </mat-toolbar>
 
 <mat-sidenav-container class="sidenav-container">
@@ -22,19 +34,70 @@
     aria-label="Main navigation"
     class="app-sidenav"
   >
-    <mat-nav-list>
+    <!-- User profile section -->
+    <div class="sidenav-profile" aria-label="User profile">
+      <div class="profile-avatar" aria-hidden="true">{{ userInitials() }}</div>
+      <div class="profile-info">
+        <span class="profile-name">{{ userDisplayName() }}</span>
+        @if (userRole()) {
+          <span class="profile-role">{{ userRole() }}</span>
+        }
+      </div>
+    </div>
+
+    <mat-divider />
+
+    <!-- Primary navigation -->
+    <mat-nav-list class="nav-list">
       @for (item of navItems; track item.route) {
         <a
           mat-list-item
           [routerLink]="item.route"
           routerLinkActive="active-link"
-          [routerLinkActiveOptions]="{ exact: false }"
+          [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
           [attr.aria-label]="item.label"
         >
           <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
           <span matListItemTitle>{{ item.label }}</span>
         </a>
       }
+    </mat-nav-list>
+
+    <!-- Admin section (role-gated) -->
+    @if (isAdmin()) {
+      <mat-divider />
+      <p class="nav-section-label">Administration</p>
+      <mat-nav-list class="nav-list">
+        @for (item of adminNavItems; track item.route) {
+          <a
+            mat-list-item
+            [routerLink]="item.route"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: false }"
+            [attr.aria-label]="item.label"
+          >
+            <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+            <span matListItemTitle>{{ item.label }}</span>
+          </a>
+        }
+      </mat-nav-list>
+    }
+
+    <!-- Push logout to bottom -->
+    <div class="sidenav-spacer"></div>
+
+    <mat-divider />
+
+    <mat-nav-list>
+      <button
+        mat-list-item
+        (click)="logout()"
+        class="logout-item"
+        aria-label="Sign out"
+      >
+        <mat-icon matListItemIcon>logout</mat-icon>
+        <span matListItemTitle>Sign out</span>
+      </button>
     </mat-nav-list>
   </mat-sidenav>
 
