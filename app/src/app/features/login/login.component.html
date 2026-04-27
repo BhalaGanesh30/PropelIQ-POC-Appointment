@@ -1,117 +1,162 @@
-<div class="login-container" role="main" aria-label="User Login">
-  <header class="login-header">
-    <h1>Welcome Back</h1>
-    <p class="login-subtitle">Sign in to your PropelIQ account</p>
-  </header>
+<div class="auth-shell" role="main" aria-label="User Login">
+  <div class="auth-card">
 
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate class="login-form">
-
-    @if (sessionBanner()) {
-      @if (bannerType() === 'success') {
-        <div class="session-banner session-banner--success" role="status" aria-live="polite">
-          {{ sessionBanner() }}
-        </div>
-      } @else if (bannerType() === 'lockout') {
-        <div class="session-banner session-banner--lockout" role="alert" aria-live="assertive">
-          <span aria-hidden="true">&#128274;</span> {{ sessionBanner() }}
-        </div>
-      } @else {
-        <div class="session-banner" role="alert" aria-live="polite">
-          {{ sessionBanner() }}
-        </div>
-      }
-    }
-
-    @if (serverError()) {
-      <div class="server-error" role="alert" aria-live="polite">
-        {{ serverError() }}
+    <!-- ══ Left hero column ══════════════════════════════════════════════════ -->
+    <section class="auth-hero" aria-hidden="true">
+      <div class="brand">
+        <strong>Unified Patient Access</strong>
+        <small>Secure sign in</small>
       </div>
-    }
+      <div class="auth-hero-stack">
+        <span class="eyebrow">SCR-002</span>
+        <h2>Access the right workspace instantly.</h2>
+        <p>
+          Unified authentication routes patients, staff, clinicians, and admins
+          to role-appropriate landing experiences.
+        </p>
+      </div>
+      <!-- Account lockout advisory — always visible on the hero -->
+      <div class="banner banner-warning">
+        <strong>Account lockout warning.</strong>
+        <p>After five failed attempts, a countdown banner and support details appear.</p>
+      </div>
+    </section>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Email Address</mat-label>
-      <input
-        matInput
-        formControlName="email"
-        type="email"
-        autocomplete="email"
-        inputmode="email"
-        [attr.aria-describedby]="
-          loginForm.controls.email.invalid && loginForm.controls.email.touched
-            ? 'email-error'
-            : null
-        "
-      />
-      @if (loginForm.controls.email.touched && loginForm.controls.email.invalid) {
-        <mat-error id="email-error">
-          @if (loginForm.controls.email.errors?.['required']) {
-            Email is required
-          } @else if (loginForm.controls.email.errors?.['email']) {
-            Please enter a valid email address
+    <!-- ══ Right form column ═════════════════════════════════════════════════ -->
+    <section class="auth-form">
+      <h2 id="login-heading">Welcome back</h2>
+
+      <!-- Session banners (session-expired / session-ended / password-reset) -->
+      @if (sessionBanner()) {
+        @if (bannerType() === 'success') {
+          <div class="banner banner-success" role="status" aria-live="polite">
+            <strong>Success.</strong>
+            <p>{{ sessionBanner() }}</p>
+          </div>
+        } @else if (bannerType() === 'lockout') {
+          <div class="banner banner-error" role="alert" aria-live="assertive">
+            <strong>Account locked.</strong>
+            <p>{{ sessionBanner() }}</p>
+          </div>
+        } @else {
+          <div class="banner banner-info" role="status" aria-live="polite">
+            <strong>Notice.</strong>
+            <p>{{ sessionBanner() }}</p>
+          </div>
+        }
+      }
+
+      <form [formGroup]="loginForm"
+            (ngSubmit)="onSubmit()"
+            aria-labelledby="login-heading"
+            novalidate>
+
+        <!-- Email field -->
+        <div class="wf-field">
+          <label for="login-email" class="wf-label">Email</label>
+          <input id="login-email"
+                 formControlName="email"
+                 type="email"
+                 autocomplete="email"
+                 inputmode="email"
+                 class="wf-input"
+                 [class.is-invalid]="loginForm.controls.email.invalid &&
+                                      loginForm.controls.email.touched"
+                 aria-required="true"
+                 placeholder="name@clinic.org"
+                 aria-describedby="email-error" />
+          @if (loginForm.controls.email.touched && loginForm.controls.email.invalid) {
+            <span id="email-error" class="wf-error" role="alert">
+              @if (loginForm.controls.email.errors?.['required']) {
+                Email is required.
+              } @else if (loginForm.controls.email.errors?.['email']) {
+                Please enter a valid email address.
+              }
+            </span>
           }
-        </mat-error>
-      }
-    </mat-form-field>
+        </div>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Password</mat-label>
-      <input
-        matInput
-        formControlName="password"
-        [type]="showPassword() ? 'text' : 'password'"
-        autocomplete="current-password"
-        [attr.aria-describedby]="
-          loginForm.controls.password.invalid && loginForm.controls.password.touched
-            ? 'password-error'
-            : null
-        "
-      />
-      <button
-        mat-icon-button
-        matSuffix
-        type="button"
-        (click)="togglePasswordVisibility()"
-        [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
-      >
-        <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-      </button>
-      @if (loginForm.controls.password.touched && loginForm.controls.password.invalid) {
-        <mat-error id="password-error">Password is required</mat-error>
-      }
-    </mat-form-field>
+        <!-- Password field -->
+        <div class="wf-field">
+          <label for="login-password" class="wf-label">Password</label>
+          <div class="wf-input-wrap">
+            <input id="login-password"
+                   formControlName="password"
+                   [type]="showPassword() ? 'text' : 'password'"
+                   autocomplete="current-password"
+                   class="wf-input"
+                   [class.is-invalid]="loginForm.controls.password.invalid &&
+                                        loginForm.controls.password.touched"
+                   aria-required="true"
+                   aria-describedby="password-error" />
+            <button type="button"
+                    class="wf-toggle-pw"
+                    (click)="togglePasswordVisibility()"
+                    [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'">
+              <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+          @if (loginForm.controls.password.touched && loginForm.controls.password.invalid) {
+            <span id="password-error" class="wf-error" role="alert">
+              Password is required.
+            </span>
+          }
+        </div>
 
-    <div class="form-options">
-      <mat-checkbox formControlName="rememberMe" color="primary">
-        Remember me
-      </mat-checkbox>
-      <a routerLink="/auth/forgot-password" class="forgot-link">
-        Forgot password?
-      </a>
-    </div>
+        <!-- Remember me -->
+        <div class="form-options">
+          <mat-checkbox formControlName="rememberMe" color="primary" class="remember-me">
+            Remember me
+          </mat-checkbox>
+        </div>
 
-    <button
-      mat-raised-button
-      color="primary"
-      type="submit"
-      class="submit-btn"
-      [disabled]="loginForm.invalid || isSubmitting()"
-      aria-label="Log in"
-    >
-      @if (isSubmitting()) {
-        <mat-spinner diameter="20" />
-      } @else {
-        Log In
-      }
-    </button>
-  </form>
+        <!-- Server / auth error banner (inline error on failed login) -->
+        @if (serverError()) {
+          <div class="banner banner-error" role="alert" aria-live="assertive">
+            <strong>Incorrect password.</strong>
+            <p>
+              {{ serverError() }}
+            </p>
+          </div>
+        }
 
-  <p class="register-link">
-    Don't have an account?
-    <a routerLink="/auth/register">Create one</a>
-  </p>
+        <!-- Action buttons: Sign in (primary) + Forgot password (ghost) -->
+        <div class="btn-row">
+          <button mat-raised-button
+                  color="primary"
+                  type="submit"
+                  class="btn-primary"
+                  [disabled]="loginForm.invalid || isSubmitting()"
+                  aria-label="Sign in">
+            @if (isSubmitting()) {
+              <mat-spinner diameter="20" aria-label="Signing in…"></mat-spinner>
+            } @else {
+              Sign in
+            }
+          </button>
+          <a mat-button
+             routerLink="/auth/forgot-password"
+             class="btn-ghost">
+            Forgot password
+          </a>
+        </div>
 
-  <footer class="login-footer">
-    <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
-    <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
-  </footer>
+      </form>
+
+      <!-- Register CTA -->
+      <small class="register-cta">
+        New patient?
+        <a routerLink="/auth/register" class="inline-link">Register here.</a>
+        Social login remains reserved for a future release.
+      </small>
+
+      <!-- Footer links -->
+      <footer class="auth-footer-links">
+        <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+        <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        <a href="/accessibility" target="_blank" rel="noopener noreferrer">Accessibility</a>
+      </footer>
+
+    </section>
+  </div>
 </div>
