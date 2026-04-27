@@ -8,6 +8,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using PropelIQ.Api.Sessions;
 using PropelIQ.Modules.Administration.Application.Auth;
 using PropelIQ.Modules.SharedServices.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using PropelIQ.Modules.SharedServices.Infrastructure.Data;
 using PropelIQ.Modules.SharedServices.Infrastructure.Identity;
 using PropelIQ.SharedKernel.Notifications;
@@ -103,7 +104,16 @@ public sealed class AuthController : BaseApiController
             return ValidationProblem(ModelState);
         }
 
-        // Generate email-confirmation token and send the link.
+        // Sync a domain user projection into app.users with the same ID so that
+        // the JWT sub (= auth user ID) resolves correctly via app.patients.user_id.
+        // Raw SQL is required because BaseEntity.Id has a protected setter.
+        await _db.Database.ExecuteSqlAsync(
+            $"""
+            INSERT INTO app.users (id, email, password_hash, role, first_name, last_name, is_active, created_at, updated_at)
+            VALUES ({user.Id}, {user.Email}, 'IDENTITY_MANAGED', 'Patient', {user.FirstName}, {user.LastName}, true, now(), now())
+            ON CONFLICT (id) DO NOTHING
+            """,
+            ct);
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         var encodedToken = Uri.EscapeDataString(token);
         var callbackUrl =

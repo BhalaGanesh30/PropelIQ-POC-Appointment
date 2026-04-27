@@ -1,155 +1,184 @@
-<!-- Loading state -->
-@if (isLoading()) {
-  <div class="confirmation-container">
-    <mat-spinner diameter="48" aria-label="Loading booking details"></mat-spinner>
-    <p class="status-text">Loading confirmation...</p>
-  </div>
-}
-
-<!-- Submitting state (UXR-501) -->
-@if (isSubmitting()) {
-  <div class="confirmation-container">
-    <mat-spinner diameter="48" aria-label="Confirming booking"></mat-spinner>
-    <p class="status-text">Confirming your booking...</p>
-  </div>
-}
-
-<!-- Confirmation card (SCR-006 Default + Validation states) -->
-@if (booking(); as b) {
-  <div class="confirmation-container">
-
-    <!-- Success banner — SCR-006 Validation state -->
-    <div class="success-banner" role="alert" aria-live="polite">
-      <mat-icon aria-hidden="true">check_circle</mat-icon>
-      <span>Appointment Confirmed!</span>
+<!-- ── Loading / Submitting spinners (UXR-501) ─────────────────────────────── -->
+@if (isLoading() || isSubmitting()) {
+  <div class="scr006-shell">
+    <div class="scr006-spinner-wrap" role="status" aria-live="polite">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p class="scr006-spinner-text">
+        {{ isSubmitting() ? 'Confirming your booking…' : 'Loading confirmation…' }}
+      </p>
     </div>
+  </div>
+}
 
-    <!-- Detail card (max-width 600px per SCR-006 layout) -->
-    <mat-card class="confirmation-card">
-      <mat-card-header>
-        <mat-card-title>Appointment Details</mat-card-title>
-        <mat-card-subtitle>
-          Confirmation Code:&nbsp;<strong>{{ b.confirmationCode }}</strong>
-        </mat-card-subtitle>
-      </mat-card-header>
+<!-- ── SCR-006 Confirmed state ────────────────────────────────────────────── -->
+@if (booking(); as b) {
+  <div class="scr006-shell">
 
-      <mat-card-content>
-        <div class="detail-grid">
-          <div class="detail-row">
-            <span class="detail-label">
-              <mat-icon aria-hidden="true">calendar_today</mat-icon> Date
-            </span>
-            <span class="detail-value">
-              {{ b.appointmentTime | date: 'EEEE, MMMM d, y' }}
-            </span>
+    <!-- Hero ────────────────────────────────────────────────────────────────── -->
+    <section class="scr006-hero">
+      <div class="scr006-hero-copy">
+        <span class="scr006-eyebrow">Booking confirmation</span>
+        <h1 class="scr006-heading">Your appointment is confirmed.</h1>
+        <p class="scr006-subheading">
+          The summary below keeps your artifacts in one place: PDF, QR code, and calendar export.
+        </p>
+        <div class="scr006-chip-row">
+          <span class="scr006-pill scr006-pill--success">Visit booked</span>
+          <span class="scr006-pill">PDF &amp; ICS actions</span>
+        </div>
+      </div>
+
+      <!-- Hero banner — SCR-006 Validation state -->
+      <div class="scr006-hero-banner" role="alert" aria-live="polite">
+        <mat-icon aria-hidden="true">check_circle</mat-icon>
+        <div class="scr006-hero-banner-text">
+          <strong>Visit booked.</strong>
+          <p>
+            {{ b.appointmentTime | date: 'EEEE d MMM y' }} at
+            {{ b.appointmentTime | date: 'h:mm a' }}
+            @if (b.providerName) { with {{ b.providerName }} }
+            @if (b.appointmentType) { — {{ b.appointmentType }} }
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Two-column panel ─────────────────────────────────────────────────── -->
+    <section class="scr006-panel">
+
+      <!-- Left: appointment summary (span-7) -->
+      <mat-card class="scr006-card scr006-card--summary">
+        <mat-card-header>
+          <mat-card-title>Appointment summary</mat-card-title>
+          <mat-card-subtitle>
+            Code:&nbsp;<strong>{{ b.confirmationCode }}</strong>
+          </mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <!-- Date / time / duration mini-card -->
+          <div class="scr006-mini-card">
+            <strong>
+              <mat-icon aria-hidden="true">calendar_today</mat-icon> Date &amp; Time
+            </strong>
+            <p>
+              {{ b.appointmentTime | date: 'EEEE, MMMM d, y' }}&nbsp;at&nbsp;{{ b.appointmentTime | date: 'h:mm a' }}
+              ({{ b.durationMinutes }} min)
+            </p>
           </div>
 
-          <div class="detail-row">
-            <span class="detail-label">
-              <mat-icon aria-hidden="true">schedule</mat-icon> Time
-            </span>
-            <span class="detail-value">
-              {{ b.appointmentTime | date: 'h:mm a' }}
-            </span>
-          </div>
-
-          <div class="detail-row">
-            <span class="detail-label">
-              <mat-icon aria-hidden="true">timelapse</mat-icon> Duration
-            </span>
-            <span class="detail-value">{{ b.durationMinutes }} minutes</span>
-          </div>
-
-          <div class="detail-row">
-            <span class="detail-label">
-              <mat-icon aria-hidden="true">medical_services</mat-icon> Type
-            </span>
-            <span class="detail-value">{{ b.appointmentType }}</span>
-          </div>
-
-          <div class="detail-row">
-            <span class="detail-label">
+          <!-- Appointment type / provider mini-card -->
+          <div class="scr006-mini-card">
+            <strong>
               <mat-icon aria-hidden="true">person</mat-icon> Provider
-            </span>
-            <span class="detail-value">{{ b.providerName ?? 'TBD' }}</span>
+            </strong>
+            <p>{{ b.providerName ?? 'To be confirmed' }}, {{ b.appointmentType }}</p>
           </div>
 
-          @if (b.location) {
-            <div class="detail-row">
-              <span class="detail-label">
-                <mat-icon aria-hidden="true">location_on</mat-icon> Location
-              </span>
-              <span class="detail-value">{{ b.location }}</span>
+          <!-- Clinic / location mini-card -->
+          <div class="scr006-mini-card">
+            <strong>
+              <mat-icon aria-hidden="true">location_on</mat-icon> Clinic
+            </strong>
+            <p>{{ b.location ?? 'Location to be confirmed' }}</p>
+          </div>
+
+          <!-- Arrival guidance mini-card -->
+          <div class="scr006-mini-card">
+            <strong>
+              <mat-icon aria-hidden="true">info_outline</mat-icon> Arrival guidance
+            </strong>
+            <p>Please arrive 15 minutes early and bring a valid photo ID.</p>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button mat-button
+                  (click)="navigateToAppointments()"
+                  aria-label="View all my appointments">
+            <mat-icon aria-hidden="true">list</mat-icon>
+            My Appointments
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+      <!-- Right: actions (span-5) -->
+      <mat-card class="scr006-card scr006-card--actions">
+        <mat-card-header>
+          <mat-card-title>Actions</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content class="scr006-actions-stack">
+          <!-- Primary: Download PDF (AC-3) -->
+          <button mat-flat-button color="primary"
+                  (click)="downloadArtifact('pdf')"
+                  [disabled]="downloadingArtifact() !== null"
+                  class="scr006-action-btn"
+                  aria-label="Download PDF appointment summary">
+            @if (downloadingArtifact() === 'pdf') {
+              <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
+            } @else {
+              <mat-icon aria-hidden="true">picture_as_pdf</mat-icon>
+            }
+            Download PDF
+          </button>
+
+          <!-- Secondary: Export to calendar (AC-2) -->
+          <button mat-stroked-button
+                  (click)="downloadArtifact('ics')"
+                  [disabled]="downloadingArtifact() !== null"
+                  class="scr006-action-btn"
+                  aria-label="Export appointment to calendar">
+            @if (downloadingArtifact() === 'ics') {
+              <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
+            } @else {
+              <mat-icon aria-hidden="true">event</mat-icon>
+            }
+            Export to Calendar
+          </button>
+
+          <!-- Ghost: Show QR code (AC-2) -->
+          <button mat-button
+                  (click)="downloadArtifact('qr')"
+                  [disabled]="downloadingArtifact() !== null"
+                  class="scr006-action-btn"
+                  aria-label="Download QR code for check-in">
+            @if (downloadingArtifact() === 'qr') {
+              <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
+            } @else {
+              <mat-icon aria-hidden="true">qr_code</mat-icon>
+            }
+            Show QR Code
+          </button>
+
+          <!-- Fallback banner — shown when artifact download fails -->
+          @if (errorMessage(); as msg) {
+            <div class="scr006-fallback-banner" role="alert">
+              <strong>Download unavailable</strong>
+              <p>{{ msg }}</p>
+              <button mat-button (click)="clearError()" aria-label="Dismiss error">
+                Dismiss
+              </button>
             </div>
           }
-        </div>
-      </mat-card-content>
+        </mat-card-content>
+      </mat-card>
 
-      <!-- Action buttons — UXR-105: PDF / QR / ICS in a single view -->
-      <mat-card-actions class="action-row">
-        <button mat-flat-button color="primary"
-                (click)="downloadArtifact('pdf')"
-                [disabled]="downloadingArtifact() !== null"
-                aria-label="Download PDF appointment summary">
-          @if (downloadingArtifact() === 'pdf') {
-            <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
-          } @else {
-            <mat-icon aria-hidden="true">picture_as_pdf</mat-icon>
-          }
-          Download PDF
-        </button>
-
-        <button mat-stroked-button
-                (click)="downloadArtifact('qr')"
-                [disabled]="downloadingArtifact() !== null"
-                aria-label="Download QR code for this appointment">
-          @if (downloadingArtifact() === 'qr') {
-            <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
-          } @else {
-            <mat-icon aria-hidden="true">qr_code</mat-icon>
-          }
-          QR Code
-        </button>
-
-        <button mat-stroked-button
-                (click)="downloadArtifact('ics')"
-                [disabled]="downloadingArtifact() !== null"
-                aria-label="Add appointment to calendar">
-          @if (downloadingArtifact() === 'ics') {
-            <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
-          } @else {
-            <mat-icon aria-hidden="true">event</mat-icon>
-          }
-          Add to Calendar
-        </button>
-      </mat-card-actions>
-    </mat-card>
-
-    <!-- Navigation link -->
-    <div class="navigation-row">
-      <button mat-button
-              (click)="navigateToAppointments()"
-              aria-label="Go to dashboard">
-        <mat-icon aria-hidden="true">arrow_back</mat-icon>
-        Back to Dashboard
-      </button>
-    </div>
+    </section>
   </div>
 }
 
-<!-- Error state (SCR-006 Error state) -->
-@if (errorMessage(); as msg) {
-  <div class="confirmation-container">
-    <mat-card class="error-card">
-      <mat-card-content>
-        <mat-icon color="warn" aria-hidden="true">error_outline</mat-icon>
-        <p role="alert">{{ msg }}</p>
-        <button mat-flat-button color="primary"
-                (click)="clearError()"
-                aria-label="Dismiss error and try again">
-          Try Again
-        </button>
-      </mat-card-content>
-    </mat-card>
+<!-- ── Error state — no booking loaded ───────────────────────────────────── -->
+@if (!isLoading() && !isSubmitting() && !booking() && errorMessage(); as msg) {
+  <div class="scr006-shell">
+    <div class="scr006-error-wrap">
+      <mat-icon color="warn" aria-hidden="true">error_outline</mat-icon>
+      <p role="alert">{{ msg }}</p>
+      <button mat-flat-button color="primary"
+              (click)="clearError()"
+              aria-label="Dismiss error and try again">
+        Try Again
+      </button>
+    </div>
   </div>
 }

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PropelIQ.Modules.Administration.Domain.Entities;
 using PropelIQ.Modules.Scheduling.Application.Abstractions;
 using PropelIQ.Modules.Scheduling.Application.Appointments.Dto;
 using PropelIQ.Modules.Scheduling.Domain.Entities;
@@ -26,11 +27,11 @@ public sealed class AppointmentHistoryRepository : IAppointmentHistoryRepository
 
     /// <inheritdoc />
     public async Task<(List<Appointment> Items, int TotalCount)> GetFilteredAsync(
-        Guid patientId,
+        Guid userId,
         AppointmentHistoryFilter filter,
         CancellationToken ct)
     {
-        var query = BuildBaseQuery(patientId, filter);
+        var query = BuildBaseQuery(userId, filter);
 
         var totalCount = await query.CountAsync(ct);
 
@@ -44,23 +45,30 @@ public sealed class AppointmentHistoryRepository : IAppointmentHistoryRepository
 
     /// <inheritdoc />
     public IAsyncEnumerable<Appointment> StreamFilteredAsync(
-        Guid patientId,
+        Guid userId,
         AppointmentHistoryFilter filter,
         CancellationToken ct)
     {
         // AsAsyncEnumerable streams rows one-by-one to keep memory flat (AC-4).
-        return BuildBaseQuery(patientId, filter).AsAsyncEnumerable();
+        return BuildBaseQuery(userId, filter).AsAsyncEnumerable();
     }
 
     // ── Private helpers ──────────────────────────────────────────────────────
 
     private IQueryable<Appointment> BuildBaseQuery(
-        Guid patientId,
+        Guid userId,
         AppointmentHistoryFilter filter)
     {
+        // Resolve auth user ID → patient ID via the patients table so that
+        // appointments.patient_id (FK→app.patients.id) is correctly matched
+        // even though the JWT sub claim carries app.users.id.
+        var patientIds = _context.Patients
+            .Where(p => p.UserId == userId)
+            .Select(p => p.Id);
+
         var query = _context.Appointments
             .AsNoTracking()
-            .Where(a => a.PatientId == patientId);
+            .Where(a => patientIds.Contains(a.PatientId));
 
         if (filter.Status is not null)
             query = query.Where(a => a.Status == filter.Status);

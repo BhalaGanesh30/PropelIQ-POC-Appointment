@@ -36,15 +36,15 @@ public sealed class AppointmentHistoryService
     /// AC-1 / AC-2 / AC-3.
     /// </summary>
     public async Task<AppointmentHistoryResponse> GetHistoryAsync(
-        Guid patientId,
+        Guid userId,
         AppointmentHistoryFilter filter,
         CancellationToken ct)
     {
         _logger.LogInformation(
-            "Fetching appointment history for patient {PatientId} (page={Page}, pageSize={PageSize}, status={Status})",
-            patientId, filter.Page, filter.PageSize, filter.Status ?? "any");
+            "Fetching appointment history for user {UserId} (page={Page}, pageSize={PageSize}, status={Status})",
+            userId, filter.Page, filter.PageSize, filter.Status ?? "any");
 
-        var (items, totalCount) = await _historyRepo.GetFilteredAsync(patientId, filter, ct);
+        var (items, totalCount) = await _historyRepo.GetFilteredAsync(userId, filter, ct);
 
         return new AppointmentHistoryResponse
         {
@@ -61,25 +61,24 @@ public sealed class AppointmentHistoryService
     /// AC-4: streams complete result set — ignores pagination.
     /// </summary>
     public async Task<byte[]> ExportPdfAsync(
-        Guid patientId,
+        Guid userId,
         AppointmentHistoryFilter filter,
         CancellationToken ct)
     {
-        // Use a page-1 / max-records filter when streaming to PDF.
         var exportFilter = filter with { Page = 1, PageSize = int.MaxValue };
 
         _logger.LogInformation(
-            "Exporting appointment history PDF for patient {PatientId} (status={Status})",
-            patientId, exportFilter.Status ?? "any");
+            "Exporting appointment history PDF for user {UserId} (status={Status})",
+            userId, exportFilter.Status ?? "any");
 
         var appointments = new List<AppointmentHistoryItem>();
 
-        await foreach (var apt in _historyRepo.StreamFilteredAsync(patientId, exportFilter, ct))
+        await foreach (var apt in _historyRepo.StreamFilteredAsync(userId, exportFilter, ct))
             appointments.Add(MapToItem(apt));
 
         _logger.LogInformation(
-            "Generating appointment history PDF for patient {PatientId} ({Count} records)",
-            patientId, appointments.Count);
+            "Generating appointment history PDF for user {UserId} ({Count} records)",
+            userId, appointments.Count);
 
         return _pdfGenerator.Generate(appointments, filter);
     }

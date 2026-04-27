@@ -5,9 +5,71 @@
   padding: 24px 16px;
   max-width: 1200px;
   margin: 0 auto;
+}
 
-  h1 {
-    margin-bottom: 24px;
+// ── SCR-007 Topbar — eyebrow + H2 + Export PDF (wireframe header pattern) ────
+.scr007-topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.scr007-topbar-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scr007-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mat-sys-primary);
+}
+
+.scr007-heading {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0;
+  color: var(--mat-sys-on-surface);
+}
+
+.scr007-topbar-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+
+  // UXR-304: minimum 44px touch target
+  button {
+    min-height: 44px;
+  }
+}
+
+// ── SCR-007 Info banner — "Destructive actions are guarded" ──────────────────
+.scr007-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 20px;
+  background: var(--mat-sys-primary-container);
+  border-left: 4px solid var(--mat-sys-primary);
+  border-radius: 6px;
+  margin-bottom: 24px;
+
+  strong {
+    font-size: 14px;
+    color: var(--mat-sys-on-primary-container);
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--mat-sys-on-primary-container);
   }
 }
 
@@ -28,7 +90,6 @@
   min-width: 160px;
 }
 
-// Clear + Export PDF grouped at the end of the filter bar
 .filter-actions {
   display: flex;
   gap: 8px;
@@ -39,11 +100,6 @@
   button {
     min-height: 44px;
   }
-}
-
-// Export PDF button — slightly wider to fit icon + label
-.export-btn {
-  min-width: 120px;
 }
 
 // ── Skeleton loading (SCR-007 Loading) ───────────────────────────────────────
@@ -114,14 +170,43 @@
   margin-bottom: 8px;
 }
 
-.action-buttons {
+// ── Action cell — inline text-style links per SCR-007 wireframe ──────────────
+.scr007-action-cell {
   display: flex;
-  gap: 4px;
-  // UXR-304: ensure 44×44px minimum touch target per button
-  button {
-    min-width: 44px;
-    min-height: 44px;
+  align-items: center;
+  gap: 0;
+}
+
+// Text-style action button ("Reschedule", "Cancel", "Download summary", "View details")
+.scr007-action-link {
+  font-size: 13px;
+  min-width: 0;
+  padding: 0 8px;
+  height: 32px;
+  line-height: 32px;
+  font-weight: 500;
+  letter-spacing: 0;
+
+  // UXR-304: expand touch target on mobile via ::before pseudo-element trick
+  position: relative;
+
+  &--danger {
+    color: var(--mat-sys-error) !important;
   }
+
+  mat-spinner {
+    display: inline-block;
+    margin-right: 4px;
+  }
+}
+
+// Pipe separator between "Reschedule | Cancel"
+.scr007-action-sep {
+  color: var(--mat-sys-outline);
+  font-size: 14px;
+  padding: 0 2px;
+  user-select: none;
+  line-height: 32px;
 }
 
 // ── Status chip colours ──────────────────────────────────────────────────────
@@ -150,6 +235,11 @@
 .status-noshow {
   background: var(--mat-sys-outline-variant) !important;
   color: var(--mat-sys-on-surface-variant) !important;
+}
+
+.status-rescheduled {
+  background: var(--mat-sys-secondary-container) !important;
+  color: var(--mat-sys-on-secondary-container) !important;
 }
 
 // ── Mobile card list ─────────────────────────────────────────────────────────
@@ -192,6 +282,15 @@
   }
 }
 
+// ── Calendar export button (US_024) ──────────────────────────────────────────
+.calendar-btn {
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+  }
+}
+
 // ── UXR-301: Responsive breakpoints ─────────────────────────────────────────
 
 // Default: desktop table visible, card list hidden
@@ -215,6 +314,24 @@
 
   .history-container {
     padding: 16px 12px;
+  }
+
+  .scr007-topbar {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .scr007-topbar-actions {
+    width: 100%;
+
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .scr007-heading {
+    font-size: 20px;
   }
 
   .filter-bar {
@@ -264,28 +381,5 @@
 @media (min-width: 1024px) {
   .history-container {
     padding: 32px;
-  }
-}
-
-// ── Calendar export button (US_024) ──────────────────────────────────────────
-
-// Desktop: calendar icon-button sits inline with reschedule/cancel in .action-buttons.
-// No extra positioning needed — inherits .action-buttons flex gap.
-
-// Mobile card: calendar button adopts the same min-height as other card actions
-// and spans full width at the 375px breakpoint.
-.calendar-btn {
-  mat-icon {
-    font-size: 18px;
-    height: 18px;
-    width: 18px;
-    margin-right: 4px;
-  }
-}
-
-@media (max-width: 599px) {
-  .calendar-btn {
-    width: 100%;
-    justify-content: center;
   }
 }

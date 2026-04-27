@@ -80,7 +80,7 @@ public sealed class BookingService
         var appointment = new Appointment
         {
             PatientId       = resolvedPatientId.Value,
-            StaffUserId     = slot.ProviderId,
+            StaffUserId     = null,   // Patient self-booking; provider name captured in ProviderName string column.
             SlotId          = slot.Id,
             IntakeRecordId  = request.IntakeRecordId,
             ScheduledAt     = slot.StartTime,
@@ -131,6 +131,35 @@ public sealed class BookingService
             var conflict = await BuildConflictAsync(slot.StartTime, slot.Type, ct);
             return (false, null, conflict);
         }
+    }
+
+    /// <summary>
+    /// Returns the <see cref="BookingResponse"/> for a given appointment ID,
+    /// scoped to the authenticated patient. Returns <see langword="null"/> when
+    /// the appointment does not exist or belongs to a different patient.
+    /// </summary>
+    public async Task<BookingResponse?> GetBookingAsync(
+        Guid appointmentId, Guid userId, CancellationToken ct)
+    {
+        var resolvedPatientId = await _bookingRepo.ResolvePatientIdAsync(userId, ct);
+        if (resolvedPatientId is null) return null;
+
+        var appt = await _bookingRepo.GetAppointmentForPatientAsync(
+            appointmentId, resolvedPatientId.Value, ct);
+        if (appt is null) return null;
+
+        return new BookingResponse
+        {
+            AppointmentId    = appt.Id,
+            ConfirmationCode = appt.ConfirmationCode ?? string.Empty,
+            AppointmentTime  = appt.ScheduledAt,
+            DurationMinutes  = appt.DurationMinutes,
+            AppointmentType  = appt.AppointmentType,
+            ProviderName     = appt.ProviderName,
+            Location         = appt.Location,
+            Status           = appt.Status,
+            BookedAt         = appt.BookedAt,
+        };
     }
 
     // ── private helpers ───────────────────────────────────────────────────────

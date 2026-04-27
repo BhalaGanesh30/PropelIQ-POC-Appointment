@@ -1,7 +1,36 @@
 <div class="history-container">
-  <h1>My Appointments</h1>
 
-  <!-- SCR-007 Default: filter bar (status, date range, clear, export PDF) -->
+  <!-- ── Topbar — SCR-007 header (eyebrow + H2 + Export PDF) ──────────────── -->
+  <header class="scr007-topbar">
+    <div class="scr007-topbar-copy">
+      <span class="scr007-eyebrow">SCR-007</span>
+      <h1 class="scr007-heading">Review upcoming and past visits</h1>
+    </div>
+    <div class="scr007-topbar-actions">
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="isExporting() || totalCount() === 0"
+        (click)="exportPdf()"
+        aria-label="Export appointment history as PDF"
+      >
+        @if (isExporting()) {
+          <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
+        } @else {
+          <mat-icon aria-hidden="true">picture_as_pdf</mat-icon>
+        }
+        Export PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Info banner — "Destructive actions are guarded" (SCR-007 wireframe) -->
+  <section class="scr007-banner" aria-label="Action guidance">
+    <strong>Destructive actions are guarded.</strong>
+    <p>Cancel and reschedule actions always open a confirmation dialog before making changes.</p>
+  </section>
+
+  <!-- SCR-007 Default: filter bar (status, date range, clear) -->
   <div class="filter-bar" role="search" aria-label="Filter appointments">
     <mat-form-field appearance="outline" class="filter-field">
       <mat-label>Status</mat-label>
@@ -57,23 +86,6 @@
         <mat-icon aria-hidden="true">clear</mat-icon>
         Clear
       </button>
-
-      <!-- AC-4: Export PDF -->
-      <button
-        mat-flat-button
-        color="primary"
-        class="export-btn"
-        [disabled]="isExporting() || totalCount() === 0"
-        (click)="exportPdf()"
-        aria-label="Export appointment history as PDF"
-      >
-        @if (isExporting()) {
-          <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
-        } @else {
-          <mat-icon aria-hidden="true">picture_as_pdf</mat-icon>
-        }
-        Export PDF
-      </button>
     </div>
   </div>
 
@@ -125,18 +137,12 @@
         [dataSource]="appointments()"
         aria-label="Appointment history table"
       >
-        <!-- Date & Time column -->
+        <!-- Date column -->
         <ng-container matColumnDef="scheduledAt">
-          <th mat-header-cell *matHeaderCellDef scope="col">Date &amp; Time</th>
+          <th mat-header-cell *matHeaderCellDef scope="col">Date</th>
           <td mat-cell *matCellDef="let apt">
-            {{ apt.scheduledAt | date : 'MMM d, y h:mm a' }}
+            {{ apt.scheduledAt | date : 'd MMM y' }}
           </td>
-        </ng-container>
-
-        <!-- Type column -->
-        <ng-container matColumnDef="appointmentType">
-          <th mat-header-cell *matHeaderCellDef scope="col">Type</th>
-          <td mat-cell *matCellDef="let apt">{{ apt.appointmentType }}</td>
         </ng-container>
 
         <!-- Provider column -->
@@ -147,10 +153,10 @@
           </td>
         </ng-container>
 
-        <!-- Duration column -->
-        <ng-container matColumnDef="duration">
-          <th mat-header-cell *matHeaderCellDef scope="col">Duration</th>
-          <td mat-cell *matCellDef="let apt">{{ apt.durationMinutes }} min</td>
+        <!-- Visit type column -->
+        <ng-container matColumnDef="appointmentType">
+          <th mat-header-cell *matHeaderCellDef scope="col">Visit type</th>
+          <td mat-cell *matCellDef="let apt">{{ apt.appointmentType }}</td>
         </ng-container>
 
         <!-- Status column -->
@@ -166,56 +172,68 @@
           </td>
         </ng-container>
 
-        <!-- Actions column -->
+        <!-- Actions column — text-style inline links per wireframe -->
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef scope="col">Actions</th>
           <td mat-cell *matCellDef="let apt">
-            <div class="action-buttons">
-              <!-- AC-2: reschedule navigates to slot search -->
-              <button
-                mat-icon-button
-                [disabled]="!canModify(apt) || actionInProgress() !== null"
-                [matTooltip]="getActionTooltip(apt) || 'Reschedule appointment'"
-                (click)="rescheduleAppointment(apt)"
-                [attr.aria-label]="'Reschedule appointment on ' + (apt.scheduledAt | date : 'MMM d')"
-              >
-                <mat-icon aria-hidden="true">edit_calendar</mat-icon>
-              </button>
+            <div class="scr007-action-cell">
 
-              <!-- AC-1 / UXR-111: cancel opens destructive-action confirmation dialog -->
-              <button
-                mat-icon-button
-                color="warn"
-                [disabled]="!canModify(apt) || actionInProgress() !== null"
-                [matTooltip]="getActionTooltip(apt) || 'Cancel appointment'"
-                (click)="cancelAppointment(apt)"
-                [attr.aria-label]="'Cancel appointment on ' + (apt.scheduledAt | date : 'MMM d')"
-              >
-                <!-- UXR-501: spinner during API call -->
-                @if (actionInProgress() === apt.id) {
-                  <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
-                } @else {
-                  <mat-icon aria-hidden="true">cancel</mat-icon>
-                }
-              </button>
-
-              <!-- AC-1 / AC-3 (US_024): ICS calendar export for Confirmed/Rescheduled -->
-              @if (canDownloadIcs(apt)) {
+              <!-- Confirmed: Reschedule | Cancel (AC-2, AC-1) -->
+              @if (apt.status === 'Confirmed') {
                 <button
-                  mat-icon-button
-                  color="primary"
-                  [disabled]="downloadingId() !== null"
-                  [matTooltip]="'Add to Calendar'"
-                  (click)="downloadCalendarEvent(apt)"
-                  [attr.aria-label]="'Add ' + apt.appointmentType + ' appointment to calendar'"
+                  mat-button
+                  class="scr007-action-link"
+                  [disabled]="!canModify(apt) || actionInProgress() !== null"
+                  [matTooltip]="getActionTooltip(apt)"
+                  (click)="rescheduleAppointment(apt)"
+                  [attr.aria-label]="'Reschedule appointment on ' + (apt.scheduledAt | date : 'MMM d')"
                 >
-                  @if (downloadingId() === apt.id) {
-                    <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
-                  } @else {
-                    <mat-icon aria-hidden="true">event</mat-icon>
+                  Reschedule
+                </button>
+                <span class="scr007-action-sep" aria-hidden="true">|</span>
+                <button
+                  mat-button
+                  class="scr007-action-link scr007-action-link--danger"
+                  [disabled]="!canModify(apt) || actionInProgress() !== null"
+                  [matTooltip]="getActionTooltip(apt)"
+                  (click)="cancelAppointment(apt)"
+                  [attr.aria-label]="'Cancel appointment on ' + (apt.scheduledAt | date : 'MMM d')"
+                >
+                  <!-- UXR-501: spinner during API call -->
+                  @if (actionInProgress() === apt.id) {
+                    <mat-spinner diameter="16" aria-hidden="true"></mat-spinner>
                   }
+                  Cancel
                 </button>
               }
+
+              <!-- Completed / Rescheduled: Download summary (ICS) -->
+              @if (canDownloadIcs(apt)) {
+                <button
+                  mat-button
+                  class="scr007-action-link"
+                  [disabled]="downloadingId() !== null"
+                  (click)="downloadCalendarEvent(apt)"
+                  [attr.aria-label]="'Download summary for ' + apt.appointmentType"
+                >
+                  @if (downloadingId() === apt.id) {
+                    <mat-spinner diameter="16" aria-hidden="true"></mat-spinner>
+                  }
+                  Download summary
+                </button>
+              }
+
+              <!-- Cancelled / NoShow / other: View details -->
+              @if (apt.status !== 'Confirmed' && !canDownloadIcs(apt)) {
+                <button
+                  mat-button
+                  class="scr007-action-link"
+                  [attr.aria-label]="'View details for ' + apt.appointmentType + ' appointment'"
+                >
+                  View details
+                </button>
+              }
+
             </div>
           </td>
         </ng-container>

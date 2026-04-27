@@ -125,12 +125,11 @@ export class AppointmentHistoryComponent implements OnInit, OnDestroy {
     return role === 'Staff' || role === 'Admin';
   });
 
-  /** Columns rendered in the Material table (desktop). */
+  /** Columns rendered in the Material table (desktop). Matches SCR-007 wireframe: Date | Provider | Visit type | Status | Actions. */
   readonly displayedColumns = [
     'scheduledAt',
-    'appointmentType',
     'providerName',
-    'duration',
+    'appointmentType',
     'status',
     'actions',
   ];
