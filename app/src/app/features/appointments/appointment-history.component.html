@@ -1,50 +1,54 @@
 <div class="history-container">
 
-  <!-- ── Topbar — SCR-007 header (eyebrow + H2 + chip-row) ──────────────── -->
-  <header class="scr007-topbar">
-    <div class="scr007-topbar-copy">
-      <span class="scr007-eyebrow">SCR-007</span>
-      <h1 class="scr007-heading">Review upcoming and past visits</h1>
-    </div>
-    <!-- Wireframe chip-row: ghost "Filter date range" + primary "Export PDF" -->
-    <div class="scr007-chip-row">
-      <button
-        mat-stroked-button
-        class="scr007-filter-toggle"
-        [class.active]="showFilters()"
-        (click)="toggleFilters()"
-        [attr.aria-expanded]="showFilters()"
-        aria-controls="scr007-filter-panel"
-        aria-label="Toggle date range and status filters"
-      >
-        <mat-icon aria-hidden="true">tune</mat-icon>
-        Filter date range
-        @if (hasActiveFilters()) {
-          <span class="scr007-filter-badge" aria-label="Filters active"></span>
-        }
-      </button>
-      <button
-        mat-flat-button
-        color="primary"
-        [disabled]="isExporting() || totalCount() === 0"
-        (click)="exportPdf()"
-        aria-label="Export appointment history as PDF"
-      >
-        @if (isExporting()) {
-          <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
-        } @else {
-          <mat-icon aria-hidden="true">picture_as_pdf</mat-icon>
-        }
-        Export PDF
-      </button>
-    </div>
-  </header>
+  <!-- ── Topbar — mat-card matches wireframe .topbar white card style ─────── -->
+  <mat-card class="scr007-topbar-card">
+    <mat-card-content class="scr007-topbar">
+      <div class="scr007-topbar-copy">
+        <span class="scr007-eyebrow">SCR-007</span>
+        <h1 class="scr007-heading">Review upcoming and past visits</h1>
+      </div>
+      <!-- Wireframe chip-row: ghost "Filter date range" + primary "Export PDF" -->
+      <div class="scr007-chip-row">
+        <button
+          mat-stroked-button
+          class="scr007-filter-toggle"
+          [class.active]="showFilters()"
+          (click)="toggleFilters()"
+          [attr.aria-expanded]="showFilters()"
+          aria-controls="scr007-filter-panel"
+          aria-label="Toggle date range and status filters"
+        >
+          <mat-icon aria-hidden="true">tune</mat-icon>
+          Filter date range
+          @if (hasActiveFilters()) {
+            <span class="scr007-filter-badge" aria-label="Filters active"></span>
+          }
+        </button>
+        <button
+          mat-flat-button
+          color="primary"
+          [disabled]="isExporting() || totalCount() === 0"
+          (click)="exportPdf()"
+          aria-label="Export appointment history as PDF"
+        >
+          @if (isExporting()) {
+            <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
+          } @else {
+            <mat-icon aria-hidden="true">picture_as_pdf</mat-icon>
+          }
+          Export PDF
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
 
   <!-- ── Info banner — "Destructive actions are guarded" (SCR-007 wireframe) -->
-  <section class="scr007-banner" aria-label="Action guidance">
-    <strong>Destructive actions are guarded.</strong>
-    <p>Cancel and reschedule actions always open a confirmation dialog before making changes.</p>
-  </section>
+  <mat-card class="scr007-banner-card" aria-label="Action guidance">
+    <mat-card-content class="scr007-banner-content">
+      <strong>Destructive actions are guarded.</strong>
+      <p>Cancel and reschedule actions always open a confirmation dialog before making changes.</p>
+    </mat-card-content>
+  </mat-card>
 
   <!-- SCR-007 Default: filter bar — shown/hidden by topbar toggle -->
   <div
@@ -153,7 +157,8 @@
 
   <!-- SCR-007 Default: desktop full table (≥ 1024 px) -->
   @if (!isLoading() && !errorMessage() && appointments().length > 0) {
-    <div class="table-wrapper desktop-only">
+    <mat-card class="scr007-table-card desktop-only">
+      <div class="scr007-table-scroll">
       <table
         mat-table
         [dataSource]="appointments()"
@@ -277,7 +282,8 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
-    </div>
+      </div>
+    </mat-card>
 
     <!-- UXR-301: mobile card list (≤ 599 px) -->
     <div class="card-list mobile-only" aria-label="Appointment cards">

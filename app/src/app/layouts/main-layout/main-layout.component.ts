@@ -54,6 +54,20 @@ export class MainLayoutComponent implements OnInit {
 
   protected readonly sidenavOpen = signal(true);
 
+  /** True when the user is authenticated — drives sidenav visibility.
+   *  Sidenav auto-closes on logout and auto-opens on login. */
+  protected readonly isAuthenticated = computed(() =>
+    this.tokenStorage.isAuthenticated(),
+  );
+
+  /** Combined: sidenav is open only when the user is logged in AND hasn't manually closed it. */
+  protected readonly sidenavVisible = computed(
+    () => this.isAuthenticated() && this.sidenavOpen(),
+  );
+
+  /** When true the sidenav shrinks to 64 px icon-only (mini-rail) mode. */
+  protected readonly sidenavCollapsed = signal(false);
+
   protected readonly navItems: readonly NavItem[] = [
     { label: 'Dashboard',        icon: 'dashboard',     route: '/dashboard' },
     { label: 'Find Appointment', icon: 'calendar_today', route: '/scheduling/search' },
@@ -103,7 +117,7 @@ export class MainLayoutComponent implements OnInit {
   }
 
   protected toggleSidenav(): void {
-    this.sidenavOpen.update((open) => !open);
+    this.sidenavCollapsed.update((c) => !c);
   }
 
   protected logout(): void {

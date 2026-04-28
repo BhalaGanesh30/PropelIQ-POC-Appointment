@@ -1,15 +1,18 @@
 <mat-toolbar color="primary" class="app-toolbar" role="banner">
-  <button
-    mat-icon-button
-    (click)="toggleSidenav()"
-    aria-label="Toggle navigation menu"
-    aria-controls="app-sidenav"
-    [attr.aria-expanded]="sidenavOpen()"
-  >
-    <mat-icon>menu</mat-icon>
-  </button>
+  @if (isAuthenticated()) {
+    <button
+      mat-icon-button
+      (click)="toggleSidenav()"
+      [attr.aria-label]="sidenavCollapsed() ? 'Expand navigation menu' : 'Collapse navigation menu'"
+      aria-controls="app-sidenav"
+      [attr.aria-expanded]="!sidenavCollapsed()"
+    >
+      <mat-icon>menu</mat-icon>
+    </button>
+  }
 
-  <span class="app-title">PropelIQ</span>
+  <mat-icon class="app-title-icon" aria-hidden="true">local_hospital</mat-icon>
+  <span class="app-title">UPACIP</span>
 
   <span class="toolbar-spacer"></span>
 
@@ -24,25 +27,34 @@
   }
 </mat-toolbar>
 
-<mat-sidenav-container class="sidenav-container">
+<mat-sidenav-container class="sidenav-container" autosize>
   <mat-sidenav
     #sidenav
     id="app-sidenav"
     mode="side"
-    [opened]="sidenavOpen()"
+    [opened]="sidenavVisible()"
     role="navigation"
     aria-label="Main navigation"
     class="app-sidenav"
+    [class.app-sidenav--collapsed]="sidenavCollapsed()"
+    [style.width]="sidenavCollapsed() ? '64px' : '260px'"
   >
     <!-- User profile section -->
     <div class="sidenav-profile" aria-label="User profile">
-      <div class="profile-avatar" aria-hidden="true">{{ userInitials() }}</div>
-      <div class="profile-info">
-        <span class="profile-name">{{ userDisplayName() }}</span>
-        @if (userRole()) {
-          <span class="profile-role">{{ userRole() }}</span>
-        }
-      </div>
+      <div
+        class="profile-avatar"
+        aria-hidden="true"
+        [matTooltip]="sidenavCollapsed() ? userDisplayName() : ''"
+        matTooltipPosition="after"
+      >{{ userInitials() }}</div>
+      @if (!sidenavCollapsed()) {
+        <div class="profile-info">
+          <span class="profile-name">{{ userDisplayName() }}</span>
+          @if (userRole()) {
+            <span class="profile-role">{{ userRole() }}</span>
+          }
+        </div>
+      }
     </div>
 
     <mat-divider />
@@ -56,9 +68,13 @@
           routerLinkActive="active-link"
           [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
           [attr.aria-label]="item.label"
+          [matTooltip]="sidenavCollapsed() ? item.label : ''"
+          matTooltipPosition="after"
         >
           <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-          <span matListItemTitle>{{ item.label }}</span>
+          @if (!sidenavCollapsed()) {
+            <span matListItemTitle>{{ item.label }}</span>
+          }
         </a>
       }
     </mat-nav-list>
@@ -66,7 +82,9 @@
     <!-- Admin section (role-gated) -->
     @if (isAdmin()) {
       <mat-divider />
-      <p class="nav-section-label">Administration</p>
+      @if (!sidenavCollapsed()) {
+        <p class="nav-section-label">Administration</p>
+      }
       <mat-nav-list class="nav-list">
         @for (item of adminNavItems; track item.route) {
           <a
@@ -75,9 +93,13 @@
             routerLinkActive="active-link"
             [routerLinkActiveOptions]="{ exact: false }"
             [attr.aria-label]="item.label"
+            [matTooltip]="sidenavCollapsed() ? item.label : ''"
+            matTooltipPosition="after"
           >
             <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-            <span matListItemTitle>{{ item.label }}</span>
+            @if (!sidenavCollapsed()) {
+              <span matListItemTitle>{{ item.label }}</span>
+            }
           </a>
         }
       </mat-nav-list>
@@ -94,9 +116,13 @@
         (click)="logout()"
         class="logout-item"
         aria-label="Sign out"
+        [matTooltip]="sidenavCollapsed() ? 'Sign out' : ''"
+        matTooltipPosition="after"
       >
         <mat-icon matListItemIcon>logout</mat-icon>
-        <span matListItemTitle>Sign out</span>
+        @if (!sidenavCollapsed()) {
+          <span matListItemTitle>Sign out</span>
+        }
       </button>
     </mat-nav-list>
   </mat-sidenav>

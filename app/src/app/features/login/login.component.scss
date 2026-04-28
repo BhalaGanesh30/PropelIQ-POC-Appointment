@@ -13,7 +13,7 @@
 :host {
   display: flex;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100%;
   background:
     radial-gradient(circle at top right, rgba(25, 118, 210, 0.12), transparent 30%),
     linear-gradient(180deg, #f8fbff 0%, #fafafa 52%, #eef4f8 100%);
@@ -419,7 +419,7 @@
 
   .auth-card {
     border-radius: 0;
-    min-height: 100vh;
+    min-height: 100%;
   }
 
   .auth-form {

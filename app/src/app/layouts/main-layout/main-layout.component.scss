@@ -12,8 +12,18 @@
   flex-shrink: 0;
 }
 
-.app-title {
+.app-title-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+  color: rgba(255, 255, 255, 0.9);
   margin-left: 8px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.app-title {
+  margin-left: 6px;
   font-size: 20px;
   font-weight: 600;
 }
@@ -46,10 +56,25 @@
 /* Sidebar — fixed 260px, flex column so logout anchors to bottom */
 .app-sidenav {
   width: 260px;
-  border-right: 1px solid var(--color-neutral-200, #e5e7eb);
-  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(180deg, #0d47a1 0%, #12375f 100%);
+  color: rgba(255, 255, 255, 0.9);
+  border-right: none;
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.28);
   display: flex;
   flex-direction: column;
+  transition: width 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+
+  /* Override Material list-item text, icons and divider colours for dark theme */
+  /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+  ::ng-deep {
+    .mdc-list-item__primary-text { color: rgba(255, 255, 255, 0.88); }
+    .mat-mdc-list-item .mat-icon { color: rgba(255, 255, 255, 0.88); }
+    .mat-mdc-list-item-icon { color: rgba(255, 255, 255, 0.88); }
+    .mat-divider { border-top-color: rgba(255, 255, 255, 0.14); }
+    .mat-mdc-list-item:hover .mdc-list-item__primary-text { color: rgba(255, 255, 255, 1); }
+    .mat-mdc-list-item:hover .mat-icon { color: rgba(255, 255, 255, 1); }
+  }
 }
 
 /* User profile strip */
@@ -85,7 +110,7 @@
 .profile-name {
   font-size: 14px;
   font-weight: 600;
-  color: var(--color-neutral-900, #111827);
+  color: rgba(255, 255, 255, 0.95);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -93,7 +118,7 @@
 
 .profile-role {
   font-size: 12px;
-  color: var(--color-neutral-500, #6b7280);
+  color: rgba(255, 255, 255, 0.65);
   margin-top: 2px;
   text-transform: capitalize;
 }
@@ -104,7 +129,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--color-neutral-400, #9ca3af);
+  color: rgba(255, 255, 255, 0.55);
   padding: 12px 20px 4px;
   margin: 0;
   flex-shrink: 0;
@@ -115,13 +140,20 @@
   padding-bottom: 4px;
 }
 
-/* Active nav item */
+/* Active nav item — wireframe: white semi-transparent fill + border */
 .active-link {
-  background-color: var(--color-primary-50, #e3f2fd) !important;
-  color: var(--color-primary-600, #1565c0) !important;
+  background-color: rgba(255, 255, 255, 0.18) !important;
+  color: rgba(255, 255, 255, 1) !important;
+  border-radius: 8px;
 
   mat-icon {
-    color: var(--color-primary-600, #1565c0);
+    color: #fff;
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+  ::ng-deep {
+    .mdc-list-item__primary-text { color: rgba(255, 255, 255, 1); }
+    .mat-icon { color: #fff; }
   }
 }
 
@@ -130,23 +162,54 @@
   flex: 1 1 auto;
 }
 
-/* Logout button */
+/* Mini-rail collapsed state: 64 px icon-only */
+.app-sidenav--collapsed {
+  .sidenav-profile {
+    justify-content: center;
+    padding: 20px 0 16px;
+    gap: 0;
+  }
+
+  // Center icons inside mat-list-item when labels are hidden
+  /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+  ::ng-deep {
+    .mat-mdc-list-item {
+      padding-inline-start: 0 !important;
+      padding-inline-end: 0 !important;
+      justify-content: center;
+    }
+
+    .mdc-list-item__start {
+      margin-inline-start: auto !important;
+      margin-inline-end: auto !important;
+    }
+  }
+}
+
+/* Logout button — white on dark sidebar; red tint on hover */
 .logout-item {
-  color: var(--color-semantic-error-main, #c62828) !important;
+  color: rgba(255, 255, 255, 0.72) !important;
   width: 100%;
 
   mat-icon {
-    color: var(--color-semantic-error-main, #c62828);
+    color: rgba(255, 255, 255, 0.72);
   }
 
   &:hover {
-    background-color: rgba(198, 40, 40, 0.06) !important;
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: #ef9a9a !important;
+
+    mat-icon {
+      color: #ef9a9a;
+    }
   }
 }
 
 /* Page padding: 24px (mobile) / 32px (desktop) */
 .content-area {
   padding: 24px;
+  min-height: 100%;
+  box-sizing: border-box;
 
   @media (min-width: 1024px) {
     padding: 32px;
