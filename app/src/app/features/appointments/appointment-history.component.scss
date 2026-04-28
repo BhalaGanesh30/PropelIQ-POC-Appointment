@@ -7,7 +7,7 @@
   margin: 0 auto;
 }
 
-// ── SCR-007 Topbar — eyebrow + H2 + Export PDF (wireframe header pattern) ────
+// ── SCR-007 Topbar — eyebrow + H2 + chip-row (wireframe header pattern) ────
 .scr007-topbar {
   display: flex;
   align-items: flex-start;
@@ -38,7 +38,8 @@
   color: var(--mat-sys-on-surface);
 }
 
-.scr007-topbar-actions {
+// Wireframe chip-row: ghost “Filter date range” + primary “Export PDF”
+.scr007-chip-row {
   display: flex;
   gap: 8px;
   align-items: center;
@@ -48,6 +49,29 @@
   button {
     min-height: 44px;
   }
+}
+
+// Ghost filter toggle button with optional “active” indicator
+.scr007-filter-toggle {
+  position: relative;
+
+  &.active {
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+    border-color: var(--mat-sys-primary);
+  }
+}
+
+// Small amber dot shown when any filter is active
+.scr007-filter-badge {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f59e0b;
+  margin-left: 6px;
+  vertical-align: middle;
+  flex-shrink: 0;
 }
 
 // ── SCR-007 Info banner — "Destructive actions are guarded" ──────────────────
@@ -74,6 +98,7 @@
 }
 
 // ── Filter bar (SCR-007 Default) ─────────────────────────────────────────────
+// Default visible; --hidden modifier collapses it (toggled by topbar ghost button)
 .filter-bar {
   display: flex;
   gap: 12px;
@@ -83,6 +108,10 @@
   padding: 16px;
   background: var(--mat-sys-surface-container-low);
   border-radius: 12px;
+
+  &--hidden {
+    display: none;
+  }
 }
 
 .filter-field {
@@ -174,7 +203,37 @@
 .scr007-action-cell {
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 4px; // space so the calendar icon button doesn't butt against the separator
+}
+
+// ── Calendar icon button in desktop action cell (US_024 AC-1/AC-3) ───────────
+.scr007-calendar-btn {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+  }
+}
+
+// ── Calendar stroked button in mobile card actions (US_024) ──────────────────
+.calendar-btn {
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    margin-right: 4px;
+  }
+}
+
+@media (max-width: 599px) {
+  .calendar-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 // Text-style action button ("Reschedule", "Cancel", "Download summary", "View details")
@@ -217,9 +276,10 @@
   padding: 0 8px;
 }
 
+// Wireframe “badge success” = green for Confirmed
 .status-confirmed {
-  background: var(--mat-sys-tertiary-container) !important;
-  color: var(--mat-sys-on-tertiary-container) !important;
+  background: #e8f5e9 !important;
+  color: #2e7d32 !important;
 }
 
 .status-cancelled {
@@ -321,7 +381,7 @@
     gap: 12px;
   }
 
-  .scr007-topbar-actions {
+  .scr007-chip-row {
     width: 100%;
 
     button {

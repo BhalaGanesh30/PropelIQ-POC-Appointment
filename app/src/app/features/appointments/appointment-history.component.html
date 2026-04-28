@@ -1,12 +1,28 @@
 <div class="history-container">
 
-  <!-- ── Topbar — SCR-007 header (eyebrow + H2 + Export PDF) ──────────────── -->
+  <!-- ── Topbar — SCR-007 header (eyebrow + H2 + chip-row) ──────────────── -->
   <header class="scr007-topbar">
     <div class="scr007-topbar-copy">
       <span class="scr007-eyebrow">SCR-007</span>
       <h1 class="scr007-heading">Review upcoming and past visits</h1>
     </div>
-    <div class="scr007-topbar-actions">
+    <!-- Wireframe chip-row: ghost "Filter date range" + primary "Export PDF" -->
+    <div class="scr007-chip-row">
+      <button
+        mat-stroked-button
+        class="scr007-filter-toggle"
+        [class.active]="showFilters()"
+        (click)="toggleFilters()"
+        [attr.aria-expanded]="showFilters()"
+        aria-controls="scr007-filter-panel"
+        aria-label="Toggle date range and status filters"
+      >
+        <mat-icon aria-hidden="true">tune</mat-icon>
+        Filter date range
+        @if (hasActiveFilters()) {
+          <span class="scr007-filter-badge" aria-label="Filters active"></span>
+        }
+      </button>
       <button
         mat-flat-button
         color="primary"
@@ -30,8 +46,14 @@
     <p>Cancel and reschedule actions always open a confirmation dialog before making changes.</p>
   </section>
 
-  <!-- SCR-007 Default: filter bar (status, date range, clear) -->
-  <div class="filter-bar" role="search" aria-label="Filter appointments">
+  <!-- SCR-007 Default: filter bar — shown/hidden by topbar toggle -->
+  <div
+    id="scr007-filter-panel"
+    class="filter-bar"
+    [class.filter-bar--hidden]="!showFilters()"
+    role="search"
+    aria-label="Filter appointments"
+  >
     <mat-form-field appearance="outline" class="filter-field">
       <mat-label>Status</mat-label>
       <mat-select
@@ -207,24 +229,38 @@
                 </button>
               }
 
-              <!-- Completed / Rescheduled: Download summary (ICS) -->
+              <!-- Confirmed / Rescheduled: calendar icon button (US_024 AC-1, AC-3) -->
               @if (canDownloadIcs(apt)) {
+                <button
+                  mat-icon-button
+                  color="primary"
+                  class="scr007-calendar-btn"
+                  [disabled]="downloadingId() !== null"
+                  (click)="downloadCalendarEvent(apt)"
+                  [matTooltip]="'Add ' + apt.appointmentType + ' to calendar'"
+                  [attr.aria-label]="'Add ' + apt.appointmentType + ' appointment to calendar'"
+                >
+                  @if (downloadingId() === apt.id) {
+                    <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
+                  } @else {
+                    <mat-icon aria-hidden="true">event</mat-icon>
+                  }
+                </button>
+              }
+
+              <!-- Completed: Download summary text link -->
+              @if (apt.status === 'Completed') {
                 <button
                   mat-button
                   class="scr007-action-link"
-                  [disabled]="downloadingId() !== null"
-                  (click)="downloadCalendarEvent(apt)"
-                  [attr.aria-label]="'Download summary for ' + apt.appointmentType"
+                  [attr.aria-label]="'Download summary for ' + apt.appointmentType + ' appointment'"
                 >
-                  @if (downloadingId() === apt.id) {
-                    <mat-spinner diameter="16" aria-hidden="true"></mat-spinner>
-                  }
                   Download summary
                 </button>
               }
 
-              <!-- Cancelled / NoShow / other: View details -->
-              @if (apt.status !== 'Confirmed' && !canDownloadIcs(apt)) {
+              <!-- Cancelled / NoShow / other statuses: View details -->
+              @if (apt.status !== 'Confirmed' && apt.status !== 'Completed' && !canDownloadIcs(apt)) {
                 <button
                   mat-button
                   class="scr007-action-link"

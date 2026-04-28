@@ -269,17 +269,27 @@ public sealed class WaitlistService
 
     /// <summary>Returns Active and Offered waitlist entries for the given patient.</summary>
     public async Task<List<WaitlistEntryResponse>> GetEntriesAsync(
-        Guid patientId, CancellationToken ct)
+        Guid userId, CancellationToken ct)
     {
-        var entries = await _waitlistRepo.GetActiveEntriesForPatientAsync(patientId, ct);
+        // JWT sub is auth user ID; waitlist_entries.patient_id stores app.patients.id.
+        var resolvedPatientId = await _bookingRepo.ResolvePatientIdAsync(userId, ct);
+        if (resolvedPatientId is null)
+            return [];
+
+        var entries = await _waitlistRepo.GetActiveEntriesForPatientAsync(resolvedPatientId.Value, ct);
         return entries.ConvertAll(MapToResponse);
     }
 
     /// <summary>Cancels a specific waitlist entry owned by the given patient.</summary>
     public async Task<Result> CancelEntryAsync(
-        Guid entryId, Guid patientId, CancellationToken ct)
+        Guid entryId, Guid userId, CancellationToken ct)
     {
-        var entry = await _waitlistRepo.GetByIdForPatientAsync(entryId, patientId, ct);
+        // Resolve JWT user ID → app.patients.id for ownership check.
+        var resolvedPatientId = await _bookingRepo.ResolvePatientIdAsync(userId, ct);
+        if (resolvedPatientId is null)
+            return Result.Failure("Patient record not found.");
+
+        var entry = await _waitlistRepo.GetByIdForPatientAsync(entryId, resolvedPatientId.Value, ct);
 
         if (entry is null)
             return Result.Failure("Waitlist entry not found.");
@@ -293,7 +303,7 @@ public sealed class WaitlistService
 
         _logger.LogInformation(
             "Waitlist entry {EntryId} cancelled by patient {PatientId}.",
-            entryId, patientId);
+            entryId, resolvedPatientId.Value);
 
         return Result.Success();
     }

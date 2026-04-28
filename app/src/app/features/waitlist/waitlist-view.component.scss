@@ -1,170 +1,219 @@
 // ── SCR-008 Waitlist View ────────────────────────────────────────────────────
+// Wireframe: topbar + two-column panel (offered | preferences)
 // UXR-301: 375px / 768px / 1440px breakpoints
-// UXR-112: urgency colours handled in countdown-timer.component.ts
+// UXR-112: urgency colours live in countdown-timer.component.ts
 
-.waitlist-page {
-  padding: 24px 16px;
-  max-width: 960px;
+// ── Page shell ───────────────────────────────────────────────────────────────
+.scr008-shell {
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 32px 24px;
 
-  @media (min-width: 768px) {
-    padding: 32px 24px;
-  }
-
-  @media (min-width: 1440px) {
-    padding: 40px 32px;
-  }
+  @media (max-width: 599px) { padding: 16px 12px; }
+  @media (min-width: 1024px) { padding: 40px 32px; }
 }
 
-// ── Page header ──────────────────────────────────────────────────────────────
-
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 28px;
-
-  .page-title {
-    margin: 0;
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--mat-sys-on-surface, #1c1b1f);
-
-    @media (min-width: 768px) {
-      font-size: 28px;
-    }
-  }
-}
-
-// ── Section headings ─────────────────────────────────────────────────────────
-
-.section-heading {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--mat-sys-on-surface, #1c1b1f);
-  margin: 24px 0 12px;
-
-  &:first-child {
-    margin-top: 0;
-  }
-
-  &.expired-heading {
-    color: var(--mat-sys-outline, #79747e);
-  }
-}
-
-// ── Entry list ───────────────────────────────────────────────────────────────
-
-.entry-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-// ── Entry cards ──────────────────────────────────────────────────────────────
-
-.entry-card {
-  border-radius: 12px;
-  transition: box-shadow 0.2s ease;
-
-  &:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  }
-
-  mat-card-content {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 16px;
-  }
-}
-
-.offered-card {
-  border: 2px solid var(--mat-sys-tertiary-container, #e8def8);
-  background: var(--mat-sys-surface-container-low, #f7f2fa);
-}
-
-.expired-card {
-  opacity: 0.75;
-  background: var(--mat-sys-surface-container, #f3edf7);
-}
-
-// ── Card content layout ───────────────────────────────────────────────────────
-
-.card-header {
+// ── Topbar ────────────────────────────────────────────────────────────────────
+.scr008-topbar {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
-}
-
-.card-title {
-  display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
+  gap: 16px;
+  margin-bottom: 32px;
 }
 
-.appointment-type {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--mat-sys-on-surface, #1c1b1f);
-
-  &.muted {
-    color: var(--mat-sys-outline, #79747e);
-  }
-}
-
-.card-details {
+.scr008-topbar-copy {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-size: 14px;
-  color: var(--mat-sys-on-surface-variant, #49454f);
-
-  &.muted {
-    color: var(--mat-sys-outline, #79747e);
-  }
-
-  span {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
+  gap: 4px;
 }
 
-.detail-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-  vertical-align: middle;
-}
-
-.countdown-row {
+.scr008-topbar-actions {
   display: flex;
   align-items: center;
-}
-
-.card-actions {
-  display: flex;
+  gap: 16px;
   flex-wrap: wrap;
-  gap: 8px;
-  padding-top: 4px;
 }
 
-.expired-chip {
-  background: var(--mat-sys-surface-container, #ece6f0) !important;
-  color: var(--mat-sys-outline, #79747e) !important;
+.scr008-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mat-sys-primary);
+}
+
+.scr008-heading {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--mat-sys-on-surface);
+
+  @media (min-width: 768px) { font-size: 26px; }
+}
+
+.scr008-chip-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.scr008-pill {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--mat-sys-surface-variant);
+  color: var(--mat-sys-on-surface-variant);
+
+  &--warning {
+    background: #fff3e0;
+    color: #e65100;
+  }
+}
+
+// ── Two-column panel ──────────────────────────────────────────────────────────
+.scr008-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+
+  @media (max-width: 1023px) { grid-template-columns: 1fr; }
+}
+
+// ── Cards ─────────────────────────────────────────────────────────────────────
+.scr008-card {
+  width: 100%;
+
+  &--offered {
+    border-left: 4px solid #2e7d32;
+  }
+
+  &--queue {}
+}
+
+// ── Mini-cards inside panel cards ─────────────────────────────────────────────
+.scr008-mini-card {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  &:last-child { border-bottom: none; }
+
+  strong {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+    margin-bottom: 4px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &--offered strong { color: #1b5e20; }
+
+  // Notification status note mini-card
+  &--status {
+    background: var(--mat-sys-surface-variant);
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 8px;
+    border-bottom: none;
+
+    strong { color: var(--mat-sys-on-surface-variant); font-size: 12px; }
+  }
+}
+
+// ── Badge row inside offered mini-card ────────────────────────────────────────
+.scr008-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+
+.scr008-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &--neutral {
+    background: var(--mat-sys-surface-variant);
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &--expired {
+    background: var(--mat-sys-surface-container, #ece6f0);
+    color: var(--mat-sys-outline, #79747e);
+  }
+}
+
+// Position badge in queue panel
+.scr008-position-badge {
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 4px;
+}
+
+// ── Mini-card action row ──────────────────────────────────────────────────────
+.scr008-mini-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+
+  @media (max-width: 599px) {
+    flex-direction: column;
+    button { width: 100%; }
+  }
+}
+
+// ── No-offers placeholder in left panel ──────────────────────────────────────
+.scr008-no-offers {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px 16px;
+  gap: 8px;
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.scr008-no-offers-sub {
+  font-size: 13px;
+  max-width: 280px;
+  margin: 0;
+}
+
+.scr008-queue-empty {
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant);
+  padding: 12px 0;
 }
 
 // ── Error banner ──────────────────────────────────────────────────────────────
-
-.error-banner {
+.scr008-error-banner {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -172,103 +221,107 @@
   background: #ffebee;
   color: #c62828;
   border-radius: 8px;
+  margin-bottom: 24px;
   font-size: 14px;
 
-  button {
-    margin-left: auto;
-  }
+  button { margin-left: auto; }
 }
 
 // ── Empty state ───────────────────────────────────────────────────────────────
-
-.empty-state {
+.scr008-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: 12px;
-  padding: 48px 24px;
+  padding: 56px 24px;
 
-  .empty-icon {
+  mat-icon {
     font-size: 64px;
     width: 64px;
     height: 64px;
-    color: var(--mat-sys-outline, #79747e);
-  }
-
-  .empty-title {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 500;
-    color: var(--mat-sys-on-surface, #1c1b1f);
-  }
-
-  .empty-subtitle {
-    margin: 0;
-    font-size: 14px;
-    color: var(--mat-sys-on-surface-variant, #49454f);
-    max-width: 380px;
+    color: var(--mat-sys-outline);
   }
 }
 
-// ── Skeleton loading cards ────────────────────────────────────────────────────
-
-.skeleton-card {
-  pointer-events: none;
-
-  mat-card-content {
-    gap: 16px;
-  }
+.scr008-empty-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
 }
 
+.scr008-empty-sub {
+  margin: 0;
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant);
+  max-width: 360px;
+}
+
+// ── Expired entries — below-fold section (AC-4) ───────────────────────────────
+.scr008-expired-section {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  opacity: 0.7;
+}
+
+.scr008-expired-heading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mat-sys-outline);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+.scr008-expired-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  font-size: 13px;
+  color: var(--mat-sys-outline);
+
+  &:last-child { border-bottom: none; }
+}
+
+// ── Skeleton loading ──────────────────────────────────────────────────────────
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    #e0e0e0 25%,
-    #eeeeee 50%,
-    #e0e0e0 75%
-  );
+  background: linear-gradient(90deg, #e0e0e0 25%, #eeeeee 50%, #e0e0e0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
   border-radius: 4px;
 }
 
-.skeleton-title {
-  height: 20px;
-  width: 55%;
+.scr008-skeleton-title {
+  height: 18px;
+  width: 50%;
+  margin-bottom: 16px;
 }
 
-.skeleton-line {
-  height: 14px;
-  width: 85%;
+.scr008-skeleton-line {
+  height: 13px;
+  width: 80%;
+  margin-bottom: 8px;
 
-  &.short {
-    width: 60%;
-  }
+  &.short { width: 55%; }
+}
+
+.skeleton-mini {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-// ── Mobile card adjustments (375px) ───────────────────────────────────────────
-
-@media (max-width: 599px) {
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .card-actions {
-    flex-direction: column;
-
-    button {
-      width: 100%;
-    }
-  }
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }

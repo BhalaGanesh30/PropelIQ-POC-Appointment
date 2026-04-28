@@ -108,6 +108,8 @@ export class AppointmentHistoryComponent implements OnInit, OnDestroy {
   /** ID of the appointment whose ICS is currently downloading; null when idle. */
   readonly downloadingId = signal<string | null>(null);
   readonly errorMessage = signal<string | null>(null);
+  /** Controls visibility of the collapsible filter panel (toggled by topbar button). */
+  readonly showFilters = signal(false);
 
   // ── Filter state (plain properties for ngModel two-way binding) ───────────
   statusFilter = '';
@@ -189,6 +191,16 @@ export class AppointmentHistoryComponent implements OnInit, OnDestroy {
     this.dateTo = '';
     this.currentPage = 0;
     this.filterChange$.next();
+  }
+
+  /** Toggles the filter panel open/closed (triggered by topbar ghost button). */
+  toggleFilters(): void {
+    this.showFilters.update((v) => !v);
+  }
+
+  /** Returns true when any filter is actively applied — used for the filter-badge dot. */
+  hasActiveFilters(): boolean {
+    return !!(this.statusFilter || this.dateFrom || this.dateTo);
   }
 
   /**
