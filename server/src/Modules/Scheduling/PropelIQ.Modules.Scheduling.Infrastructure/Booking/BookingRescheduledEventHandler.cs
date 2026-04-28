@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PropelIQ.Modules.Scheduling.Application.Booking.Artifacts;
+using PropelIQ.Modules.Scheduling.Application.Reminders;
 using PropelIQ.Modules.Scheduling.Domain.Events;
 using System.Threading.Channels;
 
@@ -113,5 +114,29 @@ public sealed class BookingRescheduledEventHandler : BackgroundService
         _logger.LogInformation(
             "Reschedule notification dispatched for appointment {AppointmentId} [IcsStored={HasIcs}]",
             evt.AppointmentId, icsPath is not null);
+
+        // AC-4 (US_026): Cancel old pending reminders and schedule new ones for updated time.
+        // Failure is non-blocking — reminder rescheduling must not affect the committed reschedule.
+        try
+        {
+            var reminderService = scope.ServiceProvider
+                .GetRequiredService<IReminderSchedulingService>();
+
+            await reminderService.RescheduleRemindersAsync(
+                evt.AppointmentId,
+                evt.NewTime,
+                evt.PatientId,
+                ct);
+
+            _logger.LogInformation(
+                "Reminders rescheduled for appointment {AppointmentId}",
+                evt.AppointmentId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Failed to reschedule reminders for appointment {AppointmentId}. Reschedule remains valid.",
+                evt.AppointmentId);
+        }
     }
 }

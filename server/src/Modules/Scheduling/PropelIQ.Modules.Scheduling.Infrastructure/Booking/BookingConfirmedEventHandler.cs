@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PropelIQ.Modules.Scheduling.Application.Reminders;
 using PropelIQ.Modules.Scheduling.Domain.Events;
 using PropelIQ.Modules.SharedServices.Infrastructure.Data;
 using System.Threading.Channels;
@@ -111,5 +112,29 @@ public sealed class BookingConfirmedEventHandler : BackgroundService
         _logger.LogInformation(
             "Confirmation artifacts generated and email sent for appointment {AppointmentId}",
             evt.AppointmentId);
+
+        // AC-1 (US_026): Schedule reminder events for the confirmed appointment.
+        // Failure is non-blocking — reminder scheduling failure must not affect booking.
+        try
+        {
+            var reminderService = scope.ServiceProvider
+                .GetRequiredService<IReminderSchedulingService>();
+
+            await reminderService.ScheduleRemindersAsync(
+                evt.AppointmentId,
+                evt.AppointmentTime,
+                evt.PatientId,
+                ct);
+
+            _logger.LogInformation(
+                "Reminders scheduled for appointment {AppointmentId}",
+                evt.AppointmentId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Failed to schedule reminders for appointment {AppointmentId}. Booking remains valid.",
+                evt.AppointmentId);
+        }
     }
 }
