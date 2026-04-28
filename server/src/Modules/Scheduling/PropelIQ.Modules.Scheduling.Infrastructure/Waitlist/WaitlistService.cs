@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using PropelIQ.Modules.Scheduling.Application.Abstractions;
@@ -306,6 +308,40 @@ public sealed class WaitlistService
             entryId, resolvedPatientId.Value);
 
         return Result.Success();
+    }
+
+    // ── US_030: Claim token validation ────────────────────────────────────────
+
+    /// <summary>
+    /// Validates an HMAC-signed claim token against the stored SHA-256 hash on
+    /// the waitlist entry (US_030 AC-3 / OWASP A01 — prevents unauthorised claim).
+    ///
+    /// Returns <see langword="true"/> when:
+    ///   – the entry has no stored token hash (alert not yet dispatched — graceful fallback), OR
+    ///   – the computed SHA-256 of <paramref name="rawToken"/> matches the stored hash
+    ///     using a constant-time comparison.
+    /// Returns <see langword="false"/> when the token is tampered or stale.
+    /// </summary>
+    public async Task<bool> ValidateClaimTokenAsync(
+        Guid entryId, string rawToken, CancellationToken ct)
+    {
+        var entry = await _waitlistRepo.GetByIdAsync(entryId, ct);
+
+        // Entry not found — let ClaimAsync handle the 400 response.
+        if (entry is null)
+            return true;
+
+        // No hash stored yet (e.g. alert dispatch is still in-flight) — allow claim.
+        if (string.IsNullOrWhiteSpace(entry.ClaimTokenHash))
+            return true;
+
+        var computedHash = Convert.ToHexString(
+            SHA256.HashData(Encoding.UTF8.GetBytes(rawToken))).ToLowerInvariant();
+
+        // Timing-safe comparison — prevents hash oracle attacks (OWASP A07).
+        return CryptographicOperations.FixedTimeEquals(
+            Encoding.UTF8.GetBytes(computedHash),
+            Encoding.UTF8.GetBytes(entry.ClaimTokenHash));
     }
 
     // ── Mapping ────────────────────────────────────────────────────────────────

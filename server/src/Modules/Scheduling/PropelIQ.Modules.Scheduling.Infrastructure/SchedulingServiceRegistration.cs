@@ -2,9 +2,12 @@ using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PropelIQ.Modules.Scheduling.Application.Abstractions;
+using PropelIQ.Modules.Scheduling.Application.AI;
+using PropelIQ.Modules.Scheduling.Application.AI.Models;
 using PropelIQ.Modules.Scheduling.Application.Booking.Artifacts;
 using PropelIQ.Modules.Scheduling.Application.Reminders;
 using PropelIQ.Modules.Scheduling.Application.Scheduling.Validators;
+using PropelIQ.Modules.Scheduling.Application.Waitlist;
 using PropelIQ.Modules.Scheduling.Domain.Events;
 using PropelIQ.Modules.Scheduling.Infrastructure.AI;
 using PropelIQ.Modules.Scheduling.Infrastructure.Booking;
@@ -118,6 +121,12 @@ public static class SchedulingServiceRegistration
         services.AddHostedService<WaitlistMatchingWorker>();
         services.AddHostedService<ClaimWindowExpiryWorker>();
 
+        // Slot alert dispatch (US_030): consumes Channel<SlotOfferedEvent> and dispatches
+        // email/SMS alerts to patients within the 5-minute SLA (AC-1).
+        // ISlotAlertService is scoped — resolved per event via IServiceScopeFactory.
+        services.AddScoped<ISlotAlertService, SlotAlertService>();
+        services.AddHostedService<SlotAlertDispatchHandler>();
+
         // ── Appointment history (US_025) ──────────────────────────────────────
 
         // Repository — scoped per request (wraps AppDbContext; uses AsNoTracking reads)
@@ -191,6 +200,27 @@ public static class SchedulingServiceRegistration
 
         // Background worker — hosted service (singleton; resolves scoped deps per tick)
         services.AddHostedService<ReminderDispatchWorker>();
+
+        // ── No-show risk scoring (US_028) ─────────────────────────────────────
+
+        // Feature extractor — scoped (EF Core queries via AppDbContext)
+        services.AddScoped<IPatientHistoryFeatureExtractor, PatientHistoryFeatureExtractor>();
+
+        // Scoring service — scoped (depends on IAiGatewayClient + scoped repos)
+        services.AddScoped<INoShowRiskScoringService, NoShowRiskScoringService>();
+
+        // ── High-risk alert channel (US_028 task_002) ─────────────────────────
+        // Unbounded channel — producer is HighRiskNotificationWorker; consumer is
+        // notification infrastructure (SignalR broadcaster, email/SMS dispatcher).
+        var highRiskChannel = Channel.CreateUnbounded<HighRiskAlertEvent>(
+            new UnboundedChannelOptions { SingleWriter = true });
+        services.AddSingleton(highRiskChannel);
+        services.AddSingleton(highRiskChannel.Reader);
+        services.AddSingleton(highRiskChannel.Writer);
+
+        // Background workers — hosted services (singleton, scoped deps via factory)
+        services.AddHostedService<RiskScoreRefreshWorker>();
+        services.AddHostedService<HighRiskNotificationWorker>();
 
         return services;
     }

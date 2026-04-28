@@ -85,5 +85,29 @@ public sealed class Appointment : BaseEntity
 
     public WaitlistEntry? WaitlistEntry { get; set; }
     public ICollection<ReminderEvent> ReminderEvents { get; set; } = [];
+
+    // ── No-show risk score (US_028 task_001) ─────────────────────────────────
+
+    /// <summary>
+    /// Risk classification assigned by the no-show risk scoring service.
+    /// One of: Low, Medium, High, Unknown.
+    /// Null when scoring has never been performed.
+    /// </summary>
+    public string? RiskLevel { get; set; }
+
+    /// <summary>Model confidence in the risk classification (0.0–1.0).</summary>
+    public double? RiskConfidence { get; set; }
+
+    /// <summary>
+    /// JSONB-serialised list of <c>RiskFeatureContribution</c> records explaining
+    /// why the risk label was assigned (AIR-004 explainability requirement).
+    /// </summary>
+    public string? RiskFeatures { get; set; }
+
+    /// <summary>
+    /// UTC timestamp when the risk score was last calculated.
+    /// Used to determine staleness (24-hour TTL) before recalculation.
+    /// </summary>
+    public DateTimeOffset? RiskScoredAt { get; set; }
 }
 

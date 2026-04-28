@@ -1,0 +1,139 @@
+<!-- SCR-009: Notification Preferences settings page (US_029)                 -->
+<!-- UXR-201: All text/colour combinations meet WCAG AA 4.5:1                  -->
+<!-- UXR-202: Full keyboard navigation + visible focus indicators               -->
+<!-- UXR-203: aria-live regions for dynamic content updates                    -->
+<!-- UXR-301: Responsive 375px / 768px / 1440px breakpoints (via SCSS)         -->
+
+<div class="scr009-shell">
+
+  <header class="scr009-topbar">
+    <span class="scr009-eyebrow">SCR-009</span>
+    <h1 class="scr009-heading">Notification Preferences</h1>
+    <p class="scr009-subheading">Choose how and when you receive appointment reminders.</p>
+  </header>
+
+  <!-- ── LOADING STATE ───────────────────────────────────────────────────── -->
+  @if (isLoading()) {
+    <div class="scr009-loading" role="status" aria-label="Loading preferences">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  }
+
+  <!-- ── MAIN FORM ───────────────────────────────────────────────────────── -->
+  @if (!isLoading()) {
+    <mat-card class="scr009-card">
+      <mat-card-content>
+
+        <!-- ── CHANNEL SECTION ─────────────────────────────────────────── -->
+        <section aria-labelledby="channels-heading" class="scr009-section">
+          <h2 id="channels-heading" class="scr009-section-title">
+            Notification Channels
+          </h2>
+          <p class="scr009-section-desc">
+            Select the channels you want appointment reminders delivered to.
+          </p>
+
+          <!-- AC-1: Email toggle -->
+          <div class="scr009-toggle-row">
+            <mat-slide-toggle
+              [checked]="emailEnabled()"
+              (change)="onEmailToggle($event.checked)"
+              aria-label="Enable email notifications"
+              color="primary">
+              <span class="scr009-toggle-label">Email</span>
+            </mat-slide-toggle>
+          </div>
+
+          <!-- AC-1: SMS toggle -->
+          <div class="scr009-toggle-row">
+            <mat-slide-toggle
+              [checked]="smsEnabled()"
+              (change)="onSmsToggle($event.checked)"
+              aria-label="Enable SMS text message notifications"
+              color="primary">
+              <span class="scr009-toggle-label">SMS / Text Message</span>
+            </mat-slide-toggle>
+          </div>
+
+          <!-- Edge case 1: Inline prompt when SMS enabled without phone number -->
+          <!-- UXR-203: role="alert" + aria-live="assertive" for screen readers -->
+          @if (showPhonePrompt()) {
+            <div class="scr009-phone-prompt"
+                 role="alert"
+                 aria-live="assertive"
+                 aria-atomic="true">
+              <mat-icon aria-hidden="true" class="scr009-prompt-icon">info</mat-icon>
+              <div class="scr009-prompt-body">
+                <strong>Phone number required</strong>
+                <p>
+                  A verified mobile number is needed to receive SMS notifications.
+                  <!-- UXR-202: keyboard-accessible link with visible focus ring -->
+                  <a class="scr009-profile-link"
+                     role="button"
+                     tabindex="0"
+                     (click)="navigateToProfile()"
+                     (keydown.enter)="navigateToProfile()"
+                     (keydown.space)="navigateToProfile()">
+                    Add your phone number
+                  </a>
+                </p>
+              </div>
+            </div>
+          }
+        </section>
+
+        <hr class="scr009-divider" aria-hidden="true" />
+
+        <!-- ── TIMING SECTION ──────────────────────────────────────────── -->
+        <section aria-labelledby="timings-heading" class="scr009-section">
+          <h2 id="timings-heading" class="scr009-section-title">
+            Reminder Timing
+          </h2>
+          <p class="scr009-section-desc">
+            Select when you want to be reminded before your appointment.
+          </p>
+
+          <div class="scr009-checkbox-group" role="group" aria-labelledby="timings-heading">
+            @for (timing of allTimings; track timing) {
+              <mat-checkbox
+                [checked]="isTimingEnabled(timing)"
+                (change)="onTimingToggle(timing, $event.checked)"
+                [attr.aria-label]="'Remind me ' + timingLabels[timing]"
+                color="primary"
+                class="scr009-checkbox">
+                {{ timingLabels[timing] }}
+              </mat-checkbox>
+            }
+          </div>
+        </section>
+
+        <hr class="scr009-divider" aria-hidden="true" />
+
+        <!-- ── ACTIONS ─────────────────────────────────────────────────── -->
+        <!-- UXR-501: Spinner + disabled state during request               -->
+        <div class="scr009-actions">
+          <button
+            mat-flat-button
+            color="primary"
+            [disabled]="saveDisabled()"
+            (click)="save()"
+            aria-label="Save notification preferences"
+            class="scr009-save-btn">
+            @if (isSaving()) {
+              <mat-spinner
+                diameter="18"
+                class="scr009-btn-spinner"
+                aria-hidden="true">
+              </mat-spinner>
+              Saving…
+            } @else {
+              Save Preferences
+            }
+          </button>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+  }
+
+</div>

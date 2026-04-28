@@ -114,9 +114,9 @@
               <!-- UXR-112: badge row with live countdown + claim status -->
               <div class="scr008-badge-row">
                 @if (entry.claimExpiresAt) {
-                  <app-countdown-timer
-                    [expiresAt]="entry.claimExpiresAt"
-                    aria-label="Time remaining to claim this slot"
+                  <!-- US_030 task_002: ClaimCountdownComponent for richer urgency display -->
+                  <app-claim-countdown
+                    [expiresAtUtc]="entry.claimExpiresAt"
                   />
                 }
                 <span class="scr008-badge scr008-badge--neutral">Claim window active</span>

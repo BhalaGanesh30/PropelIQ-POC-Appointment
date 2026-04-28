@@ -487,19 +487,36 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("queue_state");
 
+                    b.Property<double?>("RiskConfidence")
+                        .HasColumnType("double precision")
+                        .HasColumnName("risk_confidence");
+
+                    b.Property<string>("RiskFeatures")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("risk_features");
+
+                    b.Property<string>("RiskLevel")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("risk_level");
+
+                    b.Property<DateTimeOffset?>("RiskScoredAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("risk_scored_at");
+
                     b.Property<DateTimeOffset>("ScheduledAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("scheduled_at");
-
-                    b.Property<Guid?>("SlotId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("slot_id");
 
                     b.Property<int>("SequenceNumber")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValue(0)
                         .HasColumnName("sequence_number");
+
+                    b.Property<Guid?>("SlotId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("slot_id");
 
                     b.Property<Guid?>("StaffUserId")
                         .HasColumnType("uuid")
@@ -526,6 +543,9 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                     b.HasIndex("PatientId")
                         .HasDatabaseName("ix_appointments_patient_id");
 
+                    b.HasIndex("RiskScoredAt")
+                        .HasDatabaseName("ix_appointments_risk_scored_at");
+
                     b.HasIndex("SlotId")
                         .IsUnique()
                         .HasDatabaseName("ix_appointments_slot_id")
@@ -533,6 +553,10 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
 
                     b.HasIndex("StaffUserId")
                         .HasDatabaseName("ix_appointments_staff_user_id");
+
+                    b.HasIndex("PatientId", "ScheduledAt", "Status")
+                        .IsDescending(false, true, false)
+                        .HasDatabaseName("ix_appointments_patient_scheduled_status");
 
                     b.ToTable("appointments", "app");
                 });
@@ -672,6 +696,67 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                     b.ToTable("appointment_slots", "app");
                 });
 
+            modelBuilder.Entity("PropelIQ.Modules.Scheduling.Domain.Entities.DeadLetterEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<Guid>("AppointmentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("appointment_id");
+
+                    b.Property<string>("Channel")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("channel");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("FailureReason")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("failure_reason");
+
+                    b.Property<bool>("Reprocessed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("reprocessed");
+
+                    b.Property<Guid>("SourceReminderId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("source_reminder_id");
+
+                    b.Property<int>("TotalAttempts")
+                        .HasColumnType("integer")
+                        .HasColumnName("total_attempts");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_dead_letter_events");
+
+                    b.HasIndex("Reprocessed")
+                        .HasDatabaseName("ix_dead_letter_events_reprocessed")
+                        .HasFilter("\"Reprocessed\" = false");
+
+                    b.HasIndex("SourceReminderId")
+                        .HasDatabaseName("ix_dead_letter_events_source_reminder");
+
+                    b.ToTable("dead_letter_events", "app");
+                });
+
             modelBuilder.Entity("PropelIQ.Modules.Scheduling.Domain.Entities.IntakeDraft", b =>
                 {
                     b.Property<Guid>("Id")
@@ -806,9 +891,19 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<string>("IdempotencyKey")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("idempotency_key");
+
                     b.Property<int>("RetryCount")
                         .HasColumnType("integer")
                         .HasColumnName("retry_count");
+
+                    b.Property<DateTimeOffset>("ScheduledAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("scheduled_at");
 
                     b.Property<string>("SendStatus")
                         .IsRequired()
@@ -827,8 +922,16 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_reminder_events");
 
-                    b.HasIndex("AppointmentId")
-                        .HasDatabaseName("ix_reminder_events_appointment_id");
+                    b.HasIndex("IdempotencyKey")
+                        .IsUnique()
+                        .HasDatabaseName("ix_reminder_events_idempotency_key");
+
+                    b.HasIndex("AppointmentId", "SendStatus")
+                        .HasDatabaseName("ix_reminder_events_appointment_send_status");
+
+                    b.HasIndex("SendStatus", "ScheduledAt")
+                        .HasDatabaseName("ix_reminder_events_pending_scheduled_at")
+                        .HasFilter("\"SendStatus\" = 'Pending'");
 
                     b.ToTable("reminder_events", "app");
                 });
@@ -907,23 +1010,65 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("appointment_id");
 
+                    b.Property<DateTimeOffset?>("CancelledAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("cancelled_at");
+
+                    b.Property<DateTimeOffset?>("ClaimExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("claim_expires_at");
+
+                    b.Property<string>("ClaimTokenHash")
+                        .HasColumnType("text")
+                        .HasColumnName("claim_token_hash");
+
+                    b.Property<DateTimeOffset?>("ClaimedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("claimed_at");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<DateTimeOffset?>("ExpiredAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expired_at");
+
                     b.Property<DateTimeOffset?>("OfferedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("offered_at");
+
+                    b.Property<Guid?>("OfferedSlotId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("offered_slot_id");
 
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uuid")
                         .HasColumnName("patient_id");
 
-                    b.Property<int>("Priority")
+                    b.Property<int>("Position")
                         .HasColumnType("integer")
-                        .HasColumnName("priority");
+                        .HasColumnName("position");
+
+                    b.Property<string>("PreferredAppointmentType")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("preferred_appointment_type");
+
+                    b.Property<DateTimeOffset>("PreferredDateEnd")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("preferred_date_end");
+
+                    b.Property<DateTimeOffset>("PreferredDateStart")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("preferred_date_start");
+
+                    b.Property<int>("PreferredDurationMinutes")
+                        .HasColumnType("integer")
+                        .HasColumnName("preferred_duration_minutes");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -942,8 +1087,18 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_waitlist_entries_appointment_id");
 
+                    b.HasIndex("ClaimExpiresAt")
+                        .HasDatabaseName("ix_waitlist_entries_claim_expires_at_offered")
+                        .HasFilter("\"Status\" = 'Offered' AND \"ClaimExpiresAt\" IS NOT NULL");
+
                     b.HasIndex("PatientId")
                         .HasDatabaseName("ix_waitlist_entries_patient_id");
+
+                    b.HasIndex("Status", "ClaimExpiresAt")
+                        .HasDatabaseName("ix_waitlist_entries_status_claim_expires_at");
+
+                    b.HasIndex("Status", "Position")
+                        .HasDatabaseName("ix_waitlist_entries_status_position");
 
                     b.ToTable("waitlist_entries", "app");
                 });
@@ -1065,6 +1220,10 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
 
                             b1.Property<string>("PreferredPhone")
                                 .HasColumnType("text");
+
+                            b1.PrimitiveCollection<List<string>>("ReminderTimings")
+                                .IsRequired()
+                                .HasColumnType("text[]");
 
                             b1.Property<bool>("SmsEnabled")
                                 .HasColumnType("boolean");

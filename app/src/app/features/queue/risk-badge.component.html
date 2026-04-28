@@ -1,0 +1,15 @@
+<!-- AC-2: Colour-coded risk chip with accessible label and feature tooltip -->
+<!-- UXR-201: All colour/white-text combinations pass WCAG AA 4.5:1 -->
+<!-- UXR-203: aria-label surfaces risk level to screen readers          -->
+<mat-chip-listbox aria-label="Risk level">
+  <mat-chip
+    [style.background-color]="badgeColor()"
+    [style.color]="'#ffffff'"
+    [attr.aria-label]="ariaLabel()"
+    [matTooltip]="tooltipText()"
+    matTooltipPosition="above"
+    class="risk-chip"
+    disableRipple>
+    {{ badgeLabel() }}
+  </mat-chip>
+</mat-chip-listbox>

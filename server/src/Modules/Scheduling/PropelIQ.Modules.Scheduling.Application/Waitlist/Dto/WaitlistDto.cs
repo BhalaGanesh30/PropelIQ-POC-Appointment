@@ -29,10 +29,22 @@ public record WaitlistEntryResponse
 }
 
 /// <summary>
-/// Response from POST /api/v1/waitlist/{id}/claim (AC-3).
-/// Returns standard booking confirmation details so the client can display
-/// a confirmation screen identical to a direct booking.
+/// Response from GET /api/v1/waitlist/claim-details?token={token} (US_030 task_002).
+/// Returned to the claim page component so the patient can see slot details
+/// before confirming their claim.
 /// </summary>
+public record SlotClaimDetailsResponse
+{
+    public Guid WaitlistEntryId { get; init; }
+    /// <summary>ISO 8601 UTC — converted to browser timezone client-side (edge case 2).</summary>
+    public DateTimeOffset SlotDateTime { get; init; }
+    public string SlotType { get; init; } = string.Empty;
+    public string? ProviderName { get; init; }
+    public int DurationMinutes { get; init; }
+    /// <summary>UTC expiry for the countdown timer (AC-2).</summary>
+    public DateTimeOffset ExpiresAtUtc { get; init; }
+    public string Status { get; init; } = string.Empty;
+}
 public record ClaimWaitlistResponse
 {
     public Guid AppointmentId { get; init; }

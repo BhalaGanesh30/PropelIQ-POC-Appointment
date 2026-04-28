@@ -59,6 +59,39 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    // US_028: Staff queue dashboard with AI no-show risk scoring (task_003).
+    // Restricted to authenticated Staff/Admin users; role enforcement is also
+    // applied server-side on the /api/v1/appointments/risk-scores endpoint.
+    path: 'queue',
+    loadComponent: () =>
+      import('./features/queue/queue-dashboard.component').then(
+        (m) => m.QueueDashboardComponent,
+      ),
+    title: 'Queue Dashboard — PropelIQ',
+    canActivate: [authGuard],
+  },
+  {
+    // US_029/SCR-009: Patient notification channel and reminder timing preferences.
+    path: 'settings/notifications',
+    loadComponent: () =>
+      import('./features/settings/notification-preferences.component').then(
+        (m) => m.NotificationPreferencesComponent,
+      ),
+    title: 'Notification Preferences — PropelIQ',
+    canActivate: [authGuard],
+  },
+  {
+    // US_030/task_002: Slot claim page — opened from HMAC-signed email/SMS link.
+    // Accepts ?token= query param; authGuard redirects to login then back.
+    path: 'claim',
+    loadComponent: () =>
+      import('./features/waitlist/slot-claim-page.component').then(
+        (m) => m.SlotClaimPageComponent,
+      ),
+    title: 'Claim Appointment Slot — PropelIQ',
+    canActivate: [authGuard],
+  },
+  {
     // US_001 Edge Case: undefined routes render the 404 component (not a redirect,
     // preserves the URL so the user sees what they typed).
     path: '**',

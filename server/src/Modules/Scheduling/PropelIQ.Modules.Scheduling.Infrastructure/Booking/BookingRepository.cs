@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using PropelIQ.Modules.Administration.Domain.Entities;
 using PropelIQ.Modules.Scheduling.Application.Abstractions;
+using PropelIQ.Modules.Scheduling.Application.AI.Models;
 using PropelIQ.Modules.Scheduling.Domain.Entities;
 using PropelIQ.Modules.Scheduling.Domain.Enums;
 using PropelIQ.Modules.SharedServices.Infrastructure.Data;
@@ -193,5 +195,122 @@ public sealed class BookingRepository : IBookingRepository
         _context.Patients.Add(patient);
         await _context.SaveChangesAsync(ct);
         return patient.Id;
+    }
+
+    // ── No-show risk score (US_028) ───────────────────────────────────────────
+
+    /// <inheritdoc />
+    public async Task UpdateRiskScoreAsync(
+        Guid appointmentId,
+        string riskLevel,
+        double confidence,
+        string featuresJson,
+        DateTimeOffset scoredAt,
+        CancellationToken ct = default)
+    {
+        await _context.Appointments
+            .Where(a => a.Id == appointmentId)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(a => a.RiskLevel, riskLevel)
+                .SetProperty(a => a.RiskConfidence, confidence)
+                .SetProperty(a => a.RiskFeatures, featuresJson)
+                .SetProperty(a => a.RiskScoredAt, scoredAt),
+                ct);
+    }
+
+    // ── Risk dashboard queries (US_028 task_002) ──────────────────────────────
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<AppointmentRiskProjection>>
+        GetUpcomingForRiskDashboardAsync(
+            DateTimeOffset from,
+            DateTimeOffset to,
+            CancellationToken ct = default)
+    {
+        return await _context.Appointments
+            .AsNoTracking()
+            .Where(a =>
+                a.ScheduledAt >= from
+                && a.ScheduledAt <= to
+                && a.Status != "Cancelled")
+            .OrderBy(a => a.ScheduledAt)
+            .Join(
+                _context.Patients,
+                a => a.PatientId,
+                p => p.Id,
+                (a, p) => new AppointmentRiskProjection(
+                    a.Id,
+                    p.FirstName + " " + p.LastName,
+                    a.ScheduledAt,
+                    a.AppointmentType,
+                    a.Status,
+                    a.RiskLevel,
+                    a.RiskConfidence))
+            .ToListAsync(ct);
+    }
+
+    /// <inheritdoc />
+    public async Task ClearRiskScoreAsync(
+        Guid appointmentId,
+        CancellationToken ct = default)
+    {
+        await _context.Appointments
+            .Where(a => a.Id == appointmentId)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(a => a.RiskLevel, (string?)null)
+                .SetProperty(a => a.RiskConfidence, (double?)null)
+                .SetProperty(a => a.RiskFeatures, (string?)null)
+                .SetProperty(a => a.RiskScoredAt, (DateTimeOffset?)null),
+                ct);
+    }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<Guid>> GetAppointmentsNeedingRiskScoreAsync(
+        DateTimeOffset from,
+        DateTimeOffset to,
+        DateTimeOffset staleThreshold,
+        int limit,
+        CancellationToken ct = default)
+    {
+        return await _context.Appointments
+            .AsNoTracking()
+            .Where(a =>
+                a.ScheduledAt >= from
+                && a.ScheduledAt <= to
+                && a.Status == AppointmentStatus.Confirmed.ToString()
+                && (a.RiskScoredAt == null || a.RiskScoredAt < staleThreshold))
+            .OrderBy(a => a.ScheduledAt)
+            .Take(limit)
+            .Select(a => a.Id)
+            .ToListAsync(ct);
+    }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<AppointmentRiskProjection>>
+        GetHighRiskAppointmentsInWindowAsync(
+            DateTimeOffset windowStart,
+            DateTimeOffset windowEnd,
+            CancellationToken ct = default)
+    {
+        return await _context.Appointments
+            .AsNoTracking()
+            .Where(a =>
+                a.RiskLevel == "High"
+                && a.ScheduledAt >= windowStart
+                && a.ScheduledAt <= windowEnd
+                && a.Status == AppointmentStatus.Confirmed.ToString())
+            .Join(
+                _context.Patients,
+                a => a.PatientId,
+                p => p.Id,
+                (a, p) => new AppointmentRiskProjection(
+                    a.Id,
+                    p.FirstName + " " + p.LastName,
+                    a.ScheduledAt,
+                    a.AppointmentType,
+                    a.Status,
+                    a.RiskLevel,
+                    a.RiskConfidence))
+            .ToListAsync(ct);
     }
 }

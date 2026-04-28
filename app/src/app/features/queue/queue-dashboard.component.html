@@ -1,0 +1,101 @@
+<!-- Queue Dashboard — US_028 task_003, AC-1, AC-3                    -->
+<!-- UXR-106: Polling indicator shows users the table is auto-refreshing -->
+<!-- UXR-203: All interactive elements are keyboard and screen-reader    -->
+<!--          accessible (aria-labels, semantic roles)                   -->
+
+<div class="queue-page">
+
+  <!-- Page header ──────────────────────────────────────────────────────── -->
+  <div class="page-header">
+    <h1 class="page-title">Today's Appointment Queue</h1>
+    <span class="poll-hint" aria-live="polite">
+      @if (isLoading()) {
+        <mat-spinner diameter="16" aria-label="Loading risk scores"></mat-spinner>
+        <span class="sr-only">Loading…</span>
+      } @else {
+        <span aria-hidden="true">Auto-refreshes every 15 s</span>
+      }
+    </span>
+    <button
+      mat-icon-button
+      aria-label="Refresh risk scores now"
+      matTooltip="Refresh now"
+      (click)="refresh()">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
+  <!-- High-risk alert banner (AC-3) ────────────────────────────────────── -->
+  @if (highRiskAlerts().length > 0) {
+    <app-high-risk-alert-banner [appointments]="highRiskAlerts()" />
+  }
+
+  <!-- Error notice ─────────────────────────────────────────────────────── -->
+  @if (errorMessage()) {
+    <div class="error-notice" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <!-- Risk score data table (AC-1) ─────────────────────────────────────── -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <table
+        mat-table
+        [dataSource]="appointments()"
+        aria-label="Appointment queue with no-show risk scores"
+        class="queue-table">
+
+        <!-- Patient Name column -->
+        <ng-container matColumnDef="patientName">
+          <th mat-header-cell *matHeaderCellDef scope="col">Patient</th>
+          <td mat-cell *matCellDef="let appt">{{ appt.patientName }}</td>
+        </ng-container>
+
+        <!-- Appointment Date column -->
+        <ng-container matColumnDef="appointmentDate">
+          <th mat-header-cell *matHeaderCellDef scope="col">Date &amp; Time</th>
+          <td mat-cell *matCellDef="let appt">
+            {{ appt.appointmentDate | date: 'EEE, MMM d · h:mm a' }}
+          </td>
+        </ng-container>
+
+        <!-- Appointment Type column -->
+        <ng-container matColumnDef="appointmentType">
+          <th mat-header-cell *matHeaderCellDef scope="col">Type</th>
+          <td mat-cell *matCellDef="let appt">{{ appt.appointmentType }}</td>
+        </ng-container>
+
+        <!-- Status column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef scope="col">Status</th>
+          <td mat-cell *matCellDef="let appt">{{ appt.status }}</td>
+        </ng-container>
+
+        <!-- Risk column (AC-2) -->
+        <ng-container matColumnDef="risk">
+          <th mat-header-cell *matHeaderCellDef scope="col">No-Show Risk</th>
+          <td mat-cell *matCellDef="let appt">
+            <app-risk-badge
+              [riskLevel]="getRiskLevel(appt.appointmentId)"
+              [features]="getRiskFeatures(appt.appointmentId)" />
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+            class="queue-row"></tr>
+
+        <!-- Empty-state row -->
+        <tr *matNoDataRow>
+          <td [attr.colspan]="displayedColumns.length" class="empty-row">
+            <mat-icon aria-hidden="true">event_busy</mat-icon>
+            No appointments found for the selected window.
+          </td>
+        </tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+</div>

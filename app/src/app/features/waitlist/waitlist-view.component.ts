@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -18,6 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ClaimCountdownComponent } from './claim-countdown.component';
 import {
   CountdownTimerComponent,
 } from './countdown-timer.component';
@@ -55,6 +56,7 @@ const REFRESH_INTERVAL_MS = 30_000;
   standalone: true,
   imports: [
     DatePipe,
+    RouterLink,
     MatButtonModule,
     MatCardModule,
     MatChipsModule,
@@ -62,6 +64,7 @@ const REFRESH_INTERVAL_MS = 30_000;
     MatProgressSpinnerModule,
     MatSnackBarModule,
     MatTooltipModule,
+    ClaimCountdownComponent,
     CountdownTimerComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

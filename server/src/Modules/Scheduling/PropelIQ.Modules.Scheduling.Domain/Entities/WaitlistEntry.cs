@@ -30,7 +30,7 @@ public sealed class WaitlistEntry : BaseEntity
     /// <summary>Appointment type string (e.g. "General", "Specialist").</summary>
     public string PreferredAppointmentType { get; set; } = string.Empty;
 
-    // ── Offer tracking (AC-2) ─────────────────────────────────────────────────
+    // ── Offer lifecycle (AC-2, AC-4) ──────────────────────────────────────────
 
     /// <summary>Slot offered when a matching cancellation or release occurs.</summary>
     public Guid? OfferedSlotId { get; set; }
@@ -40,6 +40,13 @@ public sealed class WaitlistEntry : BaseEntity
 
     /// <summary>UTC timestamp when the 2-hour claim window closes (AC-4).</summary>
     public DateTimeOffset? ClaimExpiresAt { get; set; }
+
+    /// <summary>
+    /// SHA-256 hash (hex) of the HMAC-signed claim token embedded in the alert
+    /// email / SMS link.  Verified on claim to prevent unauthorised slot reservation.
+    /// Null until the slot alert has been dispatched (US_030 task_001).
+    /// </summary>
+    public string? ClaimTokenHash { get; set; }
 
     // ── Outcome timestamps ─────────────────────────────────────────────────────
 

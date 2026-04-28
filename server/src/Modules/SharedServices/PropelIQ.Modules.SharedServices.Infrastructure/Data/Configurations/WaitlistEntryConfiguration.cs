@@ -40,6 +40,12 @@ public sealed class WaitlistEntryConfiguration : IEntityTypeConfiguration<Waitli
         // Composite: expiry polling query (GetExpiredOffersAsync).
         builder.HasIndex(w => new { w.Status, w.ClaimExpiresAt });
 
+        // Partial index: speed up expiry worker queries on Offered entries only.
+        // Mirrors the filtered index described in the US_030 task_001 spec.
+        builder.HasIndex(w => w.ClaimExpiresAt)
+            .HasDatabaseName("ix_waitlist_entries_claim_expires_at_offered")
+            .HasFilter("\"Status\" = 'Offered' AND \"ClaimExpiresAt\" IS NOT NULL");
+
         // ── Relationships ─────────────────────────────────────────────────────
 
         // Cross-module FK to Administration.Patient — no EF navigation property.

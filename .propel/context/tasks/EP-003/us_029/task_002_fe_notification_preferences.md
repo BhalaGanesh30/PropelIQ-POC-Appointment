@@ -18,7 +18,7 @@
 | **Figma URL** | N/A |
 | **Wireframe Status** | PENDING |
 | **Wireframe Type** | N/A |
-| **Wireframe Path/URL** | `.propel/context/wireframes/Hi-Fi/wireframe-SCR-009-notification-prefs.html` (pending) |
+| **Wireframe Path/URL** | `.propel/context/wireframes/Hi-Fi/wireframe-SCR-009-notification-preferences.html` (pending) |
 | **Screen Spec** | .propel/context/docs/figma_spec.md#SCR-009 |
 | **UXR Requirements** | UXR-201, UXR-202, UXR-301, UXR-501 |
 | **Design Tokens** | N/A |

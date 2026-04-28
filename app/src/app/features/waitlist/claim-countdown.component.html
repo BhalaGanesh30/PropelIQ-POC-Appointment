@@ -1,0 +1,29 @@
+<!-- UXR-112 / UXR-404: Countdown display with urgency color backing -->
+<div
+  class="countdown"
+  [class]="'urgency-' + urgency()"
+  [style.color]="color()"
+  role="timer"
+  [attr.aria-label]="ariaLabel()"
+>
+  <span class="countdown-display">{{ display() }}</span>
+  <span class="urgency-label" aria-hidden="true">
+    @switch (urgency()) {
+      @case ('critical') { Expiring soon! }
+      @case ('warning')  { Limited time remaining }
+      @case ('expired')  { Claim window closed }
+      @default           { Time remaining to claim }
+    }
+  </span>
+</div>
+
+<!--
+  UXR-203: Separate live region for milestone announcements at 1h, 30min, 5min.
+  Visually hidden but announced by screen readers at key urgency thresholds.
+  aria-atomic="true" ensures the whole message is read, not just the changed part.
+-->
+<div
+  class="sr-only"
+  aria-live="polite"
+  aria-atomic="true"
+>{{ milestoneAnnouncement() }}</div>

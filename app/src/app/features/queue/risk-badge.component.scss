@@ -1,0 +1,28 @@
+// =============================================================================
+// RiskBadgeComponent Styles — US_028 task_003
+// UXR-201: All risk colours pass WCAG AA 4.5:1 against white text.
+// =============================================================================
+
+:host {
+  display: inline-flex;
+  align-items: center;
+}
+
+.risk-chip {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  min-height: 22px;
+  min-width: 72px;
+  padding: 0 10px;
+  cursor: default;
+  pointer-events: auto; // needed so mat-tooltip fires on hover
+  white-space: nowrap;
+
+  // Suppress mat-chip default interactive states that can alter the colour
+  &.mat-mdc-chip {
+    --mdc-chip-label-text-color: #ffffff;
+    --mdc-chip-elevated-container-color: transparent;
+    border: none;
+  }
+}

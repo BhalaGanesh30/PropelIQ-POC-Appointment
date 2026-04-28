@@ -116,6 +116,18 @@ public sealed class AppointmentConfiguration : IEntityTypeConfiguration<Appointm
 
         builder.Property(a => a.CreatedAt)
             .HasDefaultValueSql("now()");
+
+        // ── No-show risk score columns (US_028) ───────────────────────────────
+
+        builder.Property(a => a.RiskLevel)
+            .HasMaxLength(20);
+
+        builder.Property(a => a.RiskFeatures)
+            .HasColumnType("jsonb");
+
+        // Index on RiskScoredAt supports staleness queries and score expiry checks.
+        builder.HasIndex(a => a.RiskScoredAt)
+            .HasDatabaseName("ix_appointments_risk_scored_at");
     }
 }
 

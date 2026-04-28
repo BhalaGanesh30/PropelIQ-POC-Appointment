@@ -47,6 +47,22 @@ public static class AuthenticationSetup
 
                 options.Events = new JwtBearerEvents
                 {
+                    // SignalR sends JWT as query-string parameter because browsers cannot
+                    // set Authorization headers on WebSocket / SSE connections.
+                    // Copy access_token from the query string to context.Token so the
+                    // JWT middleware can validate it for hub connections (US_028, US_017).
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            path.StartsWithSegments("/hubs"))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    },
+
                     // .NET 8 uses JsonWebTokenHandler by default which does NOT apply
                     // JwtSecurityTokenHandler.DefaultInboundClaimTypeMap automatically.
                     // Explicitly copy the 'sub' claim to ClaimTypes.NameIdentifier so that

@@ -1,0 +1,163 @@
+<div class="claim-container">
+
+  <!-- ── LOADING ───────────────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <mat-card class="claim-card">
+      <mat-card-content>
+        <div class="loading-state" role="status" aria-label="Loading claim details">
+          <mat-spinner diameter="48"></mat-spinner>
+          <p class="loading-label">Loading slot details…</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- ── CLAIMED (success) ─────────────────────────────────────────────────── -->
+  @if (!loading() && claimed()) {
+    <mat-card class="claim-card claim-card--success">
+      <mat-card-content>
+        <mat-icon class="state-icon state-icon--success" aria-hidden="true">check_circle</mat-icon>
+        <h1 class="state-heading">Appointment Claimed!</h1>
+
+        @if (claimResult(); as r) {
+          <p class="state-body">
+            Your appointment on
+            <strong>{{ r.appointmentTime | date:'fullDate' }}</strong>
+            at <strong>{{ r.appointmentTime | date:'shortTime' }}</strong>
+            has been confirmed.
+          </p>
+          @if (r.providerName) {
+            <p class="state-body">Provider: <strong>{{ r.providerName }}</strong></p>
+          }
+          <p class="state-body confirm-code">
+            Confirmation #<strong>{{ r.confirmationCode }}</strong>
+          </p>
+        } @else {
+          @if (slot()) {
+            <p class="state-body">
+              Your <strong>{{ slot()!.slotType }}</strong> appointment on
+              <strong>{{ slot()!.slotDateTime | date:'fullDate' }}</strong>
+              at <strong>{{ slot()!.slotDateTime | date:'shortTime' }}</strong>
+              has been reserved.
+            </p>
+          }
+        }
+
+        <div class="state-actions">
+          <button mat-flat-button color="primary" (click)="navigateToDashboard()">
+            <mat-icon aria-hidden="true">dashboard</mat-icon>
+            View Dashboard
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- ── EXPIRED / ERROR ───────────────────────────────────────────────────── -->
+  @if (!loading() && !claimed() && (expired() || errorMessage())) {
+    <mat-card class="claim-card claim-card--expired">
+      <mat-card-content>
+        <mat-icon class="state-icon state-icon--expired" aria-hidden="true">timer_off</mat-icon>
+        <h1 class="state-heading">Slot No Longer Available</h1>
+        <p class="state-body" role="alert" aria-live="assertive">
+          {{ errorMessage() || 'This offer has expired.' }}
+        </p>
+        <div class="state-actions">
+          <button mat-flat-button color="primary" (click)="navigateToWaitlist()">
+            <mat-icon aria-hidden="true">queue</mat-icon>
+            Return to Waitlist
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- ── CLAIM FORM (AC-2 + AC-3) ─────────────────────────────────────────── -->
+  @if (showClaimForm(); as _) {
+    @if (slot(); as s) {
+      <mat-card class="claim-card">
+        <mat-card-header>
+          <mat-card-title>Preferred Slot Available</mat-card-title>
+          <mat-card-subtitle>Claim your appointment before the window closes</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+
+          <!-- AC-2: Live countdown timer -->
+          <app-claim-countdown
+            [expiresAtUtc]="s.expiresAtUtc"
+          />
+
+          <!-- Error banner (claim failure) -->
+          @if (errorMessage()) {
+            <div class="inline-error" role="alert" aria-live="assertive">
+              <mat-icon aria-hidden="true">error_outline</mat-icon>
+              {{ errorMessage() }}
+            </div>
+          }
+
+          <!-- Slot details -->
+          <dl class="slot-details">
+            <div class="detail-row">
+              <dt class="detail-label">Date</dt>
+              <dd class="detail-value">{{ s.slotDateTime | date:'fullDate' }}</dd>
+            </div>
+            <div class="detail-row">
+              <dt class="detail-label">Time</dt>
+              <dd class="detail-value">{{ s.slotDateTime | date:'shortTime' }}</dd>
+            </div>
+            <div class="detail-row">
+              <dt class="detail-label">Type</dt>
+              <dd class="detail-value">{{ s.slotType }}</dd>
+            </div>
+            @if (s.providerName) {
+              <div class="detail-row">
+                <dt class="detail-label">Provider</dt>
+                <dd class="detail-value">{{ s.providerName }}</dd>
+              </div>
+            }
+            <div class="detail-row">
+              <dt class="detail-label">Duration</dt>
+              <dd class="detail-value">{{ s.durationMinutes }} minutes</dd>
+            </div>
+            <div class="detail-row">
+              <dt class="detail-label">Offer expires</dt>
+              <dd class="detail-value">{{ s.expiresAtUtc | date:'shortTime' }} (local time)</dd>
+            </div>
+          </dl>
+
+          <!-- AC-3: Claim button -->
+          <div class="claim-actions">
+            <button
+              mat-flat-button
+              color="primary"
+              class="claim-btn"
+              (click)="claim()"
+              [disabled]="claiming() || expired()"
+              [attr.aria-busy]="claiming()"
+              aria-label="Claim this appointment slot"
+            >
+              @if (claiming()) {
+                <mat-spinner diameter="20" class="btn-spinner" aria-hidden="true"></mat-spinner>
+                Claiming…
+              } @else {
+                <mat-icon aria-hidden="true">event_available</mat-icon>
+                Claim Appointment
+              }
+            </button>
+
+            <button
+              mat-button
+              (click)="navigateToWaitlist()"
+              aria-label="Decline this slot and return to waitlist"
+            >
+              Decline &amp; Return to Waitlist
+            </button>
+          </div>
+
+        </mat-card-content>
+      </mat-card>
+    }
+  }
+
+</div>

@@ -1,3 +1,4 @@
+using PropelIQ.Modules.Scheduling.Application.AI.Models;
 using PropelIQ.Modules.Scheduling.Domain.Entities;
 using PropelIQ.Modules.Scheduling.Domain.Enums;
 
@@ -93,4 +94,59 @@ public interface IBookingRepository
     /// Returns <see langword="null"/> when no matching patient record exists.
     /// </summary>
     Task<Guid?> ResolvePatientIdAsync(Guid userId, CancellationToken ct);
+
+    // ── No-show risk score (US_028) ───────────────────────────────────────────
+
+    /// <summary>
+    /// Persists the no-show risk score against an appointment record.
+    /// Uses EF Core ExecuteUpdateAsync for a targeted single-row UPDATE (AC-4).
+    /// </summary>
+    Task UpdateRiskScoreAsync(
+        Guid appointmentId,
+        string riskLevel,
+        double confidence,
+        string featuresJson,
+        DateTimeOffset scoredAt,
+        CancellationToken ct = default);
+
+    // ── Risk dashboard queries (US_028 task_002) ──────────────────────────────
+
+    /// <summary>
+    /// Returns upcoming appointments with patient names in a date range.
+    /// Used by the risk-scores dashboard endpoint (AC-4).
+    /// </summary>
+    Task<IReadOnlyList<AppointmentRiskProjection>> GetUpcomingForRiskDashboardAsync(
+        DateTimeOffset from,
+        DateTimeOffset to,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Clears the cached risk score on an appointment, forcing recalculation
+    /// on next access. Called when an appointment is rescheduled (edge case 2).
+    /// </summary>
+    Task ClearRiskScoreAsync(
+        Guid appointmentId,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns appointment IDs for confirmed upcoming appointments that have
+    /// a stale or missing risk score, up to <paramref name="limit"/> rows.
+    /// Used by <c>RiskScoreRefreshWorker</c> for batch pre-computation.
+    /// </summary>
+    Task<IReadOnlyList<Guid>> GetAppointmentsNeedingRiskScoreAsync(
+        DateTimeOffset from,
+        DateTimeOffset to,
+        DateTimeOffset staleThreshold,
+        int limit,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns High-risk confirmed appointments whose scheduled time falls
+    /// within <paramref name="windowStart"/> and <paramref name="windowEnd"/>.
+    /// Used by <c>HighRiskNotificationWorker</c> to publish 24-hour staff alerts (AC-3).
+    /// </summary>
+    Task<IReadOnlyList<AppointmentRiskProjection>> GetHighRiskAppointmentsInWindowAsync(
+        DateTimeOffset windowStart,
+        DateTimeOffset windowEnd,
+        CancellationToken ct = default);
 }

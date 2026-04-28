@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PropelIQ.Modules.Scheduling.Application.Abstractions;
 using PropelIQ.Modules.Scheduling.Application.Booking.Artifacts;
 using PropelIQ.Modules.Scheduling.Application.Reminders;
 using PropelIQ.Modules.Scheduling.Domain.Events;
@@ -136,6 +137,27 @@ public sealed class BookingRescheduledEventHandler : BackgroundService
         {
             _logger.LogError(ex,
                 "Failed to reschedule reminders for appointment {AppointmentId}. Reschedule remains valid.",
+                evt.AppointmentId);
+        }
+
+        // Edge case 2 (US_028): Invalidate cached risk score on reschedule so the
+        // scoring service recalculates with the updated appointment metadata on next access.
+        try
+        {
+            var bookingRepo = scope.ServiceProvider
+                .GetRequiredService<IBookingRepository>();
+
+            await bookingRepo.ClearRiskScoreAsync(evt.AppointmentId, ct);
+
+            _logger.LogInformation(
+                "Risk score cache cleared for rescheduled appointment {AppointmentId}",
+                evt.AppointmentId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex,
+                "Failed to clear risk score cache for appointment {AppointmentId}. " +
+                "Score will become stale and recalculate after 24h TTL.",
                 evt.AppointmentId);
         }
     }
