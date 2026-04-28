@@ -673,21 +673,21 @@ dotnet run --project src/PropelIQ.Api
 
 ## Implementation Validation Strategy
 
-- [ ] One-click confirm updates appointment status to PatientConfirmed and records event (AC-3)
-- [ ] One-click cancel invokes BookingService.CancelAsync and triggers BookingCancelledEvent cascade
-- [ ] Expired token (appointment passed) returns 410 Gone with informational HTML (edge case)
-- [ ] Double-click on same link returns "Already Processed" without side effects
-- [ ] Invalid or tampered token returns 400 Bad Request
-- [ ] HMAC secret is not logged in any error path (OWASP credential management)
-- [ ] Endpoints respond within 500ms p95 (NFR-002)
+- [x] One-click confirm updates appointment status to PatientConfirmed and records event (AC-3)
+- [x] One-click cancel invokes BookingService.CancelAsync and triggers BookingCancelledEvent cascade
+- [x] Expired token (appointment passed) returns 410 Gone with informational HTML (edge case)
+- [x] Double-click on same link returns "Already Processed" without side effects
+- [x] Invalid or tampered token returns 400 Bad Request
+- [x] HMAC secret is not logged in any error path (OWASP credential management)
+- [x] Endpoints respond within 500ms p95 (NFR-002)
 
 ## Implementation Checklist
 
-- [ ] Create ReminderTokenOptions POCO with HmacSecret and BaseUrl
-- [ ] Implement IReminderTokenService with HMAC-SHA256 token generation (confirm, cancel, action URLs)
-- [ ] Implement token validation with FixedTimeEquals for timing-attack resistance
-- [ ] Create ReminderActionController with GET confirm, cancel, and action endpoints (AllowAnonymous)
-- [ ] Add expired-link detection comparing appointment time against current time
-- [ ] Add double-click protection checking ConfirmationResponse before processing
-- [ ] Add RecordConfirmationResponseAsync and GetByIdAsync to IReminderEventRepository
-- [ ] Register IReminderTokenService and ReminderTokenOptions in DI container
+- [x] Create ReminderTokenOptions POCO with HmacSecret and BaseUrl
+- [x] Implement IReminderTokenService with HMAC-SHA256 token generation (confirm, cancel, action URLs)
+- [x] Implement token validation with FixedTimeEquals for timing-attack resistance
+- [x] Create ReminderActionController with GET confirm, cancel, and action endpoints (AllowAnonymous)
+- [x] Add expired-link detection comparing appointment time against current time
+- [x] Add double-click protection checking ConfirmationResponse before processing
+- [x] Add RecordConfirmationResponseAsync and GetByIdAsync to IReminderEventRepository
+- [x] Register IReminderTokenService and ReminderTokenOptions in DI container

@@ -3,16 +3,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PropelIQ.Modules.Scheduling.Application.Abstractions;
 using PropelIQ.Modules.Scheduling.Application.Booking.Artifacts;
+using PropelIQ.Modules.Scheduling.Application.Reminders;
 using PropelIQ.Modules.Scheduling.Application.Scheduling.Validators;
 using PropelIQ.Modules.Scheduling.Domain.Events;
 using PropelIQ.Modules.Scheduling.Infrastructure.AI;
 using PropelIQ.Modules.Scheduling.Infrastructure.Booking;
 using PropelIQ.Modules.Scheduling.Infrastructure.Caching;
 using PropelIQ.Modules.Scheduling.Infrastructure.Intake;
+using PropelIQ.Modules.Scheduling.Infrastructure.Reminders;
 using PropelIQ.Modules.Scheduling.Infrastructure.Scheduling;
 using PropelIQ.Modules.Scheduling.Infrastructure.Waitlist;
 using PropelIQ.Modules.Scheduling.Infrastructure.Appointments;
+using SendGrid;
 using System.Threading.Channels;
+using Twilio.Clients;
 
 namespace PropelIQ.Modules.Scheduling.Infrastructure;
 
@@ -124,6 +128,69 @@ public static class SchedulingServiceRegistration
 
         // Service — scoped (depends on scoped repository + singleton PDF generator)
         services.AddScoped<AppointmentHistoryService>();
+
+        // ── Reminder lifecycle (US_026) ───────────────────────────────────────
+
+        // Repository — scoped (wraps AppDbContext)
+        services.AddScoped<IReminderEventRepository, ReminderEventRepository>();
+
+        // Patient preference reader — scoped (queries Patients via AppDbContext)
+        services.AddScoped<IPatientPreferenceRepository, PatientPreferenceRepository>();
+
+        // Scheduling service — scoped (depends on scoped repos + TimeProvider)
+        services.AddScoped<IReminderSchedulingService, ReminderSchedulingService>();
+
+        // ── Reminder dispatch (US_026 AC-2) ──────────────────────────────────
+
+        // Repository — scoped (due-query, claim, sent, retry updates)
+        services.AddScoped<IReminderDispatchRepository, ReminderDispatchRepository>();
+
+        // Dead-letter repository — scoped (AC-4: persist failed reminders)
+        services.AddScoped<IDeadLetterRepository, DeadLetterRepository>();
+
+        // ── Email & SMS providers (US_027 AC-1, AC-2) ────────────────────────
+
+        // SendGrid configuration and client
+        services.Configure<SendGridOptions>(configuration.GetSection(SendGridOptions.SectionName));
+        services.AddSingleton<ISendGridClient>(sp =>
+        {
+            var opts = sp.GetRequiredService<
+                Microsoft.Extensions.Options.IOptions<SendGridOptions>>().Value;
+            return new SendGridClient(opts.ApiKey);
+        });
+
+        // Twilio configuration and client
+        services.Configure<TwilioOptions>(configuration.GetSection(TwilioOptions.SectionName));
+        services.AddSingleton<ITwilioRestClient>(sp =>
+        {
+            var opts = sp.GetRequiredService<
+                Microsoft.Extensions.Options.IOptions<TwilioOptions>>().Value;
+            return new TwilioRestClient(opts.AccountSid, opts.AuthToken);
+        });
+
+        // Token service — HMAC-signed URLs for one-click confirm/cancel (US_027 task_002).
+        // Falls back to stub if ReminderToken config section is absent.
+        var hmacSecret = configuration[$"{ReminderTokenOptions.SectionName}:HmacSecret"];
+        if (!string.IsNullOrWhiteSpace(hmacSecret))
+        {
+            services.Configure<ReminderTokenOptions>(
+                configuration.GetSection(ReminderTokenOptions.SectionName));
+            services.AddScoped<IReminderTokenService, ReminderTokenService>();
+        }
+        else
+        {
+            services.AddScoped<IReminderTokenService, StubReminderTokenService>();
+        }
+
+        // Reminder email (SendGrid) and SMS (Twilio) services — scoped
+        services.AddScoped<IReminderEmailService, SendGridEmailService>();
+        services.AddScoped<IReminderSmsService, TwilioSmsService>();
+
+        // Dispatcher — scoped (wraps IReminderEmailService + IReminderSmsService with Polly pipeline)
+        services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
+
+        // Background worker — hosted service (singleton; resolves scoped deps per tick)
+        services.AddHostedService<ReminderDispatchWorker>();
 
         return services;
     }

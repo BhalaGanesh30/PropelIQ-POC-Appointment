@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PropelIQ.Modules.Scheduling.Application.Booking.Artifacts;
+using PropelIQ.Modules.Scheduling.Application.Reminders;
 using PropelIQ.Modules.Scheduling.Domain.Events;
 using System.Threading.Channels;
 
@@ -115,5 +116,25 @@ public sealed class BookingCancelledEventHandler : BackgroundService
         _logger.LogInformation(
             "Cancellation notification dispatched for appointment {AppointmentId} [IcsStored={HasIcs}]",
             evt.AppointmentId, icsPath is not null);
+
+        // AC-3 (US_026): Cancel all pending reminders for the cancelled appointment.
+        // Failure is non-blocking — reminder cancellation must not affect committed cancellation.
+        try
+        {
+            var reminderService = scope.ServiceProvider
+                .GetRequiredService<IReminderSchedulingService>();
+
+            await reminderService.CancelRemindersAsync(evt.AppointmentId, ct);
+
+            _logger.LogInformation(
+                "Pending reminders cancelled for appointment {AppointmentId}",
+                evt.AppointmentId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Failed to cancel reminders for appointment {AppointmentId}. Cancellation remains valid.",
+                evt.AppointmentId);
+        }
     }
 }

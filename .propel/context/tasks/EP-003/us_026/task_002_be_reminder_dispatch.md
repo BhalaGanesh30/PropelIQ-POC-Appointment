@@ -503,11 +503,11 @@ dotnet ef database update \
 
 ## Implementation Checklist
 
-- [ ] Create IReminderDispatchRepository with due query, claim, sent, and retry methods
-- [ ] Implement ReminderDispatchRepository with optimistic Pending-to-Sending claim
-- [ ] Create INotificationDispatcher abstraction and Polly-wrapped implementation
-- [ ] Implement ReminderDispatchWorker with PeriodicTimer (1-minute interval) and batch processing
-- [ ] Add filtered composite index on (SendStatus, ScheduledAt) for dispatch query
-- [ ] Register all services and hosted worker in Program.cs DI container
-- [ ] Implement max-retry (3) logic transitioning to Failed status on exhaustion
-- [ ] Add structured logging for dispatch success, failure, and batch metrics
+- [x] Create IReminderDispatchRepository with due query, claim, sent, and retry methods
+- [x] Implement ReminderDispatchRepository with optimistic Pending-to-Sending claim
+- [x] Create INotificationDispatcher abstraction and Polly-wrapped implementation
+- [x] Implement ReminderDispatchWorker with PeriodicTimer (1-minute interval) and batch processing
+- [x] Add filtered composite index on (SendStatus, ScheduledAt) for dispatch query
+- [x] Register all services and hosted worker in Program.cs DI container
+- [x] Implement max-retry (3) logic transitioning to Failed status on exhaustion
+- [x] Add structured logging for dispatch success, failure, and batch metrics
