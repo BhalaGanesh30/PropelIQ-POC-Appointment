@@ -484,11 +484,11 @@ dotnet ef database update \
 
 ## Implementation Checklist
 
-- [ ] Define ReminderOffsets constants (7d, 2d, 1d, 2h) and BuildIdempotencyKey helper
-- [ ] Create IReminderSchedulingService interface with schedule, cancel, and reschedule methods
-- [ ] Implement ReminderSchedulingService with past-time skip and per-channel reminder creation
-- [ ] Create IReminderEventRepository and EF Core implementation with idempotent AddRange
-- [ ] Implement bulk CancelPendingByAppointmentAsync using ExecuteUpdateAsync
-- [ ] Create BookingConfirmedReminderHandler BackgroundService consuming Channel
-- [ ] Integrate CancelRemindersAsync into BookingCancelledEventHandler
-- [ ] Integrate RescheduleRemindersAsync into BookingRescheduledEventHandler
+- [x] Define ReminderOffsets constants (7d, 2d, 1d, 2h) and BuildIdempotencyKey helper
+- [x] Create IReminderSchedulingService interface with schedule, cancel, and reschedule methods
+- [x] Implement ReminderSchedulingService with past-time skip and per-channel reminder creation
+- [x] Create IReminderEventRepository and EF Core implementation with idempotent AddRange
+- [x] Implement bulk CancelPendingByAppointmentAsync using ExecuteUpdateAsync
+- [x] Create BookingConfirmedReminderHandler BackgroundService consuming Channel
+- [x] Integrate CancelRemindersAsync into BookingCancelledEventHandler
+- [x] Integrate RescheduleRemindersAsync into BookingRescheduledEventHandler

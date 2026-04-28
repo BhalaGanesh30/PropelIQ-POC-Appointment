@@ -557,11 +557,11 @@ dotnet run --project src/PropelIQ.Api
 
 ## Implementation Checklist
 
-- [ ] Create SendGridOptions and TwilioOptions configuration POCOs
-- [ ] Implement SendGridEmailService with HTML reminder template and confirm/cancel links
-- [ ] Implement TwilioSmsService with concise SMS body and SemaphoreSlim rate gate
-- [ ] Create DeadLetterEvent entity with source reminder ID, failure reason, and reprocessed flag
-- [ ] Create IDeadLetterRepository interface and EF Core implementation
-- [ ] Enhance ReminderDispatchWorker to persist DeadLetterEvent on retry exhaustion
-- [ ] Register SendGrid/Twilio clients, options, and services in DI container
-- [ ] Add DbSet<DeadLetterEvent> and entity configuration to AppDbContext
+- [x] Create SendGridOptions and TwilioOptions configuration POCOs
+- [x] Implement SendGridEmailService with HTML reminder template and confirm/cancel links
+- [x] Implement TwilioSmsService with concise SMS body and SemaphoreSlim rate gate
+- [x] Create DeadLetterEvent entity with source reminder ID, failure reason, and reprocessed flag
+- [x] Create IDeadLetterRepository interface and EF Core implementation
+- [x] Enhance ReminderDispatchWorker to persist DeadLetterEvent on retry exhaustion
+- [x] Register SendGrid/Twilio clients, options, and services in DI container
+- [x] Add DbSet<DeadLetterEvent> and entity configuration to AppDbContext

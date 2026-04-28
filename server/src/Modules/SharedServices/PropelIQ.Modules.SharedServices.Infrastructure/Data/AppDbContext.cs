@@ -35,6 +35,7 @@ public class AppDbContext : DbContext
     public DbSet<Appointment> Appointments => Set<Appointment>();
     public DbSet<WaitlistEntry> WaitlistEntries => Set<WaitlistEntry>();
     public DbSet<ReminderEvent> ReminderEvents => Set<ReminderEvent>();
+    public DbSet<DeadLetterEvent> DeadLetterEvents => Set<DeadLetterEvent>();
     public DbSet<AppointmentSlot> AppointmentSlots => Set<AppointmentSlot>();
     public DbSet<SlotTemplate> SlotTemplates => Set<SlotTemplate>();
     public DbSet<IntakeDraft> IntakeDrafts => Set<IntakeDraft>();

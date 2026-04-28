@@ -10,4 +10,9 @@ public enum AppointmentStatus
     Cancelled = 1,
     Completed = 2,
     NoShow    = 3,
+    /// <summary>
+    /// AC-3 (US_027): Patient explicitly confirmed the appointment
+    /// via one-click confirm link in reminder email/SMS.
+    /// </summary>
+    PatientConfirmed = 4,
 }

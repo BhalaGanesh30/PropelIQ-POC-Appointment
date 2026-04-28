@@ -240,6 +240,8 @@ builder.Services.AddAiGateway(builder.Configuration);
 if (builder.Environment.IsDevelopment())
     builder.Services.AddSingleton<IAiGatewayClient, DevMockAiGatewayClient>();
 // ── Module Infrastructure Registrations ──────────────────────────────────────
+// TimeProvider singleton used by reminder scheduling for testable UTC clock access.
+builder.Services.AddSingleton(TimeProvider.System);
 builder.Services
     .AddSchedulingInfrastructure(builder.Configuration)
     .AddClinicalIntelligenceInfrastructure(builder.Configuration)
