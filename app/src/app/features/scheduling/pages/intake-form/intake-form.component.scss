@@ -1,104 +1,273 @@
-.intake-form-page {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 24px 24px 108px; // bottom clearance for sticky footer
+﻿// =============================================================================
+// IntakeFormComponent Styles — SCR-005
+// Wireframe-aligned: topbar eyebrow + h2 + chip-row, two-column panel
+// (Visit details card left, Progress card right), sticky footer-bar.
+// UXR-104: AI assist toggle pill
+// UXR-201/202: WCAG AA contrast + keyboard nav
+// UXR-301: responsive 375px / 768px / 1440px
+// UXR-405: AI badge on AI-populated fields
+// =============================================================================
+
+:host {
+  display: block;
 }
 
-// ── Progress bar ──────────────────────────────────────────────────────────────
-.progress-section {
-  margin-bottom: 16px;
+// ── Shell ─────────────────────────────────────────────────────────────────────
 
-  .progress-label {
-    display: block;
-    text-align: right;
-    font-size: 0.75rem;
-    color: #757575;
-    margin-top: 4px;
-  }
-
-  mat-progress-bar.complete ::ng-deep .mdc-linear-progress__bar-inner {
-    border-color: #4caf50;
-  }
+.scr005-shell {
+  padding-bottom: 80px; // clearance for sticky footer
 }
 
-// ── Page header ───────────────────────────────────────────────────────────────
-.page-header {
+// ── Topbar ────────────────────────────────────────────────────────────────────
+
+.scr005-topbar {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  align-items: center;
+  gap: 16px;
   margin-bottom: 24px;
   flex-wrap: wrap;
-  gap: 12px;
-
-  h1 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin: 0;
-    color: #212121;
-  }
 }
 
-.ai-toggle {
+.scr005-topbar-copy {
   display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scr005-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mat-sys-primary, #1976d2);
+}
+
+.scr005-heading {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0;
+  color: #212121;
+}
+
+// ── Chip-row (topbar) ─────────────────────────────────────────────────────────
+
+.scr005-chip-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+// ── Pills (shared base) ───────────────────────────────────────────────────────
+
+.scr005-pill {
+  display: inline-flex;
   align-items: center;
   gap: 4px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  background: #f5f5f5;
+  color: #616161;
 
   mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    vertical-align: middle;
-    color: #7e57c2;
-  }
-
-  // Purple accent for the AI slide toggle when active
-  ::ng-deep .mdc-switch.mdc-switch--selected .mdc-switch__track {
-    background-color: #7e57c2 !important;
-  }
-
-  ::ng-deep .mdc-switch.mdc-switch--selected .mdc-switch__handle {
-    background-color: #4527a0 !important;
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
   }
 }
 
-// ── Form sections ─────────────────────────────────────────────────────────────
-.form-section {
-  margin-bottom: 32px;
-  padding: 20px;
-  border-radius: 12px;
-  background: #ffffff;
+// AI pill (toggle button)
+button.scr005-pill--ai {
+  cursor: pointer;
+  background: #f3e5f5;
+  color: #6a1b9a;
+  border-color: #ce93d8;
+  transition: background 120ms ease, color 120ms ease;
+
+  &:hover {
+    background: #e1bee7;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #7e57c2;
+    outline-offset: 2px;
+  }
+}
+
+button.scr005-pill--ai-active {
+  background: #7e57c2;
+  color: #fff;
+  border-color: #7e57c2;
+
+  &:hover {
+    background: #6a1b9a;
+    border-color: #6a1b9a;
+  }
+}
+
+.scr005-pill--success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-color: #a5d6a7;
+}
+
+.scr005-pill--warning {
+  background: #fff3e0;
+  color: #e65100;
+  border-color: #ffcc80;
+}
+
+// ── Two-column panel ──────────────────────────────────────────────────────────
+
+.scr005-panel {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  align-items: start;
+}
+
+// ── Cards (shared) ────────────────────────────────────────────────────────────
+
+.scr005-card {
+  background: #fff;
   border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.scr005-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #424242;
+  margin: 0;
+  padding: 14px 20px;
+  background: #fafafa;
+  border-bottom: 1px solid #eeeeee;
+}
+
+// ── Main (left) card — form ───────────────────────────────────────────────────
+
+.scr005-card--main {
+  form {
+    padding: 0;
+  }
+}
+
+// ── Progress (right) card — sticky ───────────────────────────────────────────
+
+.scr005-card--progress {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 4px;
+}
+
+.scr005-progress-pills {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 16px 0;
+}
+
+.scr005-banner {
+  margin: 0 16px;
+  padding: 14px 16px;
+  background: #e3f2fd;
+  border: 1px solid #bbdefb;
+  border-radius: 8px;
   border-left: 4px solid #1976d2;
+  font-size: 13px;
 
-  h2 {
-    font-size: 1.125rem;
+  strong {
+    display: block;
     font-weight: 600;
-    margin: 0 0 16px;
-    color: #212121;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    color: #0d47a1;
+    margin-bottom: 4px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
 
-    .section-check {
-      color: #4caf50;
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-    }
+  p {
+    margin: 0;
+    color: #1565c0;
+    line-height: 1.5;
+    font-size: 12px;
+  }
+}
+
+.scr005-mini-card {
+  margin: 0 16px 12px;
+  padding: 12px 14px;
+  background: #f9f9f9;
+  border: 1px solid #eeeeee;
+  border-radius: 8px;
+  font-size: 13px;
+
+  strong {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4527a0;
+    margin-bottom: 4px;
+  }
+
+  p {
+    margin: 0;
+    color: #616161;
+    line-height: 1.5;
+    font-size: 12px;
+  }
+}
+
+// ── Form sections (within main card) ─────────────────────────────────────────
+
+.scr005-section {
+  padding: 20px 20px 12px;
+  border-bottom: 1px solid #eeeeee;
+
+  &:last-of-type {
+    border-bottom: none;
   }
 
   mat-form-field {
     width: 100%;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
+}
 
-  &.section-reason    { border-left-color: #f57c00; }
-  &.section-history   { border-left-color: #00897b; }
-  &.section-insurance { border-left-color: #7b1fa2; }
+.scr005-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #424242;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  .scr005-check {
+    color: #4caf50;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
 }
 
 // ── AI badge (UXR-405) ────────────────────────────────────────────────────────
-.ai-badge {
+
+.scr005-ai-badge {
   display: inline-flex;
   align-items: center;
   gap: 2px;
@@ -117,12 +286,13 @@
   }
 }
 
-.ai-filled {
+.scr005-ai-filled {
   background-color: #ede7f6 !important;
 }
 
 // ── Error state ───────────────────────────────────────────────────────────────
-.error-state {
+
+.scr005-error {
   text-align: center;
   padding: 48px 24px;
 
@@ -143,9 +313,10 @@
 }
 
 // ── Skeleton loading ──────────────────────────────────────────────────────────
-.skeleton-form {
-  .skeleton-section {
-    background: #ffffff;
+
+.scr005-skeleton {
+  .scr005-skeleton-section {
+    background: #fff;
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 16px;
@@ -153,7 +324,7 @@
   }
 }
 
-.skeleton-line {
+.scr005-skeleton-line {
   height: 14px;
   border-radius: 4px;
   background: linear-gradient(90deg, #eeeeee 25%, #f5f5f5 50%, #eeeeee 75%);
@@ -170,53 +341,8 @@
   100% { background-position: -200% 0; }
 }
 
-// ── Sticky footer ─────────────────────────────────────────────────────────────
-.sticky-footer {
-  position: fixed;
-  bottom: 0;
-  left: 260px; // accounts for sidebar width
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 24px;
-  background: #ffffff;
-  border-top: 1px solid #e0e0e0;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
-  z-index: 10;
-}
-
-.autosave-indicator {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.8125rem;
-  color: #757575;
-
-  .saved-icon {
-    color: #4caf50;
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-  }
-}
-
-.footer-actions {
-  display: flex;
-  gap: 12px;
-
-  button {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-
-    mat-spinner {
-      display: inline-block;
-    }
-  }
-}
-
 // ── Inline validation errors (UXR-205, UXR-601) ───────────────────────────────
+
 mat-error {
   display: flex;
   align-items: center;
@@ -229,33 +355,114 @@ mat-error {
   }
 }
 
+// ── Sticky footer bar (wireframe: help text + Back + Submit intake) ───────────
+
+.scr005-footer-bar {
+  position: fixed;
+  bottom: 0;
+  left: 260px; // accounts for 260px app sidenav
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 32px;
+  background: #fff;
+  border-top: 2px solid #1976d2;
+  box-shadow: 0 -4px 20px rgba(25, 118, 210, 0.10);
+  z-index: 1020;
+}
+
+.scr005-footer-hint {
+  font-size: 13px;
+  color: #9e9e9e;
+  flex-shrink: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.scr005-footer-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    mat-spinner {
+      display: inline-block;
+    }
+  }
+}
+
+.scr005-ghost-btn {
+  min-height: 44px;
+}
+
+.scr005-primary-btn {
+  min-height: 44px;
+  min-width: 140px;
+  font-weight: 600;
+}
+
 // ── Responsive (UXR-301) ──────────────────────────────────────────────────────
+
+// Tablet (768–1023px)
+@media (min-width: 768px) and (max-width: 1023px) {
+  .scr005-panel {
+    grid-template-columns: 1fr 260px;
+  }
+}
+
+// Mobile (<768px)
 @media (max-width: 767px) {
-  .intake-form-page {
-    padding: 16px 16px 120px;
-  }
-
-  .page-header {
+  .scr005-topbar {
     flex-direction: column;
-    align-items: flex-start;
+    gap: 12px;
   }
 
-  .form-section {
-    padding: 16px;
+  .scr005-chip-row {
+    flex-wrap: wrap;
   }
 
-  .sticky-footer {
-    left: 0; // full-width on mobile (no sidebar)
+  .scr005-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .scr005-card--progress {
+    position: static;
+  }
+
+  .scr005-progress-pills {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .scr005-section {
+    padding: 16px 16px 12px;
+  }
+
+  .scr005-footer-bar {
+    left: 0;
     flex-direction: column;
-    gap: 8px;
-    padding: 12px 16px;
+    gap: 10px;
+    padding: 14px 16px;
+  }
 
-    .footer-actions {
-      width: 100%;
+  .scr005-footer-hint {
+    white-space: normal;
+    text-align: center;
+  }
 
-      button {
-        flex: 1;
-      }
+  .scr005-footer-actions {
+    width: 100%;
+
+    button {
+      flex: 1;
     }
   }
 }

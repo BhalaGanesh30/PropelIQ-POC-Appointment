@@ -7,13 +7,20 @@
   margin: 0 auto;
 }
 
-// ── SCR-007 Topbar — eyebrow + H2 + chip-row (wireframe header pattern) ────
+// ── SCR-007 Topbar — mat-card matches wireframe .topbar white card style ───
+.scr007-topbar-card {
+  margin-bottom: 20px;
+
+  // Remove default mat-card-content bottom padding
+  /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+  ::ng-deep .mat-mdc-card-content { padding-bottom: 0 !important; }
+}
+
 .scr007-topbar {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 20px;
 }
 
 .scr007-topbar-copy {
@@ -75,25 +82,30 @@
 }
 
 // ── SCR-007 Info banner — "Destructive actions are guarded" ──────────────────
-.scr007-banner {
+// mat-card container — white card matches wireframe .banner style
+.scr007-banner-card {
+  margin-bottom: 24px;
+
+  // Remove the default bottom padding added by mat-card-content
+  /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+  ::ng-deep .mat-mdc-card-content { padding-bottom: 0 !important; }
+}
+
+.scr007-banner-content {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 14px 20px;
-  background: var(--mat-sys-primary-container);
-  border-left: 4px solid var(--mat-sys-primary);
-  border-radius: 6px;
-  margin-bottom: 24px;
 
   strong {
     font-size: 14px;
-    color: var(--mat-sys-on-primary-container);
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
   }
 
   p {
     margin: 0;
     font-size: 13px;
-    color: var(--mat-sys-on-primary-container);
+    color: var(--mat-sys-on-surface-variant);
   }
 }
 
@@ -193,10 +205,20 @@
   }
 }
 
-// ── Desktop table ────────────────────────────────────────────────────────────
-.table-wrapper {
-  overflow-x: auto;
+// ── Desktop table — mat-card wraps the table per wireframe card style ─────────────
+.scr007-table-card {
   margin-bottom: 8px;
+  overflow: hidden;
+
+  // Remove default mat-card inner padding so table header aligns to card edge
+  /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+  ::ng-deep .mat-mdc-card-content { padding: 0 !important; }
+}
+
+// Scrollable inner wrapper for wide tables on small screens
+.scr007-table-scroll {
+  overflow-x: auto;
+  width: 100%;
 }
 
 // ── Action cell — inline text-style links per SCR-007 wireframe ──────────────

@@ -1,109 +1,218 @@
-// =============================================================================
+﻿// =============================================================================
 // SlotSearchComponent Styles — SCR-004
-// Layout: side filter panel (left) + results area (right) per figma_spec.md
-// UXR-301: responsive at 375px / 768px / 1440px
-// UXR-303: grid on desktop, vertical cards on mobile
-// UXR-304: 44×44px touch targets
-// UXR-503: sticky selection footer
-// Design tokens: designsystem.md
+// Wireframe-aligned: topbar eyebrow + h2 + chip-row, hero, panel (filter card
+// + results card with table layout), sticky footer-bar.
+// UXR-301: responsive 375px / 768px / 1440px
+// UXR-503: sticky footer-bar when a slot is selected
+// UXR-304: 44px minimum touch targets
 // =============================================================================
 
 :host {
   display: block;
 }
 
-// ── Page wrapper ──────────────────────────────────────────────────────────────
+// ── Shell wrapper ─────────────────────────────────────────────────────────────
 
-.slot-search-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding-bottom: 100px; // room for sticky footer
+.scr004-shell {
+  padding-bottom: 80px; // room for sticky footer
 }
 
-// ── Header ────────────────────────────────────────────────────────────────────
+// ── Topbar (wireframe header pattern) ────────────────────────────────────────
 
-.page-header {
-  margin-bottom: 24px;
-
-  h1 {
-    font-size: 24px;       // designsystem.md heading1
-    font-weight: 600;
-    line-height: 32px;
-    letter-spacing: -0.25px;
-    color: #212121;         // neutral-900
-    margin: 0 0 4px;
-  }
-
-  .page-subtitle {
-    font-size: 14px;        // body
-    color: #757575;         // neutral-600
-    margin: 0;
-  }
-}
-
-// ── Two-column layout ─────────────────────────────────────────────────────────
-
-.search-layout {
+.scr004-topbar {
   display: flex;
-  gap: 24px;
   align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
-// ── Filter panel (sticky left column) ────────────────────────────────────────
+.scr004-topbar-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 
-.filter-panel {
-  width: 272px;
+.scr004-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mat-sys-primary, #1976d2);
+}
+
+.scr004-heading {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0;
+  color: #212121;
+}
+
+.scr004-chip-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
   flex-shrink: 0;
-  position: sticky;
-  top: 24px;
-  background: #ffffff;        // surface
-  border: 1px solid #eeeeee;  // neutral-200
-  border-radius: 12px;        // lg
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06); // elevation level_1
+}
+
+.scr004-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #f5f5f5;
+  color: #616161;
+  border: 1px solid #e0e0e0;
+  white-space: nowrap;
+}
+
+.scr004-pill--success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-color: #a5d6a7;
+}
+
+// ── Hero section ─────────────────────────────────────────────────────────────
+
+.scr004-hero {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: start;
+  margin-bottom: 28px;
+  padding: 28px 32px;
+  background: linear-gradient(135deg, #103b67 0%, #1976d2 60%, #26a69a 100%);
+  border-radius: 16px;
+  color: #fff;
+}
+
+.scr004-hero-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scr004-hero-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.scr004-hero-desc {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.82);
+  margin: 0;
+  line-height: 1.6;
+  max-width: 520px;
+}
+
+.scr004-hero-banner {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 10px;
+  padding: 16px 20px;
+  max-width: 280px;
+  flex-shrink: 0;
+
+  strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+
+  p {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.78);
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+// ── Two-card panel ────────────────────────────────────────────────────────────
+
+.scr004-panel {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+// ── Card shared ───────────────────────────────────────────────────────────────
+
+.scr004-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
   overflow: hidden;
 }
 
-.filter-panel-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 20px;
-  background: #fafafa;        // neutral-50
-  border-bottom: 1px solid #eeeeee;
+.scr004-card-title {
   font-size: 14px;
   font-weight: 600;
-  color: #424242;             // neutral-800
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    color: #1976d2;           // primary-500
-  }
+  color: #424242;
+  margin: 0;
+  padding: 14px 20px;
+  background: #fafafa;
+  border-bottom: 1px solid #eeeeee;
 }
 
-.filter-form {
+// ── Filter card ───────────────────────────────────────────────────────────────
+
+.scr004-card--filters {
+  position: sticky;
+  top: 24px;
+}
+
+.scr004-filter-form {
   display: flex;
   flex-direction: column;
   padding: 16px;
-  gap: 0;
+  gap: 4px;
 }
 
-.filter-field {
+.scr004-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.scr004-field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #424242;
+  text-transform: none;
+}
+
+.scr004-date-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scr004-date-field,
+.scr004-select-field {
   width: 100%;
 }
 
-// ── Validation error (AC-4) ───────────────────────────────────────────────────
-
-.validation-error {
+.scr004-validation-error {
   display: flex;
   align-items: flex-start;
   gap: 8px;
   padding: 10px 12px;
-  border-radius: 8px;         // md
-  background: #ffebee;        // semantic.error.light
-  color: #c62828;             // semantic.error.dark
-  margin-bottom: 8px;
+  border-radius: 8px;
+  background: #ffebee;
+  color: #c62828;
+  margin-top: 4px;
+  margin-bottom: 4px;
   font-size: 12px;
   line-height: 16px;
 
@@ -116,7 +225,7 @@
   }
 }
 
-.search-btn {
+.scr004-search-btn {
   width: 100%;
   height: 48px;
   min-height: 44px; // UXR-304
@@ -125,37 +234,27 @@
   font-weight: 600;
 }
 
-// ── Results area (right column) ───────────────────────────────────────────────
+// ── Results card ──────────────────────────────────────────────────────────────
 
-.results-area {
-  flex: 1;
-  min-width: 0;
-}
-
-.results-progress {
-  margin-bottom: 16px;
-  border-radius: 4px;
+.scr004-card--results {
+  min-height: 300px;
 }
 
 // ── Idle hint ─────────────────────────────────────────────────────────────────
 
-.idle-state {
+.scr004-idle {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
-  padding: 64px 24px;
-  background: #ffffff;
-  border: 2px dashed #eeeeee; // neutral-200
-  border-radius: 12px;
-  color: #9e9e9e;             // neutral-500
+  padding: 56px 24px;
+  color: #9e9e9e;
 
   mat-icon {
     font-size: 52px;
     width: 52px;
     height: 52px;
-    color: #bdbdbd;           // neutral-400
+    color: #bdbdbd;
     margin-bottom: 16px;
   }
 
@@ -166,88 +265,153 @@
     max-width: 300px;
 
     strong {
-      color: #1976d2;         // primary-500
+      color: #1976d2;
     }
   }
 }
 
-// ── Results header ────────────────────────────────────────────────────────────
+// ── Progress bar ──────────────────────────────────────────────────────────────
 
-.results-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
+.scr004-progress {
+  margin: 0 20px 12px;
+  border-radius: 4px;
 }
 
-.result-summary {
+// ── Result count ──────────────────────────────────────────────────────────────
+
+.scr004-result-count {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  color: #2e7d32;             // semantic.success.dark
+  color: #2e7d32;
+  padding: 12px 20px 4px;
+  margin: 0;
 
   mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
   }
 }
 
-// ── Day groups ────────────────────────────────────────────────────────────────
+// ── Table layout (wireframe: Date|Time|Clinician|Mode|Status) ─────────────────
 
-.day-group {
-  margin-bottom: 28px;
+.scr004-table {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 8px;
 }
 
-.day-heading {
+.scr004-table-header {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1.8fr 1.2fr 1.2fr;
+  padding: 10px 20px;
+  background: #fafafa;
+  border-top: 1px solid #eeeeee;
+  border-bottom: 1px solid #eeeeee;
+  font-size: 12px;
+  font-weight: 600;
+  color: #616161;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  gap: 8px;
+}
+
+.scr004-table-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1.8fr 1.2fr 1.2fr;
+  padding: 12px 20px;
+  gap: 8px;
+  border-bottom: 1px solid #eeeeee;
+  cursor: pointer;
+  transition: background 120ms ease;
+  outline: none;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: #f5f5f5;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1976d2;
+    outline-offset: -2px;
+  }
+
+  &--selected {
+    background: #e3f2fd;
+
+    &:hover {
+      background: #bbdefb;
+    }
+  }
+}
+
+.scr004-table-cell {
+  font-size: 13px;
+  color: #212121;
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 13px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+// ── Status badges ─────────────────────────────────────────────────────────────
+
+.scr004-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #616161;             // neutral-700
-  margin: 0 0 12px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eeeeee;
-
-  .day-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #1976d2;      // primary-500
-    flex-shrink: 0;
-  }
+  white-space: nowrap;
 }
 
-// ── Results grid ──────────────────────────────────────────────────────────────
+.scr004-badge--selected {
+  background: #1976d2;
+  color: #fff;
+}
 
-.results-grid {
+.scr004-badge--available {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+.scr004-badge--warning {
+  background: #fff3e0;
+  color: #e65100;
+  border: 1px solid #ffcc80;
+}
+
+// ── Skeleton rows ─────────────────────────────────────────────────────────────
+
+.scr004-skeleton-row {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 12px;
+  grid-template-columns: 1.2fr 1fr 1.8fr 1.2fr 1.2fr;
+  padding: 14px 20px;
+  gap: 8px;
+  border-bottom: 1px solid #eeeeee;
 }
 
-// ── Skeleton loading cards ────────────────────────────────────────────────────
-
-.skeleton-card {
-  background: #ffffff;
-  border-radius: 8px;         // md
-  padding: 16px;
-  border: 1px solid #eeeeee;
-  min-height: 100px;
+.scr004-skeleton-cell {
+  display: flex;
+  align-items: center;
 }
 
-.skeleton-line {
+.scr004-skeleton-line {
   height: 13px;
   border-radius: 4px;
-  margin-bottom: 10px;
   background: linear-gradient(
     90deg,
-    #eeeeee 25%,              // neutral-200
-    #f5f5f5 50%,              // neutral-100
+    #eeeeee 25%,
+    #f5f5f5 50%,
     #eeeeee 75%
   );
   background-size: 200% 100%;
@@ -263,169 +427,148 @@
   100% { background-position: -200% 0; }
 }
 
-// ── Empty state (AC-3, SCR-004 Empty) ────────────────────────────────────────
+// ── Empty state (AC-3) ────────────────────────────────────────────────────────
 
-.empty-state {
+.scr004-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   padding: 64px 24px;
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #eeeeee;
 
-  .empty-illustration {
-    width: 88px;
-    height: 88px;
+  .scr004-empty-icon {
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     background: #fafafa;
+    border: 2px solid #eeeeee;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
-    border: 2px solid #eeeeee;
 
     mat-icon {
-      font-size: 44px;
-      width: 44px;
-      height: 44px;
-      color: #bdbdbd;         // neutral-400
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      color: #bdbdbd;
     }
   }
 
   h2 {
     font-size: 18px;
     font-weight: 600;
-    color: #212121;           // neutral-900
+    color: #212121;
     margin: 0 0 8px;
   }
 
   p {
     font-size: 14px;
-    color: #757575;           // neutral-600
+    color: #757575;
     margin: 0 0 24px;
     max-width: 320px;
   }
-
-  .waitlist-btn {
-    min-height: 44px;         // UXR-304
-  }
 }
 
-// ── Error banner (SCR-004 Error, UXR-602) ─────────────────────────────────────
+.scr004-waitlist-btn {
+  min-height: 44px; // UXR-304
+}
 
-.error-banner {
+// ── Error banner ──────────────────────────────────────────────────────────────
+
+.scr004-error-banner {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
+  margin: 20px;
   padding: 16px 20px;
-  background: #ffebee;        // semantic.error.light
+  background: #ffebee;
   border: 1px solid #ffcdd2;
-  border-left: 4px solid #f44336; // semantic.error.main
+  border-left: 4px solid #f44336;
   border-radius: 8px;
 
-  .error-banner-content {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-
-    mat-icon {
-      color: #c62828;         // semantic.error.dark
-      font-size: 24px;
-      width: 24px;
-      height: 24px;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    strong {
-      display: block;
-      font-size: 14px;
-      font-weight: 600;
-      color: #c62828;
-      margin-bottom: 3px;
-    }
-
-    p {
-      font-size: 13px;
-      color: #7f3535;
-      margin: 0;
-    }
-  }
-
   button {
-    min-height: 44px;         // UXR-304
+    min-height: 44px;
     flex-shrink: 0;
   }
 }
 
-// ── Selection footer — sticky (UXR-503, SCR-004 Validation) ──────────────────
+.scr004-error-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
 
-.selection-footer {
+  mat-icon {
+    color: #c62828;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #c62828;
+    margin-bottom: 3px;
+  }
+
+  p {
+    font-size: 13px;
+    color: #7f3535;
+    margin: 0;
+  }
+}
+
+// ── Footer bar — sticky slot summary + actions (UXR-503, wireframe) ───────────
+
+.scr004-footer-bar {
   position: fixed;
   bottom: 0;
-  left: 260px; // accounts for the 260px app sidebar (main-layout.component.scss)
+  left: 260px; // accounts for 260px app sidenav
   right: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   padding: 14px 32px;
-  background: #ffffff;
-  border-top: 2px solid #1976d2; // primary-500
+  background: #fff;
+  border-top: 2px solid #1976d2;
   box-shadow: 0 -4px 20px rgba(25, 118, 210, 0.12);
-  z-index: 1020; // z_index.sticky
+  z-index: 1020;
 }
 
-.selection-summary {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-
-  .selection-badge {
-    flex-shrink: 0;
-
-    mat-icon {
-      font-size: 28px;
-      width: 28px;
-      height: 28px;
-      color: #4caf50;         // semantic.success.main
-    }
-  }
-}
-
-.selection-detail {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.selection-label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #9e9e9e;             // neutral-500
-  line-height: 1;
-  margin-bottom: 3px;
-}
-
-.selection-info {
+.scr004-footer-summary {
   font-size: 14px;
   font-weight: 500;
-  color: #212121;             // neutral-900
+  color: #212121;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  strong {
+    font-weight: 700;
+    margin-right: 4px;
+  }
 }
 
-.continue-btn {
-  min-height: 44px;           // UXR-304
-  min-width: 180px;
+.scr004-footer-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
   flex-shrink: 0;
+}
+
+.scr004-ghost-btn {
+  min-height: 44px; // UXR-304
+}
+
+.scr004-primary-btn {
+  min-height: 44px; // UXR-304
+  min-width: 160px;
   font-weight: 600;
 }
 
@@ -433,47 +576,104 @@
 
 // Tablet (768–1023px)
 @media (min-width: 768px) and (max-width: 1023px) {
-  .filter-panel {
-    width: 232px;
+  .scr004-panel {
+    grid-template-columns: 240px 1fr;
   }
 
-  .results-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .scr004-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .scr004-hero-banner {
+    max-width: none;
   }
 }
 
-// Mobile (<768px): stack filter above results (UXR-303)
+// Mobile (<768px)
 @media (max-width: 767px) {
-  .search-layout {
+  .scr004-topbar {
     flex-direction: column;
+    gap: 12px;
+  }
+
+  .scr004-chip-row {
+    width: 100%;
+  }
+
+  .scr004-hero {
+    grid-template-columns: 1fr;
+    padding: 20px;
     gap: 16px;
   }
 
-  .filter-panel {
-    width: 100%;
-    position: static; // no sticky on mobile
+  .scr004-hero-banner {
+    max-width: none;
   }
 
-  .results-grid {
-    grid-template-columns: 1fr; // vertical cards (UXR-303)
+  .scr004-panel {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 
-  .selection-footer {
-    left: 0;
-    padding: 12px 16px;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
+  .scr004-card--filters {
+    position: static;
+  }
 
-    .continue-btn {
-      width: 100%;
+  // Mobile table: label-above each cell (data-label pattern)
+  .scr004-table-header {
+    display: none;
+  }
+
+  .scr004-table-row {
+    grid-template-columns: 1fr;
+    padding: 16px;
+
+    &::before {
+      display: none;
     }
   }
-}
 
-// Reduced motion (WCAG 2.1 2.3.3 / designsystem.md)
-@media (prefers-reduced-motion: reduce) {
-  .skeleton-line {
-    animation: none;
+  .scr004-skeleton-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .scr004-table-cell::before {
+    content: attr(data-label);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #9e9e9e;
+    display: block;
+    margin-bottom: 2px;
+    white-space: nowrap;
+  }
+
+  .scr004-table-cell {
+    flex-direction: column;
+    align-items: flex-start;
+    white-space: normal;
+  }
+
+  .scr004-footer-bar {
+    left: 0;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 16px;
+  }
+
+  .scr004-footer-summary {
+    white-space: normal;
+    text-align: center;
+    width: 100%;
+  }
+
+  .scr004-footer-actions {
+    width: 100%;
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
   }
 }

@@ -45,7 +45,7 @@ export const routes: Routes = [
       import('./features/appointments/appointment-history.component').then(
         (m) => m.AppointmentHistoryComponent,
       ),
-    title: 'My Appointments — PropelIQ',
+    title: 'My Appointments — UPACIP',
     canActivate: [authGuard],
   },
   {
@@ -55,7 +55,7 @@ export const routes: Routes = [
       import('./features/waitlist/waitlist-view.component').then(
         (m) => m.WaitlistViewComponent,
       ),
-    title: 'My Waitlist — PropelIQ',
+    title: 'My Waitlist — UPACIP',
     canActivate: [authGuard],
   },
   {

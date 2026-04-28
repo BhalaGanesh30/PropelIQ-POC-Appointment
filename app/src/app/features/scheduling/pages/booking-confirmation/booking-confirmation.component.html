@@ -14,34 +14,38 @@
 @if (booking(); as b) {
   <div class="scr006-shell">
 
-    <!-- Hero ────────────────────────────────────────────────────────────────── -->
-    <section class="scr006-hero">
-      <div class="scr006-hero-copy">
-        <span class="scr006-eyebrow">Booking confirmation</span>
-        <h1 class="scr006-heading">Your appointment is confirmed.</h1>
-        <p class="scr006-subheading">
-          The summary below keeps your artifacts in one place: PDF, QR code, and calendar export.
-        </p>
-        <div class="scr006-chip-row">
-          <span class="scr006-pill scr006-pill--success">Visit booked</span>
-          <span class="scr006-pill">PDF &amp; ICS actions</span>
-        </div>
-      </div>
+    <!-- Hero — mat-card matches wireframe .hero card style ─────────────────── -->
+    <mat-card class="scr006-hero-card">
+      <mat-card-content>
+        <div class="scr006-hero">
+          <div class="scr006-hero-copy">
+            <span class="scr006-eyebrow">SCR-006</span>
+            <h1 class="scr006-heading">Your appointment is confirmed.</h1>
+            <p class="scr006-subheading">
+              The summary below keeps your artifacts in one place: PDF, QR code, and calendar export.
+            </p>
+            <div class="scr006-chip-row">
+              <span class="scr006-pill scr006-pill--success">Success state</span>
+              <span class="scr006-pill">PDF and ICS actions</span>
+            </div>
+          </div>
 
-      <!-- Hero banner — SCR-006 Validation state -->
-      <div class="scr006-hero-banner" role="alert" aria-live="polite">
-        <mat-icon aria-hidden="true">check_circle</mat-icon>
-        <div class="scr006-hero-banner-text">
-          <strong>Visit booked.</strong>
-          <p>
-            {{ b.appointmentTime | date: 'EEEE d MMM y' }} at
-            {{ b.appointmentTime | date: 'h:mm a' }}
-            @if (b.providerName) { with {{ b.providerName }} }
-            @if (b.appointmentType) { — {{ b.appointmentType }} }
-          </p>
+          <!-- Hero banner — SCR-006 Validation state -->
+          <div class="scr006-hero-banner" role="alert" aria-live="polite">
+            <mat-icon aria-hidden="true">check_circle</mat-icon>
+            <div class="scr006-hero-banner-text">
+              <strong>Visit booked.</strong>
+              <p>
+                {{ b.appointmentTime | date: 'EEEE d MMM y' }} at
+                {{ b.appointmentTime | date: 'h:mm a' }}
+                @if (b.providerName) { with {{ b.providerName }} }
+                @if (b.appointmentType) { — {{ b.appointmentType }} }
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </mat-card-content>
+    </mat-card>
 
     <!-- Two-column panel ─────────────────────────────────────────────────── -->
     <section class="scr006-panel">
@@ -56,39 +60,26 @@
         </mat-card-header>
 
         <mat-card-content>
-          <!-- Date / time / duration mini-card -->
+          <!-- Clinic mini-card -->
           <div class="scr006-mini-card">
-            <strong>
-              <mat-icon aria-hidden="true">calendar_today</mat-icon> Date &amp; Time
-            </strong>
-            <p>
-              {{ b.appointmentTime | date: 'EEEE, MMMM d, y' }}&nbsp;at&nbsp;{{ b.appointmentTime | date: 'h:mm a' }}
-              ({{ b.durationMinutes }} min)
-            </p>
-          </div>
-
-          <!-- Appointment type / provider mini-card -->
-          <div class="scr006-mini-card">
-            <strong>
-              <mat-icon aria-hidden="true">person</mat-icon> Provider
-            </strong>
-            <p>{{ b.providerName ?? 'To be confirmed' }}, {{ b.appointmentType }}</p>
-          </div>
-
-          <!-- Clinic / location mini-card -->
-          <div class="scr006-mini-card">
-            <strong>
-              <mat-icon aria-hidden="true">location_on</mat-icon> Clinic
-            </strong>
+            <strong>Clinic</strong>
             <p>{{ b.location ?? 'Location to be confirmed' }}</p>
+          </div>
+
+          <!-- Patient / visit info mini-card -->
+          <div class="scr006-mini-card">
+            <strong>Patient</strong>
+            <p>
+              {{ b.appointmentTime | date: 'EEEE d MMM y' }} at {{ b.appointmentTime | date: 'h:mm a' }}
+              ({{ b.durationMinutes }} min) &mdash; {{ b.appointmentType }}
+              @if (b.providerName) { with {{ b.providerName }} }
+            </p>
           </div>
 
           <!-- Arrival guidance mini-card -->
           <div class="scr006-mini-card">
-            <strong>
-              <mat-icon aria-hidden="true">info_outline</mat-icon> Arrival guidance
-            </strong>
-            <p>Please arrive 15 minutes early and bring a valid photo ID.</p>
+            <strong>Arrival guidance</strong>
+            <p>Please arrive 15 minutes early and bring a photo ID.</p>
           </div>
         </mat-card-content>
 
@@ -151,16 +142,19 @@
             Show QR Code
           </button>
 
-          <!-- Fallback banner — shown when artifact download fails -->
-          @if (errorMessage(); as msg) {
-            <div class="scr006-fallback-banner" role="alert">
-              <strong>Download unavailable</strong>
-              <p>{{ msg }}</p>
-              <button mat-button (click)="clearError()" aria-label="Dismiss error">
-                Dismiss
-              </button>
-            </div>
-          }
+          <!-- Fallback banner — mat-card matches wireframe .banner white card -->
+          <mat-card class="scr006-fallback-card" [class.scr006-fallback-card--error]="!!errorMessage()" role="status">
+            <mat-card-content>
+              @if (errorMessage(); as msg) {
+                <strong>Download unavailable</strong>
+                <p>{{ msg }}</p>
+                <button mat-button (click)="clearError()" aria-label="Dismiss error">Dismiss</button>
+              } @else {
+                <strong>Fallback behavior</strong>
+                <p>If artifact generation fails, the page keeps the booking summary and exposes retry controls.</p>
+              }
+            </mat-card-content>
+          </mat-card>
         </mat-card-content>
       </mat-card>
 

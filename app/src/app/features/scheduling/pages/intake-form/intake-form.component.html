@@ -1,331 +1,412 @@
-<div class="intake-form-page">
+﻿<div class="scr005-shell">
 
-  <!-- Section progress bar (shown during form filling / submitting) -->
-  @if (formState() === 'default' || formState() === 'submitting') {
-    <div
-      class="progress-section"
-      role="progressbar"
-      [attr.aria-valuenow]="sectionProgress().percentage"
-      aria-valuemin="0"
-      aria-valuemax="100"
-      [attr.aria-label]="sectionProgress().completed + ' of ' + sectionProgress().total + ' sections complete'">
-      <mat-progress-bar
-        mode="determinate"
-        [value]="sectionProgress().percentage"
-        [class.complete]="sectionProgress().percentage === 100" />
-      <span class="progress-label">
-        {{ sectionProgress().completed }}/{{ sectionProgress().total }} sections complete
-      </span>
-    </div>
-  }
-
-  <!-- Page header with AI-assist toggle (UXR-104) -->
-  <header class="page-header">
-    <h1>Patient Intake Form</h1>
-    <div class="ai-toggle">
-      <mat-slide-toggle
-        [checked]="aiMode()"
-        (change)="onAiToggle($event.checked)"
-        aria-label="Toggle AI-assisted intake mode">
-        <mat-icon aria-hidden="true">auto_awesome</mat-icon>
-        AI-Assisted
-      </mat-slide-toggle>
-    </div>
-  </header>
-
-  <!-- ── Loading state ────────────────────────────────────────────────────── -->
+  <!-- Loading state -->
   @if (formState() === 'loading') {
     <mat-progress-bar mode="indeterminate" aria-label="Loading intake form" />
-    <div class="skeleton-form" aria-busy="true" aria-label="Loading intake form sections">
+    <div class="scr005-skeleton" aria-busy="true" aria-label="Loading intake form">
       @for (i of [1, 2, 3, 4]; track i) {
-        <div class="skeleton-section">
-          <div class="skeleton-line wide"></div>
-          <div class="skeleton-line medium"></div>
-          <div class="skeleton-line medium"></div>
+        <div class="scr005-skeleton-section">
+          <div class="scr005-skeleton-line wide"></div>
+          <div class="scr005-skeleton-line medium"></div>
+          <div class="scr005-skeleton-line medium"></div>
         </div>
       }
     </div>
   }
 
-  <!-- ── Error state ──────────────────────────────────────────────────────── -->
+  <!-- Error state -->
   @if (formState() === 'error') {
-    <div class="error-state" role="alert">
+    <div class="scr005-error" role="alert">
       <mat-icon aria-hidden="true">cloud_off</mat-icon>
       <p>Unable to load intake form. Please try again.</p>
       <button mat-stroked-button type="button" (click)="onRetry()">
-        <mat-icon aria-hidden="true">refresh</mat-icon> Retry
+        <mat-icon aria-hidden="true">refresh</mat-icon>
+        Retry
       </button>
     </div>
   }
 
-  <!-- ── AI assist panel (AC-1) ───────────────────────────────────────────── -->
+  <!-- Topbar: eyebrow + h2 + chip-row (wireframe header pattern) -->
+  <header class="scr005-topbar">
+    <div class="scr005-topbar-copy">
+      <span class="scr005-eyebrow">SCR-005</span>
+      <h2 class="scr005-heading">Complete visit intake</h2>
+    </div>
+    <div class="scr005-chip-row">
+      <!-- AI assist pill doubles as toggle (UXR-104) -->
+      <button
+        type="button"
+        class="scr005-pill scr005-pill--ai"
+        [class.scr005-pill--ai-active]="aiMode()"
+        (click)="onAiToggle(!aiMode())"
+        [attr.aria-pressed]="aiMode()"
+        aria-label="Toggle AI-assisted intake mode">
+        <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+        {{ aiMode() ? 'AI assist enabled' : 'AI assist off' }}
+      </button>
+      <!-- Autosave status pill (AC-2) -->
+      @if (autosaveStatus().saved) {
+        <span
+          class="scr005-pill scr005-pill--success"
+          role="status"
+          aria-live="polite">
+          <mat-icon aria-hidden="true">cloud_done</mat-icon>
+          Autosaved {{ autosaveStatus().timestamp | date:'shortTime' }}
+        </span>
+      }
+    </div>
+  </header>
+
+  <!-- AI assist panel (AC-1) -->
   @if (aiMode() && (formState() === 'default' || formState() === 'empty')) {
     <app-ai-assist-panel (submitted)="onAiSubmit($event)" />
   }
 
-  <!-- ── Main form (default / empty / submitting) ─────────────────────────── -->
+  <!-- Two-column panel: Visit details (left) + Progress (right) -->
   @if (formState() === 'default' || formState() === 'empty' || formState() === 'submitting') {
-    <form [formGroup]="intakeForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="scr005-panel">
 
-      <!-- Section 1: Personal Information -->
-      <section class="form-section" formGroupName="personalInfo" aria-labelledby="section-personal">
-        <h2 id="section-personal">
-          Personal Information
-          @if (intakeForm.get('personalInfo')?.valid) {
-            <mat-icon class="section-check" aria-label="Section complete">check_circle</mat-icon>
-          }
-        </h2>
+      <!-- Left card: Visit details (all form sections) -->
+      <div class="scr005-card scr005-card--main">
+        <h3 class="scr005-card-title">Visit details</h3>
 
-        <mat-form-field appearance="outline">
-          <mat-label>First Name</mat-label>
-          <input
-            matInput
-            formControlName="firstName"
-            (blur)="onFieldBlur()"
-            autocomplete="given-name"
-            [attr.aria-describedby]="intakeForm.get('personalInfo.firstName')?.invalid && intakeForm.get('personalInfo.firstName')?.touched ? 'firstName-error' : null" />
-          @if (intakeForm.get('personalInfo.firstName')?.hasError('required') && intakeForm.get('personalInfo.firstName')?.touched) {
-            <mat-error id="firstName-error">
-              <mat-icon aria-hidden="true">error</mat-icon> First name is required
-            </mat-error>
-          }
-        </mat-form-field>
+        <form
+          id="intake-form"
+          [formGroup]="intakeForm"
+          (ngSubmit)="onSubmit()"
+          novalidate>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Last Name</mat-label>
-          <input
-            matInput
-            formControlName="lastName"
-            (blur)="onFieldBlur()"
-            autocomplete="family-name"
-            [attr.aria-describedby]="intakeForm.get('personalInfo.lastName')?.invalid && intakeForm.get('personalInfo.lastName')?.touched ? 'lastName-error' : null" />
-          @if (intakeForm.get('personalInfo.lastName')?.hasError('required') && intakeForm.get('personalInfo.lastName')?.touched) {
-            <mat-error id="lastName-error">
-              <mat-icon aria-hidden="true">error</mat-icon> Last name is required
-            </mat-error>
-          }
-        </mat-form-field>
+          <!-- Section 1: Personal Information -->
+          <section
+            class="scr005-section"
+            formGroupName="personalInfo"
+            aria-labelledby="section-personal">
+            <h4 id="section-personal" class="scr005-section-title">
+              Personal Information
+              @if (intakeForm.get('personalInfo')?.valid) {
+                <mat-icon class="scr005-check" aria-label="Section complete">check_circle</mat-icon>
+              }
+            </h4>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Date of Birth</mat-label>
-          <input matInput type="date" formControlName="dateOfBirth" (blur)="onFieldBlur()" autocomplete="bday" />
-          @if (intakeForm.get('personalInfo.dateOfBirth')?.hasError('required') && intakeForm.get('personalInfo.dateOfBirth')?.touched) {
-            <mat-error><mat-icon aria-hidden="true">error</mat-icon> Date of birth is required</mat-error>
-          }
-        </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>First Name</mat-label>
+              <input
+                matInput
+                formControlName="firstName"
+                (blur)="onFieldBlur()"
+                autocomplete="given-name"
+                [attr.aria-describedby]="intakeForm.get('personalInfo.firstName')?.invalid && intakeForm.get('personalInfo.firstName')?.touched ? 'firstName-error' : null" />
+              @if (intakeForm.get('personalInfo.firstName')?.hasError('required') && intakeForm.get('personalInfo.firstName')?.touched) {
+                <mat-error id="firstName-error">
+                  <mat-icon aria-hidden="true">error</mat-icon> First name is required
+                </mat-error>
+              }
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Phone</mat-label>
-          <input matInput type="tel" formControlName="phone" (blur)="onFieldBlur()" autocomplete="tel" />
-          @if (intakeForm.get('personalInfo.phone')?.hasError('required') && intakeForm.get('personalInfo.phone')?.touched) {
-            <mat-error><mat-icon aria-hidden="true">error</mat-icon> Phone number is required</mat-error>
-          }
-        </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Last Name</mat-label>
+              <input
+                matInput
+                formControlName="lastName"
+                (blur)="onFieldBlur()"
+                autocomplete="family-name"
+                [attr.aria-describedby]="intakeForm.get('personalInfo.lastName')?.invalid && intakeForm.get('personalInfo.lastName')?.touched ? 'lastName-error' : null" />
+              @if (intakeForm.get('personalInfo.lastName')?.hasError('required') && intakeForm.get('personalInfo.lastName')?.touched) {
+                <mat-error id="lastName-error">
+                  <mat-icon aria-hidden="true">error</mat-icon> Last name is required
+                </mat-error>
+              }
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Email (optional)</mat-label>
-          <input matInput type="email" formControlName="email" (blur)="onFieldBlur()" autocomplete="email" />
-          @if (intakeForm.get('personalInfo.email')?.hasError('email') && intakeForm.get('personalInfo.email')?.touched) {
-            <mat-error><mat-icon aria-hidden="true">error</mat-icon> Invalid email format</mat-error>
-          }
-        </mat-form-field>
-      </section>
+            <mat-form-field appearance="outline">
+              <mat-label>Date of Birth</mat-label>
+              <input matInput type="date" formControlName="dateOfBirth" (blur)="onFieldBlur()" autocomplete="bday" />
+              @if (intakeForm.get('personalInfo.dateOfBirth')?.hasError('required') && intakeForm.get('personalInfo.dateOfBirth')?.touched) {
+                <mat-error><mat-icon aria-hidden="true">error</mat-icon> Date of birth is required</mat-error>
+              }
+            </mat-form-field>
 
-      <!-- Section 2: Reason for Visit -->
-      <section class="form-section section-reason" formGroupName="reasonForVisit" aria-labelledby="section-reason">
-        <h2 id="section-reason">
-          Reason for Visit
-          @if (intakeForm.get('reasonForVisit')?.valid) {
-            <mat-icon class="section-check" aria-label="Section complete">check_circle</mat-icon>
-          }
-        </h2>
+            <mat-form-field appearance="outline">
+              <mat-label>Phone</mat-label>
+              <input matInput type="tel" formControlName="phone" (blur)="onFieldBlur()" autocomplete="tel" />
+              @if (intakeForm.get('personalInfo.phone')?.hasError('required') && intakeForm.get('personalInfo.phone')?.touched) {
+                <mat-error><mat-icon aria-hidden="true">error</mat-icon> Phone number is required</mat-error>
+              }
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Chief Complaint</mat-label>
-          <input
-            matInput
-            formControlName="chiefComplaint"
-            (blur)="onFieldBlur()"
-            [class.ai-filled]="isAiPopulated('reasonForVisit')" />
-          @if (isAiPopulated('reasonForVisit')) {
-            <span class="ai-badge" matSuffix aria-label="AI-populated field">
-              <mat-icon aria-hidden="true">auto_awesome</mat-icon> AI
-            </span>
-          }
-          @if (intakeForm.get('reasonForVisit.chiefComplaint')?.hasError('required') && intakeForm.get('reasonForVisit.chiefComplaint')?.touched) {
-            <mat-error><mat-icon aria-hidden="true">error</mat-icon> Chief complaint is required</mat-error>
-          }
-        </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Email (optional)</mat-label>
+              <input matInput type="email" formControlName="email" (blur)="onFieldBlur()" autocomplete="email" />
+              @if (intakeForm.get('personalInfo.email')?.hasError('email') && intakeForm.get('personalInfo.email')?.touched) {
+                <mat-error><mat-icon aria-hidden="true">error</mat-icon> Invalid email format</mat-error>
+              }
+            </mat-form-field>
+          </section>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Symptom Description</mat-label>
-          <textarea
-            matInput
-            formControlName="symptomDescription"
-            rows="3"
-            (blur)="onFieldBlur()"
-            [class.ai-filled]="isAiPopulated('symptomDescription')">
-          </textarea>
-          @if (isAiPopulated('symptomDescription')) {
-            <span class="ai-badge" matSuffix aria-label="AI-populated field">
-              <mat-icon aria-hidden="true">auto_awesome</mat-icon> AI
-            </span>
-          }
-        </mat-form-field>
+          <!-- Section 2: Reason for Visit -->
+          <section
+            class="scr005-section"
+            formGroupName="reasonForVisit"
+            aria-labelledby="section-reason">
+            <h4 id="section-reason" class="scr005-section-title">
+              Reason for Visit
+              @if (intakeForm.get('reasonForVisit')?.valid) {
+                <mat-icon class="scr005-check" aria-label="Section complete">check_circle</mat-icon>
+              }
+            </h4>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Severity</mat-label>
-          <mat-select
-            formControlName="severity"
-            (selectionChange)="onFieldBlur()"
-            [class.ai-filled]="isAiPopulated('severity')">
-            <mat-option value="">Not specified</mat-option>
-            @for (s of severityOptions; track s) {
-              <mat-option [value]="s">{{ s }}</mat-option>
-            }
-          </mat-select>
-          @if (isAiPopulated('severity')) {
-            <span class="ai-badge" matSuffix aria-label="AI-populated field">
-              <mat-icon aria-hidden="true">auto_awesome</mat-icon> AI
-            </span>
-          }
-        </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Chief Complaint</mat-label>
+              <input
+                matInput
+                formControlName="chiefComplaint"
+                (blur)="onFieldBlur()"
+                [class.scr005-ai-filled]="isAiPopulated('reasonForVisit')" />
+              @if (isAiPopulated('reasonForVisit')) {
+                <span class="scr005-ai-badge" matSuffix aria-label="AI-populated field">
+                  <mat-icon aria-hidden="true">auto_awesome</mat-icon> AI
+                </span>
+              }
+              @if (intakeForm.get('reasonForVisit.chiefComplaint')?.hasError('required') && intakeForm.get('reasonForVisit.chiefComplaint')?.touched) {
+                <mat-error><mat-icon aria-hidden="true">error</mat-icon> Chief complaint is required</mat-error>
+              }
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Onset / Duration</mat-label>
-          <input
-            matInput
-            formControlName="onsetDuration"
-            (blur)="onFieldBlur()"
-            [class.ai-filled]="isAiPopulated('onsetDuration')" />
-          @if (isAiPopulated('onsetDuration')) {
-            <span class="ai-badge" matSuffix aria-label="AI-populated field">
-              <mat-icon aria-hidden="true">auto_awesome</mat-icon> AI
-            </span>
-          }
-        </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Reason for visit</mat-label>
+              <textarea
+                matInput
+                formControlName="symptomDescription"
+                rows="3"
+                (blur)="onFieldBlur()"
+                [class.scr005-ai-filled]="isAiPopulated('symptomDescription')">
+              </textarea>
+              @if (isAiPopulated('symptomDescription')) {
+                <span class="scr005-ai-badge" matSuffix aria-label="AI-populated field">
+                  <mat-icon aria-hidden="true">auto_awesome</mat-icon> AI
+                </span>
+              }
+              @if (isAiPopulated('symptomDescription')) {
+                <mat-hint>AI-assisted draft populated from booking context. You can edit before submit.</mat-hint>
+              }
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Body Area</mat-label>
-          <input
-            matInput
-            formControlName="bodyArea"
-            (blur)="onFieldBlur()"
-            [class.ai-filled]="isAiPopulated('bodyArea')" />
-          @if (isAiPopulated('bodyArea')) {
-            <span class="ai-badge" matSuffix aria-label="AI-populated field">
-              <mat-icon aria-hidden="true">auto_awesome</mat-icon> AI
-            </span>
-          }
-        </mat-form-field>
-      </section>
+            <mat-form-field appearance="outline">
+              <mat-label>Severity</mat-label>
+              <mat-select
+                formControlName="severity"
+                (selectionChange)="onFieldBlur()"
+                [class.scr005-ai-filled]="isAiPopulated('severity')">
+                <mat-option value="">Not specified</mat-option>
+                @for (s of severityOptions; track s) {
+                  <mat-option [value]="s">{{ s }}</mat-option>
+                }
+              </mat-select>
+              @if (isAiPopulated('severity')) {
+                <span class="scr005-ai-badge" matSuffix aria-label="AI-populated field">
+                  <mat-icon aria-hidden="true">auto_awesome</mat-icon> AI
+                </span>
+              }
+            </mat-form-field>
 
-      <!-- Section 3: Medical History -->
-      <section class="form-section section-history" formGroupName="medicalHistory" aria-labelledby="section-history">
-        <h2 id="section-history">
-          Medical History
-          @if (intakeForm.get('medicalHistory')?.valid) {
-            <mat-icon class="section-check" aria-label="Section complete">check_circle</mat-icon>
-          }
-        </h2>
+            <mat-form-field appearance="outline">
+              <mat-label>Onset / Duration</mat-label>
+              <input
+                matInput
+                formControlName="onsetDuration"
+                (blur)="onFieldBlur()"
+                [class.scr005-ai-filled]="isAiPopulated('onsetDuration')" />
+              @if (isAiPopulated('onsetDuration')) {
+                <span class="scr005-ai-badge" matSuffix aria-label="AI-populated field">
+                  <mat-icon aria-hidden="true">auto_awesome</mat-icon> AI
+                </span>
+              }
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Existing Conditions</mat-label>
-          <textarea
-            matInput
-            formControlName="conditions"
-            rows="2"
-            (blur)="onFieldBlur()"
-            [class.ai-filled]="isAiPopulated('relevantMedicalHistory')">
-          </textarea>
-          @if (isAiPopulated('relevantMedicalHistory')) {
-            <span class="ai-badge" matSuffix aria-label="AI-populated field">
-              <mat-icon aria-hidden="true">auto_awesome</mat-icon> AI
-            </span>
-          }
-        </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Body Area</mat-label>
+              <input
+                matInput
+                formControlName="bodyArea"
+                (blur)="onFieldBlur()"
+                [class.scr005-ai-filled]="isAiPopulated('bodyArea')" />
+              @if (isAiPopulated('bodyArea')) {
+                <span class="scr005-ai-badge" matSuffix aria-label="AI-populated field">
+                  <mat-icon aria-hidden="true">auto_awesome</mat-icon> AI
+                </span>
+              }
+            </mat-form-field>
+          </section>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Current Medications</mat-label>
-          <textarea
-            matInput
-            formControlName="medications"
-            rows="2"
-            (blur)="onFieldBlur()"
-            [class.ai-filled]="isAiPopulated('currentMedications')">
-          </textarea>
-          @if (isAiPopulated('currentMedications')) {
-            <span class="ai-badge" matSuffix aria-label="AI-populated field">
-              <mat-icon aria-hidden="true">auto_awesome</mat-icon> AI
-            </span>
-          }
-        </mat-form-field>
+          <!-- Section 3: Medical History -->
+          <section
+            class="scr005-section"
+            formGroupName="medicalHistory"
+            aria-labelledby="section-history">
+            <h4 id="section-history" class="scr005-section-title">
+              Medical History
+              @if (intakeForm.get('medicalHistory')?.valid) {
+                <mat-icon class="scr005-check" aria-label="Section complete">check_circle</mat-icon>
+              }
+            </h4>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Allergies</mat-label>
-          <textarea
-            matInput
-            formControlName="allergies"
-            rows="2"
-            (blur)="onFieldBlur()"
-            [class.ai-filled]="isAiPopulated('allergies')">
-          </textarea>
-          @if (isAiPopulated('allergies')) {
-            <span class="ai-badge" matSuffix aria-label="AI-populated field">
-              <mat-icon aria-hidden="true">auto_awesome</mat-icon> AI
-            </span>
-          }
-        </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Medical history</mat-label>
+              <textarea
+                matInput
+                formControlName="conditions"
+                rows="2"
+                (blur)="onFieldBlur()"
+                [class.scr005-ai-filled]="isAiPopulated('relevantMedicalHistory')">
+              </textarea>
+              @if (isAiPopulated('relevantMedicalHistory')) {
+                <span class="scr005-ai-badge" matSuffix aria-label="AI-populated field">
+                  <mat-icon aria-hidden="true">auto_awesome</mat-icon> AI
+                </span>
+              }
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Previous Surgeries</mat-label>
-          <textarea matInput formControlName="surgeries" rows="2" (blur)="onFieldBlur()"></textarea>
-        </mat-form-field>
-      </section>
+            <mat-form-field appearance="outline">
+              <mat-label>Current medications</mat-label>
+              <textarea
+                matInput
+                formControlName="medications"
+                rows="2"
+                (blur)="onFieldBlur()"
+                [class.scr005-ai-filled]="isAiPopulated('currentMedications')">
+              </textarea>
+              @if (isAiPopulated('currentMedications')) {
+                <span class="scr005-ai-badge" matSuffix aria-label="AI-populated field">
+                  <mat-icon aria-hidden="true">auto_awesome</mat-icon> AI
+                </span>
+              }
+            </mat-form-field>
 
-      <!-- Section 4: Insurance Reference -->
-      <section class="form-section section-insurance" formGroupName="insurance" aria-labelledby="section-insurance">
-        <h2 id="section-insurance">
-          Insurance Reference
-          @if (intakeForm.get('insurance')?.valid) {
-            <mat-icon class="section-check" aria-label="Section complete">check_circle</mat-icon>
-          }
-        </h2>
+            <mat-form-field appearance="outline">
+              <mat-label>Allergies</mat-label>
+              <textarea
+                matInput
+                formControlName="allergies"
+                rows="2"
+                (blur)="onFieldBlur()"
+                [class.scr005-ai-filled]="isAiPopulated('allergies')">
+              </textarea>
+              @if (isAiPopulated('allergies')) {
+                <span class="scr005-ai-badge" matSuffix aria-label="AI-populated field">
+                  <mat-icon aria-hidden="true">auto_awesome</mat-icon> AI
+                </span>
+              }
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Insurance Provider</mat-label>
-          <input matInput formControlName="provider" (blur)="onFieldBlur()" autocomplete="organization" />
-        </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Previous Surgeries</mat-label>
+              <textarea matInput formControlName="surgeries" rows="2" (blur)="onFieldBlur()"></textarea>
+            </mat-form-field>
+          </section>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Member ID</mat-label>
-          <input matInput formControlName="memberId" (blur)="onFieldBlur()" />
-        </mat-form-field>
+          <!-- Section 4: Insurance Reference -->
+          <section
+            class="scr005-section"
+            formGroupName="insurance"
+            aria-labelledby="section-insurance">
+            <h4 id="section-insurance" class="scr005-section-title">
+              Insurance Reference
+              @if (intakeForm.get('insurance')?.valid) {
+                <mat-icon class="scr005-check" aria-label="Section complete">check_circle</mat-icon>
+              }
+            </h4>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Group Number</mat-label>
-          <input matInput formControlName="groupNumber" (blur)="onFieldBlur()" />
-        </mat-form-field>
-      </section>
+            <mat-form-field appearance="outline">
+              <mat-label>Insurance Provider</mat-label>
+              <input matInput formControlName="provider" (blur)="onFieldBlur()" autocomplete="organization" />
+            </mat-form-field>
 
-    </form>
-  }
+            <mat-form-field appearance="outline">
+              <mat-label>Member ID</mat-label>
+              <input matInput formControlName="memberId" (blur)="onFieldBlur()" />
+            </mat-form-field>
 
-  <!-- ── Sticky bottom bar ─────────────────────────────────────────────────── -->
-  @if (formState() === 'default' || formState() === 'empty' || formState() === 'submitting') {
-    <div class="sticky-footer">
-      <!-- Autosave indicator (AC-2) -->
-      <div class="autosave-indicator" role="status" aria-live="polite">
-        @if (autosaveStatus().saved) {
-          <mat-icon class="saved-icon" aria-hidden="true">cloud_done</mat-icon>
-          <span>Saved {{ autosaveStatus().timestamp | date:'shortTime' }}</span>
-        }
+            <mat-form-field appearance="outline">
+              <mat-label>Group Number</mat-label>
+              <input matInput formControlName="groupNumber" (blur)="onFieldBlur()" />
+            </mat-form-field>
+          </section>
+
+        </form>
       </div>
 
-      <div class="footer-actions">
+      <!-- Right card: Progress + info panels -->
+      <div class="scr005-card scr005-card--progress">
+        <h3 class="scr005-card-title">Progress</h3>
+
+        <!-- Section completion pills -->
+        <div class="scr005-progress-pills">
+          <span
+            class="scr005-pill"
+            [class.scr005-pill--success]="intakeForm.get('personalInfo')?.valid"
+            [class.scr005-pill--warning]="!intakeForm.get('personalInfo')?.valid">
+            @if (intakeForm.get('personalInfo')?.valid) {
+              <mat-icon aria-hidden="true">check</mat-icon>
+            }
+            Personal info
+          </span>
+          <span
+            class="scr005-pill"
+            [class.scr005-pill--success]="intakeForm.get('reasonForVisit')?.valid"
+            [class.scr005-pill--warning]="!intakeForm.get('reasonForVisit')?.valid">
+            @if (intakeForm.get('reasonForVisit')?.valid) {
+              <mat-icon aria-hidden="true">check</mat-icon>
+            }
+            Visit reason
+          </span>
+          <span
+            class="scr005-pill"
+            [class.scr005-pill--success]="intakeForm.get('medicalHistory')?.valid"
+            [class.scr005-pill--warning]="!intakeForm.get('medicalHistory')?.valid">
+            @if (intakeForm.get('medicalHistory')?.valid) {
+              <mat-icon aria-hidden="true">check</mat-icon>
+            }
+            Medical history
+          </span>
+          <span
+            class="scr005-pill"
+            [class.scr005-pill--success]="intakeForm.get('insurance')?.valid"
+            [class.scr005-pill--warning]="!intakeForm.get('insurance')?.valid">
+            @if (intakeForm.get('insurance')?.valid) {
+              <mat-icon aria-hidden="true">check</mat-icon>
+            }
+            Insurance
+            @if (!intakeForm.get('insurance')?.valid) { pending }
+          </span>
+        </div>
+
+        <!-- Autosave model info banner -->
+        <div class="scr005-banner">
+          <strong>Autosave model</strong>
+          <p>Field blur saves quietly. Failures raise a persistent warning toast and keep edits local.</p>
+        </div>
+
+        <!-- AI field treatment info mini-card -->
+        <div class="scr005-mini-card">
+          <strong>AI field treatment</strong>
+          <p>AI-filled inputs use a tinted background plus badge, never a locked state.</p>
+        </div>
+      </div>
+
+    </div>
+  }
+
+  <!-- Footer bar: help text + Back + Submit intake (wireframe) -->
+  @if (formState() === 'default' || formState() === 'empty' || formState() === 'submitting') {
+    <div class="scr005-footer-bar" role="contentinfo">
+      <small class="scr005-footer-hint">
+        Back and submit remain sticky for long forms on desktop and mobile.
+      </small>
+      <div class="scr005-footer-actions">
         <button
           mat-stroked-button
           type="button"
+          class="scr005-ghost-btn"
           (click)="onBack()"
           [disabled]="isSubmitting()">
           Back
@@ -334,15 +415,16 @@
           mat-flat-button
           color="primary"
           type="submit"
-          (click)="onSubmit()"
+          form="intake-form"
+          class="scr005-primary-btn"
           [disabled]="intakeForm.invalid || isSubmitting()"
+          (click)="onSubmit()"
           aria-label="Submit intake form">
           @if (isSubmitting()) {
             <mat-spinner diameter="20" />
-            <span>Submitting…</span>
-          } @else {
-            Submit
           }
+          @if (isSubmitting()) { Submitting&hellip; }
+          @if (!isSubmitting()) { Submit intake }
         </button>
       </div>
     </div>
