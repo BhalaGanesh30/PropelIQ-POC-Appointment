@@ -96,5 +96,6 @@ public sealed class AppointmentHistoryService
             ProviderName     = apt.ProviderName,
             Location         = apt.Location,
             ConfirmationCode = apt.ConfirmationCode ?? string.Empty,
+            HasIntakeRecord  = apt.IntakeRecordId.HasValue && apt.IntakeRecordId.Value != Guid.Empty,
         };
 }

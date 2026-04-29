@@ -31,6 +31,8 @@ public record AppointmentHistoryItem
     public string? ProviderName { get; init; }
     public string? Location { get; init; }
     public string ConfirmationCode { get; init; } = string.Empty;
+    /// <summary>True when an intake record has been submitted for this appointment.</summary>
+    public bool HasIntakeRecord { get; init; }
 }
 
 /// <summary>

@@ -102,6 +102,13 @@ public sealed class IntakeDraftService
             throw new UnauthorizedAccessException(
                 "Intake draft does not belong to the authenticated patient.");
 
+        // Guard: reject if an intake record already exists for this appointment.
+        var existingRecord = await _context.IntakeRecords
+            .FirstOrDefaultAsync(r => r.AppointmentId == request.AppointmentId, ct);
+        if (existingRecord is not null)
+            throw new InvalidOperationException(
+                "An intake record has already been submitted for this appointment.");
+
         // Transition draft → Submitted
         draft.Submit();
 

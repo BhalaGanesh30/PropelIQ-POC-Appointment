@@ -236,9 +236,18 @@ public sealed class BookingService
         CancelBookingRequest request,
         CancellationToken ct)
     {
-        var appointment = isStaff
-            ? await _bookingRepo.GetAppointmentAsync(appointmentId, ct)
-            : await _bookingRepo.GetAppointmentForPatientAsync(appointmentId, userId, ct);
+        Appointment? appointment;
+        if (isStaff)
+        {
+            appointment = await _bookingRepo.GetAppointmentAsync(appointmentId, ct);
+        }
+        else
+        {
+            var resolvedPatientId = await _bookingRepo.ResolvePatientIdAsync(userId, ct);
+            if (resolvedPatientId is null)
+                return Result<CancelBookingResponse>.Failure("Appointment not found.");
+            appointment = await _bookingRepo.GetAppointmentForPatientAsync(appointmentId, resolvedPatientId.Value, ct);
+        }
 
         if (appointment is null)
             return Result<CancelBookingResponse>.Failure("Appointment not found.");
@@ -310,9 +319,18 @@ public sealed class BookingService
         RescheduleBookingRequest request,
         CancellationToken ct)
     {
-        var appointment = isStaff
-            ? await _bookingRepo.GetAppointmentAsync(appointmentId, ct)
-            : await _bookingRepo.GetAppointmentForPatientAsync(appointmentId, userId, ct);
+        Appointment? appointment;
+        if (isStaff)
+        {
+            appointment = await _bookingRepo.GetAppointmentAsync(appointmentId, ct);
+        }
+        else
+        {
+            var resolvedPatientId = await _bookingRepo.ResolvePatientIdAsync(userId, ct);
+            if (resolvedPatientId is null)
+                return Result<RescheduleBookingResponse>.Failure("Appointment not found.");
+            appointment = await _bookingRepo.GetAppointmentForPatientAsync(appointmentId, resolvedPatientId.Value, ct);
+        }
 
         if (appointment is null)
             return Result<RescheduleBookingResponse>.Failure("Appointment not found.");

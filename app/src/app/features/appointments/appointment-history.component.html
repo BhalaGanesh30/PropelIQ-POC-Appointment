@@ -207,6 +207,17 @@
 
               <!-- Confirmed: Reschedule | Cancel (AC-2, AC-1) -->
               @if (apt.status === 'Confirmed') {
+                @if (!apt.hasIntakeRecord) {
+                  <button
+                    mat-button
+                    class="scr007-action-link scr007-action-link--intake"
+                    (click)="completeIntake(apt)"
+                    [attr.aria-label]="'Complete intake form for appointment on ' + (apt.scheduledAt | date : 'MMM d')"
+                  >
+                    Complete Intake
+                  </button>
+                  <span class="scr007-action-sep" aria-hidden="true">|</span>
+                }
                 <button
                   mat-button
                   class="scr007-action-link"
@@ -234,22 +245,17 @@
                 </button>
               }
 
-              <!-- Confirmed / Rescheduled: calendar icon button (US_024 AC-1, AC-3) -->
+              <!-- Confirmed / Rescheduled: Google Calendar sync (US_024 AC-1, AC-3) -->
               @if (canDownloadIcs(apt)) {
                 <button
                   mat-icon-button
                   color="primary"
                   class="scr007-calendar-btn"
-                  [disabled]="downloadingId() !== null"
-                  (click)="downloadCalendarEvent(apt)"
-                  [matTooltip]="'Add ' + apt.appointmentType + ' to calendar'"
-                  [attr.aria-label]="'Add ' + apt.appointmentType + ' appointment to calendar'"
+                  (click)="addToGoogleCalendar(apt)"
+                  [matTooltip]="'Add ' + apt.appointmentType + ' to Google Calendar'"
+                  [attr.aria-label]="'Add ' + apt.appointmentType + ' appointment to Google Calendar'"
                 >
-                  @if (downloadingId() === apt.id) {
-                    <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
-                  } @else {
-                    <mat-icon aria-hidden="true">event</mat-icon>
-                  }
+                  <mat-icon aria-hidden="true">event</mat-icon>
                 </button>
               }
 
@@ -269,6 +275,7 @@
                 <button
                   mat-button
                   class="scr007-action-link"
+                  (click)="viewDetails(apt)"
                   [attr.aria-label]="'View details for ' + apt.appointmentType + ' appointment'"
                 >
                   View details
@@ -317,6 +324,19 @@
           </mat-card-content>
 
           <mat-card-actions>
+            <!-- Complete intake if not yet submitted -->
+            @if (apt.status === 'Confirmed' && !apt.hasIntakeRecord) {
+              <button
+                mat-stroked-button
+                color="primary"
+                (click)="completeIntake(apt)"
+                [attr.aria-label]="'Complete intake form for appointment on ' + (apt.scheduledAt | date : 'MMM d')"
+              >
+                <mat-icon aria-hidden="true">assignment</mat-icon>
+                Complete Intake
+              </button>
+            }
+
             <!-- AC-2: reschedule -->
             <button
               mat-stroked-button
@@ -347,21 +367,28 @@
               Cancel
             </button>
 
-            <!-- AC-1 / AC-3 (US_024): ICS calendar export for Confirmed/Rescheduled -->
+            <!-- AC-1 / AC-3 (US_024): Google Calendar sync for Confirmed/Rescheduled -->
             @if (canDownloadIcs(apt)) {
               <button
                 mat-stroked-button
                 class="calendar-btn"
-                [disabled]="downloadingId() !== null"
-                (click)="downloadCalendarEvent(apt)"
-                [attr.aria-label]="'Add ' + apt.appointmentType + ' appointment to calendar'"
+                (click)="addToGoogleCalendar(apt)"
+                [attr.aria-label]="'Add ' + apt.appointmentType + ' appointment to Google Calendar'"
               >
-                @if (downloadingId() === apt.id) {
-                  <mat-spinner diameter="16" aria-hidden="true"></mat-spinner>
-                } @else {
-                  <mat-icon aria-hidden="true">event</mat-icon>
-                }
-                Add to Calendar
+                <mat-icon aria-hidden="true">event</mat-icon>
+                Add to Google Calendar
+              </button>
+            }
+
+            <!-- View details for non-active appointments (mobile) -->
+            @if (apt.status !== 'Confirmed' && apt.status !== 'Completed' && !canDownloadIcs(apt)) {
+              <button
+                mat-stroked-button
+                (click)="viewDetails(apt)"
+                [attr.aria-label]="'View details for ' + apt.appointmentType + ' appointment'"
+              >
+                <mat-icon aria-hidden="true">info</mat-icon>
+                View Details
               </button>
             }
           </mat-card-actions>
