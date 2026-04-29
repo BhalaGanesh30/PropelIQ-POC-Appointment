@@ -16,8 +16,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatNativeDateModule } from '@angular/material/core';
 import { JoinWaitlistRequest } from './models/waitlist.models';
 
-/** Data injected into the join dialog — currently none, reserved for future expansion. */
-export type JoinWaitlistDialogData = Record<string, never>;
+/** Data injected into the join dialog for optional pre-fill from slot search filters. */
+export interface JoinWaitlistDialogData {
+  preferredDateStart?: Date | null;
+  preferredDateEnd?: Date | null;
+  preferredDurationMinutes?: number | null;
+  preferredAppointmentType?: string | null;
+}
 
 /** Value emitted when the dialog closes (null = cancelled). */
 export type JoinWaitlistDialogResult = JoinWaitlistRequest | null;
@@ -198,18 +203,19 @@ export class JoinWaitlistDialogComponent {
       MatDialogRef,
     );
 
-  // Reserved for future use (e.g. pre-fill from slot context).
-  readonly _data = inject<JoinWaitlistDialogData>(MAT_DIALOG_DATA);
+  readonly data = inject<JoinWaitlistDialogData>(MAT_DIALOG_DATA);
 
   readonly today = new Date();
 
   readonly appointmentTypes = APPOINTMENT_TYPES;
   readonly durationOptions = DURATION_OPTIONS;
 
-  readonly startDate = signal<Date | null>(null);
-  readonly endDate = signal<Date | null>(null);
-  readonly duration = signal<15 | 30 | 60 | null>(null);
-  readonly appointmentType = signal<string>('');
+  readonly startDate = signal<Date | null>(this.data?.preferredDateStart ?? null);
+  readonly endDate = signal<Date | null>(this.data?.preferredDateEnd ?? null);
+  readonly duration = signal<15 | 30 | 60 | null>(
+    (this.data?.preferredDurationMinutes as 15 | 30 | 60 | null) ?? null,
+  );
+  readonly appointmentType = signal<string>(this.data?.preferredAppointmentType ?? '');
 
   readonly canSubmit = computed(() => {
     const start = this.startDate();

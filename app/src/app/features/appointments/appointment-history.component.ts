@@ -33,6 +33,7 @@ import {
   CancelDialogData,
   CancelDialogResult,
 } from './cancel-dialog.component';
+import { AppointmentDetailDialogComponent } from './appointment-detail-dialog.component';
 import {
   AppointmentHistoryFilter,
   AppointmentHistoryItem,
@@ -322,6 +323,42 @@ export class AppointmentHistoryComponent implements OnInit, OnDestroy {
         duration: apt.durationMinutes,
       },
     });
+  }
+
+  completeIntake(apt: AppointmentHistoryItem): void {
+    this.router.navigate(['/scheduling/intake'], {
+      queryParams: { appointmentId: apt.id },
+    });
+  }
+
+  viewDetails(apt: AppointmentHistoryItem): void {
+    this.dialog.open(AppointmentDetailDialogComponent, {
+      data: apt,
+      width: '480px',
+    });
+  }
+
+  /** Opens Google Calendar in a new tab with pre-filled event details. */
+  addToGoogleCalendar(apt: AppointmentHistoryItem): void {
+    const start = new Date(apt.scheduledAt);
+    const end = new Date(start.getTime() + apt.durationMinutes * 60_000);
+
+    const formatGCalDate = (d: Date): string =>
+      d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+
+    const params = new URLSearchParams({
+      action: 'TEMPLATE',
+      text: `${apt.appointmentType} – ${apt.providerName ?? 'Provider TBD'}`,
+      dates: `${formatGCalDate(start)}/${formatGCalDate(end)}`,
+      details: `Confirmation code: ${apt.confirmationCode}\nProvider: ${apt.providerName ?? 'TBD'}\nDuration: ${apt.durationMinutes} min`,
+      ...(apt.location ? { location: apt.location } : {}),
+    });
+
+    window.open(
+      `https://calendar.google.com/calendar/render?${params.toString()}`,
+      '_blank',
+      'noopener,noreferrer',
+    );
   }
 
   downloadCalendarEvent(apt: AppointmentHistoryItem): void {

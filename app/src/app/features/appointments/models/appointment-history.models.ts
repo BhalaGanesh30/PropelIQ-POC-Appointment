@@ -30,6 +30,8 @@ export interface AppointmentHistoryItem {
   providerName: string | null;
   location: string | null;
   confirmationCode: string;
+  /** True when an intake record has been submitted for this appointment. */
+  hasIntakeRecord: boolean;
 }
 
 /**

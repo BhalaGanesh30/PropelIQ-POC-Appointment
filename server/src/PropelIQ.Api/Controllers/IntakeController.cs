@@ -85,12 +85,14 @@ public sealed class IntakeController : BaseApiController
     /// <response code="401">JWT bearer token missing or invalid.</response>
     /// <response code="403">Draft belongs to a different patient.</response>
     /// <response code="404">Draft not found or already submitted.</response>
+    /// <response code="409">An intake record already exists for this appointment.</response>
     [HttpPost("submit")]
     [ProducesResponseType(typeof(SubmitIntakeResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> SubmitIntake(
         [FromBody] SubmitIntakeRequest request,
         CancellationToken ct)
@@ -101,6 +103,10 @@ public sealed class IntakeController : BaseApiController
             var result = await _intakeService.SubmitIntakeAsync(
                 patientId, request, ct);
             return Ok(result);
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("already been submitted"))
+        {
+            return Conflict(new { error = ex.Message });
         }
         catch (InvalidOperationException ex)
         {

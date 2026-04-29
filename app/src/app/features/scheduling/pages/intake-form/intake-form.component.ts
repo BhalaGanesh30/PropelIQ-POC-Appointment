@@ -84,6 +84,7 @@ export class IntakeFormComponent implements OnInit, OnDestroy {
   isSubmitting = signal(false);
 
   slotId: string | null = null;
+  appointmentId: string | null = null;
 
   readonly severityOptions = ['Mild', 'Moderate', 'Severe'] as const;
 
@@ -139,6 +140,7 @@ export class IntakeFormComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.slotId = this.route.snapshot.queryParamMap.get('slotId');
+    this.appointmentId = this.route.snapshot.queryParamMap.get('appointmentId');
 
     this.loadDraft(); // AC-3
 
@@ -281,8 +283,8 @@ export class IntakeFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (!this.slotId) {
-      this.snackBar.open('No appointment slot selected. Please go back and choose a slot.', 'Dismiss', {
+    if (!this.slotId && !this.appointmentId) {
+      this.snackBar.open('No appointment context. Please go back and try again.', 'Dismiss', {
         duration: 5000, panelClass: 'error-snackbar',
       });
       return;
@@ -291,41 +293,59 @@ export class IntakeFormComponent implements OnInit, OnDestroy {
     this.isSubmitting.set(true);
     this.formState.set('submitting');
 
-    // Step 1: Create the booking (reserves the slot atomically).
-    this.bookingApi.createBooking({ slotId: this.slotId }).pipe(
-      switchMap((booking) =>
-        // Step 2: Submit the intake form attached to the new appointment.
-        this.intakeApi.submitIntake({ draftId, appointmentId: booking.appointmentId }).pipe(
-          map(() => booking.appointmentId),
-        )
-      ),
-    ).subscribe({
-      next: (appointmentId) => {
-        this.isSubmitting.set(false);
-        this.router.navigate(['/scheduling/booking/confirmation', appointmentId]);
-      },
-      error: (err) => {
-        this.isSubmitting.set(false);
-        this.formState.set('default');
-        if (err?.status === 409) {
-          this.snackBar.open(
-            'This slot was just taken. Please go back and select another.',
-            'Dismiss',
-            { duration: 6000, panelClass: 'error-snackbar' },
-          );
-        } else {
+    if (this.appointmentId) {
+      // Booking already exists (navigated from My Appointments) — just submit intake.
+      this.intakeApi.submitIntake({ draftId, appointmentId: this.appointmentId }).subscribe({
+        next: () => {
+          this.isSubmitting.set(false);
+          this.snackBar.open('Intake form submitted successfully.', 'Close', { duration: 4000 });
+          this.router.navigate(['/appointments']);
+        },
+        error: (err) => {
+          this.isSubmitting.set(false);
+          this.formState.set('default');
           const message = err?.error?.title ?? 'Submission failed. Please try again.';
           this.snackBar.open(message, 'Dismiss', {
             duration: 5000, panelClass: 'error-snackbar',
           });
-        }
-      },
-    });
+        },
+      });
+    } else {
+      // New booking flow (navigated from slot search with slotId).
+      this.bookingApi.createBooking({ slotId: this.slotId! }).pipe(
+        switchMap((booking) =>
+          this.intakeApi.submitIntake({ draftId, appointmentId: booking.appointmentId }).pipe(
+            map(() => booking.appointmentId),
+          )
+        ),
+      ).subscribe({
+        next: (appointmentIdResult) => {
+          this.isSubmitting.set(false);
+          this.router.navigate(['/scheduling/booking/confirmation', appointmentIdResult]);
+        },
+        error: (err) => {
+          this.isSubmitting.set(false);
+          this.formState.set('default');
+          if (err?.status === 409) {
+            this.snackBar.open(
+              'This slot was just taken. Please go back and select another.',
+              'Dismiss',
+              { duration: 6000, panelClass: 'error-snackbar' },
+            );
+          } else {
+            const message = err?.error?.title ?? 'Submission failed. Please try again.';
+            this.snackBar.open(message, 'Dismiss', {
+              duration: 5000, panelClass: 'error-snackbar',
+            });
+          }
+        },
+      });
+    }
   }
 
   onBack(): void {
     this.saveDraft();
-    this.router.navigate(['/scheduling/search']);
+    this.router.navigate([this.appointmentId ? '/appointments' : '/scheduling/search']);
   }
 
   onRetry(): void {

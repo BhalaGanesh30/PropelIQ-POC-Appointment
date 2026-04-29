@@ -21,13 +21,20 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SlotSearchService } from '../../services/slot-search.service';
-import { SlotCardComponent } from '../../components/slot-card/slot-card.component';
+import { BookingApiService } from '../../services/booking-api.service';
 import {
   AppointmentType,
   SlotDto,
   SlotSearchResponse,
 } from '../../models/slot.model';
+import {
+  JoinWaitlistDialogComponent,
+  JoinWaitlistDialogData,
+} from '../../../../features/waitlist/join-waitlist-dialog.component';
+import { WaitlistApiService } from '../../../../features/waitlist/waitlist-api.service';
 
 type SearchState = 'idle' | 'loading' | 'success' | 'empty' | 'error';
 
@@ -58,7 +65,7 @@ type SearchState = 'idle' | 'loading' | 'success' | 'empty' | 'error';
     MatButtonModule,
     MatIconModule,
     MatProgressBarModule,
-    SlotCardComponent,
+    MatSnackBarModule,
   ],
   templateUrl: './slot-search.component.html',
   styleUrl: './slot-search.component.scss',
@@ -69,8 +76,13 @@ export class SlotSearchComponent implements OnInit {
   private static readonly MS_PER_DAY = 86_400_000;
 
   private readonly slotSearchService = inject(SlotSearchService);
+  private readonly bookingApi = inject(BookingApiService);
   private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly waitlistApi = inject(WaitlistApiService);
 
+  readonly isBooking = signal(false);
   readonly searchState = signal<SearchState>('idle');
   readonly searchResult = signal<SlotSearchResponse | null>(null);
   readonly selectedSlot = signal<SlotDto | null>(null);
@@ -163,23 +175,90 @@ export class SlotSearchComponent implements OnInit {
     this.selectedSlot.set(slot);
   }
 
-  onContinueToIntake(): void {
+  onConfirmBooking(): void {
     const slot = this.selectedSlot();
-    if (!slot) return;
-    this.router.navigate(['/scheduling/intake'], {
-      queryParams: { slotId: slot.id },
+    if (!slot || this.isBooking()) return;
+
+    this.isBooking.set(true);
+
+    this.bookingApi.createBooking({ slotId: slot.id }).subscribe({
+      next: (booking) => {
+        this.isBooking.set(false);
+        this.router.navigate(
+          ['/scheduling/booking/confirmation', booking.appointmentId],
+        );
+      },
+      error: (err: HttpErrorResponse) => {
+        this.isBooking.set(false);
+        if (err.status === 409) {
+          this.snackBar.open(
+            'This slot was just taken. Please select another.',
+            'Dismiss',
+            { duration: 5000, panelClass: 'snack-error' },
+          );
+          this.selectedSlot.set(null);
+          this.onSearch();
+        } else {
+          this.snackBar.open(
+            err.error?.title ?? 'Booking failed. Please try again.',
+            'Dismiss',
+            { duration: 5000, panelClass: 'snack-error' },
+          );
+        }
+      },
     });
   }
 
   onJoinWaitlist(): void {
     const { dateFrom, dateTo, duration, type } = this.filterForm.value;
-    this.router.navigate(['/scheduling/waitlist'], {
-      queryParams: {
-        dateFrom: dateFrom ? this.toIsoDate(dateFrom) : null,
-        dateTo: dateTo ? this.toIsoDate(dateTo) : null,
-        duration,
-        type,
-      },
+    const selectedSlot = this.selectedSlot();
+
+    const dialogData: JoinWaitlistDialogData = {
+      preferredDateStart: selectedSlot
+        ? new Date(selectedSlot.startTime)
+        : (dateFrom ?? null),
+      preferredDateEnd: selectedSlot
+        ? new Date(selectedSlot.endTime)
+        : (dateTo ?? null),
+      preferredDurationMinutes: selectedSlot
+        ? selectedSlot.durationMinutes
+        : (duration ?? null),
+      preferredAppointmentType: selectedSlot
+        ? selectedSlot.type
+        : (type ?? null),
+    };
+
+    const ref = this.dialog.open(JoinWaitlistDialogComponent, {
+      data: dialogData,
+      width: '500px',
+      maxWidth: '95vw',
+    });
+
+    ref.afterClosed().subscribe((request) => {
+      if (!request) return;
+
+      this.waitlistApi.joinWaitlist(request).subscribe({
+        next: () => {
+          this.snackBar.open(
+            'You have been added to the waitlist. We will notify you when a slot becomes available.',
+            'View Waitlist',
+            { duration: 6000, panelClass: 'snack-success' },
+          ).onAction().subscribe(() => {
+            this.router.navigate(['/waitlist']);
+          });
+          this.router.navigate(['/waitlist']);
+        },
+        error: (err: HttpErrorResponse) => {
+          const message =
+            err.status === 409
+              ? 'You are already on the waitlist for a matching slot.'
+              : 'Failed to join the waitlist. Please try again.';
+          this.snackBar.open(message, 'Dismiss', {
+            duration: 5000,
+            panelClass: 'snack-error',
+          });
+        },
+      });
     });
   }
 

@@ -147,7 +147,15 @@ export class BookingConfirmationComponent implements OnInit {
   }
 
   navigateToAppointments(): void {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/appointments']);
+  }
+
+  navigateToIntake(): void {
+    const id = this.booking()?.appointmentId;
+    if (!id) return;
+    this.router.navigate(['/scheduling/intake'], {
+      queryParams: { appointmentId: id },
+    });
   }
 
   private loadBooking(appointmentId: string): void {

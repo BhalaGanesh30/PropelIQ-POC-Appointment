@@ -22,9 +22,11 @@ flowchart TD
     SCR030 --> Admin
 
     Patient --> SCR004[SCR-004 Slot Search]
-    SCR004 --> SCR005[SCR-005 Intake]
-    SCR005 --> SCR006[SCR-006 Booking Confirmation]
+    SCR004 --> SCR006[SCR-006 Booking Confirmation]
+    SCR006 --> SCR007
+    SCR006 --> SCR005[SCR-005 Intake]
     Patient --> SCR007[SCR-007 Appointment History]
+    SCR007 --> SCR005
     Patient --> SCR008[SCR-008 Waitlist]
     Patient --> SCR009[SCR-009 Notification Preferences]
     Patient --> SCR011[SCR-011 Document Upload]
@@ -69,7 +71,8 @@ flowchart TD
 
 | Pattern | Example |
 |---------|---------|
-| Patient booking | Home / Appointments / Search Slots / Intake |
+| Patient booking | Home / Appointments / Search Slots / Confirm Booking |
+| Intake completion | Home / My Appointments / Complete Intake |
 | Document review | Home / Documents / Library / Viewer |
 | Clinical review | Home / Patient Lookup / Profile / Coding Review |
 | Admin governance | Home / Administration / User Management |
@@ -78,8 +81,10 @@ flowchart TD
 
 | From | To | Reason |
 |------|----|--------|
-| SCR-004 | SCR-005 | Selected slot feeds intake context |
-| SCR-005 | SCR-006 | Submitted intake completes booking |
+| SCR-004 | SCR-006 | Confirm Booking creates appointment and navigates to confirmation |
+| SCR-006 | SCR-005 | Complete Intake link from confirmation page |
+| SCR-006 | SCR-007 | My Appointments link from confirmation page |
+| SCR-007 | SCR-005 | Complete Intake action for appointments without intake record |
 | SCR-012 | SCR-013 | Library opens selected document in viewer |
 | SCR-014 | SCR-013 | Source links open origin document |
 | SCR-017 | SCR-018 | Manual coding fallback to code search |

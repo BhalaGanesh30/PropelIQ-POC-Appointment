@@ -225,7 +225,8 @@
 .scr007-action-cell {
   display: flex;
   align-items: center;
-  gap: 4px; // space so the calendar icon button doesn't butt against the separator
+  gap: 4px;
+  flex-wrap: nowrap;
 }
 
 // ── Calendar icon button in desktop action cell (US_024 AC-1/AC-3) ───────────
@@ -233,6 +234,8 @@
   width: 32px;
   height: 32px;
   line-height: 32px;
+  margin-left: 4px;
+  flex-shrink: 0;
 
   mat-icon {
     font-size: 18px;
