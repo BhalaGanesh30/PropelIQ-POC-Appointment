@@ -1,0 +1,374 @@
+// ── Host ─────────────────────────────────────────────────────────────────────
+.insurance-host {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 64px 32px;
+  background: var(--surface-card, #ffffff);
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle, #e0e0e0);
+  text-align: center;
+
+  mat-icon {
+    font-size: 56px;
+    width: 56px;
+    height: 56px;
+    color: var(--text-tertiary, #9e9e9e);
+  }
+}
+
+.empty-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary, #212121);
+}
+
+.empty-body {
+  margin: 0;
+  color: var(--text-secondary, #616161);
+  font-size: 15px;
+  max-width: 380px;
+}
+
+// ── Form layout ───────────────────────────────────────────────────────────────
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+// ── Cards ─────────────────────────────────────────────────────────────────────
+.form-card,
+.upload-card {
+  background: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-subtle, #e0e0e0);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary, #212121);
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #1976d2;
+  }
+}
+
+// ── Full-width mat-form-field ─────────────────────────────────────────────────
+.full-width {
+  width: 100%;
+}
+
+// ── Toggle row ─────────────────────────────────────────────────────────────────
+.toggle-row {
+  padding-top: 4px;
+  border-top: 1px solid var(--border-subtle, #e0e0e0);
+  padding-bottom: 4px;
+}
+
+// ── File upload ────────────────────────────────────────────────────────────────
+.upload-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary, #424242);
+  margin-bottom: 6px;
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 20px;
+  border: 2px dashed var(--border-default, #bdbdbd);
+  border-radius: 8px;
+  background: var(--surface-background, #fafafa);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  text-align: center;
+
+  &:hover,
+  &:focus-visible {
+    border-color: #1976d2;
+    background: #e3f2fd;
+    outline: 2px solid #1976d2;
+    outline-offset: 2px;
+  }
+}
+
+.dropzone-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: var(--text-tertiary, #9e9e9e);
+}
+
+.dropzone-cta {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.dropzone small {
+  font-size: 11px;
+  color: var(--text-tertiary, #757575);
+}
+
+// Uploaded chip
+.uploaded-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #2e7d32;
+
+  mat-icon:first-child {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #388e3c;
+  }
+
+  span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+// Upload error
+.upload-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #ffebee;
+  border: 1px solid #ef9a9a;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #b71c1c;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+// Screen-reader only (hidden file input)
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// ── Card actions ──────────────────────────────────────────────────────────────
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+
+  button {
+    width: 100%;
+    justify-content: center;
+    gap: 8px;
+
+    mat-spinner {
+      display: inline-block;
+    }
+  }
+}
+
+// ── Banners (UXR-404) ─────────────────────────────────────────────────────────
+.banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 0 6px 6px 0;
+  border-left: 4px solid #2196f3;
+  background: #e3f2fd;
+  font-size: 14px;
+  color: #0d47a1;
+
+  mat-icon { flex-shrink: 0; font-size: 20px; width: 20px; height: 20px; }
+  div { flex: 1; }
+
+  &.warning {
+    border-left-color: #ff9800;
+    background: #fff3e0;
+    color: #6d3c00;
+  }
+
+  &.error {
+    border-left-color: #f44336;
+    background: #ffebee;
+    color: #b71c1c;
+  }
+}
+
+// ── Result panel ──────────────────────────────────────────────────────────────
+.result-panel {
+  margin-top: 4px;
+}
+
+.result-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+
+  mat-icon { flex-shrink: 0; font-size: 22px; width: 22px; height: 22px; margin-top: 1px; }
+  div { flex: 1; line-height: 1.5; }
+
+  .warning-item {
+    display: block;
+    margin-top: 4px;
+  }
+
+  code {
+    font-family: monospace;
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.06);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  // AC-3 — SoftValidated (green)
+  &.success {
+    background: #e8f5e9;
+    border: 1px solid #a5d6a7;
+    color: #1b5e20;
+    mat-icon { color: #388e3c; }
+  }
+
+  // AC-2 — Warning (amber)
+  &.warning {
+    background: #fff3e0;
+    border: 1px solid #ffcc80;
+    color: #6d3c00;
+    mat-icon { color: #f57c00; }
+  }
+
+  // AC-4 — ValidationFailed (red)
+  &.error {
+    background: #ffebee;
+    border: 1px solid #ef9a9a;
+    color: #b71c1c;
+    mat-icon { color: #d32f2f; }
+  }
+
+  // Edge Case 1 — ValidationPending (blue)
+  &.info {
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+    color: #0d47a1;
+    mat-icon { color: #1976d2; }
+  }
+}
+
+// ── Status badges ─────────────────────────────────────────────────────────────
+.status-badge {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &.success { background: #c8e6c9; color: #1b5e20; }
+  &.warning { background: #ffe0b2; color: #6d3c00; }
+  &.error   { background: #ffcdd2; color: #b71c1c; }
+  &.info    { background: #bbdefb; color: #0d47a1; }
+}
+
+// ── Secondary section ─────────────────────────────────────────────────────────
+.secondary-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.secondary-heading {
+  color: #7b1fa2;
+
+  mat-icon { color: #7b1fa2; }
+}
+
+// ── Responsive (UXR-301) ──────────────────────────────────────────────────────
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .insurance-host {
+    padding: 16px;
+  }
+}
+
+// ── Staff report link (US_039) ────────────────────────────────────────────────
+.report-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1976d2;
+  text-decoration: none;
+  cursor: pointer;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1976d2;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+@media (max-width: 400px) {
+  .card-actions {
+    button { font-size: 13px; }
+  }
+}

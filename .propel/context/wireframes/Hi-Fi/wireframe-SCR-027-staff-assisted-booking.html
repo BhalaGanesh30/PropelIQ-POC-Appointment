@@ -3,20 +3,419 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SCR-027 Staff-Assisted Booking</title>
+  <title>SCR-027 Staff-Assisted Booking — PropelIQ Hi-Fi Wireframe</title>
   <link rel="stylesheet" href="./wireframe-theme.css">
+  <style>
+    .state-nav {
+      position: fixed; top: var(--space-3); left: 50%; transform: translateX(-50%);
+      display: flex; gap: var(--space-2); background: var(--neutral-0); padding: 6px var(--space-3);
+      border-radius: 999px; box-shadow: var(--shadow-2); z-index: 200; font-size: 12px;
+    }
+    .state-tab {
+      padding: 4px 14px; border-radius: 999px; cursor: pointer; color: var(--neutral-700);
+      border: 1px solid var(--neutral-300); background: var(--neutral-0); font-size: 12px;
+      font-weight: 500; transition: all var(--transition-fast);
+    }
+    .state-tab.active { background: var(--primary-500); color: var(--neutral-0); border-color: var(--primary-500); }
+
+    /* ── Wizard shell ──────────────────────────────────────────────────── */
+    .wizard-card {
+      background: var(--neutral-0); border-radius: var(--radius-lg); box-shadow: var(--shadow-2);
+      padding: var(--space-6); max-width: 860px; width: 100%; margin: 72px auto var(--space-6);
+    }
+    .wizard-title { font-size: 20px; font-weight: 700; color: var(--neutral-900); margin: 0 0 4px; }
+    .wizard-subtitle { font-size: 14px; color: var(--neutral-600); margin: 0 0 var(--space-5); }
+
+    /* ── Steps ─────────────────────────────────────────────────────────── */
+    .wizard-steps { display: flex; align-items: center; margin-bottom: var(--space-5); }
+    .step-item { display: flex; align-items: center; gap: var(--space-2); position: relative; }
+    .step-connector { flex: 1; height: 2px; background: var(--neutral-200); margin: 0 var(--space-2); min-width: 40px; }
+    .step-connector.done { background: var(--primary-500); }
+    .step-circle {
+      width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0;
+      border: 2px solid var(--neutral-300); background: var(--neutral-0); color: var(--neutral-600);
+    }
+    .step-item.done .step-circle { border-color: var(--primary-500); background: var(--primary-500); color: var(--neutral-0); }
+    .step-item.active .step-circle { border-color: var(--primary-500); background: var(--neutral-0); color: var(--primary-500); box-shadow: 0 0 0 4px #e3f2fd; }
+    .step-label { font-size: 12px; font-weight: 500; color: var(--neutral-600); white-space: nowrap; }
+    .step-item.done .step-label, .step-item.active .step-label { color: var(--primary-500); font-weight: 600; }
+
+    /* ── Search ─────────────────────────────────────────────────────────── */
+    .search-field { position: relative; margin-bottom: var(--space-3); }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--neutral-600); font-size: 18px; }
+    .search-input {
+      width: 100%; padding: 12px 12px 12px 44px; border: 2px solid var(--primary-500);
+      border-radius: var(--radius-sm); font-size: 15px; font-family: var(--font-sans); outline: none;
+    }
+
+    /* ── Patient results ─────────────────────────────────────────────────── */
+    .patient-list { list-style: none; margin: 0 0 var(--space-3); padding: 0; border: 1px solid var(--neutral-200); border-radius: var(--radius-sm); overflow: hidden; }
+    .patient-item { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); cursor: pointer; border-bottom: 1px solid var(--neutral-100); transition: background var(--transition-fast); }
+    .patient-item:last-child { border-bottom: none; }
+    .patient-item:hover, .patient-item.selected { background: var(--primary-50); }
+    .patient-item.selected { border-left: 3px solid var(--primary-500); }
+    .patient-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary-500); color: var(--neutral-0); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+    .patient-name { font-weight: 600; font-size: 14px; color: var(--neutral-900); }
+    .patient-meta { font-size: 12px; color: var(--neutral-600); }
+
+    /* ── Inline patient form ─────────────────────────────────────────────── */
+    .inline-form { background: var(--neutral-50); border: 1px solid var(--neutral-200); border-radius: var(--radius-sm); padding: var(--space-4); margin-bottom: var(--space-4); }
+    .inline-form-title { font-size: 14px; font-weight: 600; color: var(--primary-500); margin: 0 0 var(--space-3); }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group.span-2 { grid-column: span 2; }
+    .form-label { font-size: 11px; font-weight: 700; color: var(--neutral-700); text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-input { padding: 8px 10px; border: 1px solid var(--neutral-300); border-radius: var(--radius-sm); font-size: 14px; font-family: var(--font-sans); color: var(--neutral-900); background: var(--neutral-0); }
+
+    /* ── Slot grid ───────────────────────────────────────────────────────── */
+    .slot-filters { display: flex; gap: var(--space-3); margin-bottom: var(--space-4); flex-wrap: wrap; align-items: flex-end; }
+    .slot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: var(--space-2); margin-bottom: var(--space-4); }
+    .slot-chip { padding: 10px var(--space-3); border: 1px solid var(--neutral-300); border-radius: var(--radius-sm); text-align: center; cursor: pointer; font-size: 13px; transition: all var(--transition-fast); background: var(--neutral-0); }
+    .slot-chip:hover { border-color: var(--primary-500); background: var(--primary-50); }
+    .slot-chip.selected { border-color: var(--primary-500); background: var(--primary-50); color: var(--primary-700); font-weight: 700; }
+    .slot-chip.conflict-selected { border-color: #e65100; background: #fff3e0; }
+    .slot-chip.unavailable { opacity: 0.4; cursor: not-allowed; }
+    .slot-time { font-size: 15px; font-weight: 700; color: var(--neutral-900); }
+    .slot-chip.selected .slot-time { color: var(--primary-700); }
+    .slot-chip.conflict-selected .slot-time { color: #e65100; }
+    .slot-provider { font-size: 11px; color: var(--neutral-600); margin-top: 2px; }
+
+    /* ── Conflict banner ─────────────────────────────────────────────────── */
+    .conflict-banner { display: flex; gap: var(--space-3); padding: var(--space-3) var(--space-4); background: var(--warning-soft); border-left: 4px solid var(--warning); border-radius: var(--radius-sm); margin-bottom: var(--space-4); font-size: 14px; }
+    .conflict-banner strong { display: block; color: #7c4e00; margin-bottom: 3px; }
+    .conflict-banner p { margin: 0; color: #7c4e00; font-size: 13px; }
+    .conflict-actions { display: flex; gap: var(--space-2); margin-top: var(--space-2); }
+
+    /* ── Override notice ─────────────────────────────────────────────────── */
+    .override-notice { display: flex; gap: var(--space-3); padding: var(--space-3) var(--space-4); background: var(--warning-soft); border-left: 4px solid var(--warning); border-radius: var(--radius-sm); margin-bottom: var(--space-4); font-size: 13px; color: #7c4e00; }
+
+    /* ── Textarea ────────────────────────────────────────────────────────── */
+    .mock-textarea { width: 100%; min-height: 80px; padding: var(--space-3); border: 1px solid var(--neutral-300); border-radius: var(--radius-sm); font-size: 14px; font-family: var(--font-sans); resize: vertical; color: var(--neutral-900); }
+    .char-row { display: flex; justify-content: flex-end; font-size: 12px; color: var(--neutral-600); margin-top: 4px; }
+
+    /* ── Summary ─────────────────────────────────────────────────────────── */
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4); }
+    .summary-item { padding: var(--space-3) var(--space-4); background: var(--neutral-50); border-radius: var(--radius-sm); border: 1px solid var(--neutral-200); }
+    .summary-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--neutral-600); margin-bottom: 4px; }
+    .summary-value { font-size: 14px; font-weight: 600; color: var(--neutral-900); }
+
+    /* ── Actions ─────────────────────────────────────────────────────────── */
+    .action-row { display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-5); padding-top: var(--space-4); border-top: 1px solid var(--neutral-200); }
+    .btn { padding: 10px 24px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; border: none; display: flex; align-items: center; gap: var(--space-2); transition: all var(--transition-fast); }
+    .btn-back { background: var(--neutral-0); border: 1px solid var(--neutral-300); color: var(--neutral-700); }
+    .btn-next { background: var(--primary-500); color: var(--neutral-0); }
+    .btn-next.disabled, .btn-next:disabled { background: var(--neutral-300); color: var(--neutral-600); cursor: not-allowed; }
+    .btn-confirm { background: #2e7d32; color: var(--neutral-0); min-width: 160px; justify-content: center; }
+    .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .self-note { font-size: 12px; color: var(--neutral-600); display: flex; align-items: center; gap: 4px; margin-bottom: var(--space-3); }
+    .create-link { display: inline-flex; align-items: center; gap: 6px; color: var(--primary-500); font-size: 14px; font-weight: 500; cursor: pointer; padding: var(--space-2) 0; }
+  </style>
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand"><strong>Staff Portal</strong><small>Assisted booking</small></div>
-      <div class="nav-group"><div class="nav-item">Daily Schedule</div><div class="nav-item active">Book for Patient</div><div class="nav-item">Walk-in Registration</div></div>
-    </aside>
-    <main class="content">
-      <section class="hero"><div class="stack"><span class="eyebrow">SCR-027</span><h1>Book on behalf of a patient.</h1><p>Staff can move quickly through patient search, slot selection, simplified intake, and override justification when policy exceptions apply.</p><div class="steps"><span class="step done">1 Patient</span><span class="step done">2 Slot</span><span class="step active">3 Intake</span><span class="step">4 Confirm</span></div></div><div class="banner warning"><strong>Override required.</strong><p>Scheduling constraint bypassed. Reason becomes mandatory before confirmation.</p></div></section>
-      <section class="panel"><div class="card span-7"><h3>Selected patient and slot</h3><div class="stack"><div class="mini-card"><strong>Patient</strong><p>Rahul Menon, MRN 0041831</p></div><div class="mini-card"><strong>Slot</strong><p>Today at 03:15 PM with Dr. Patel</p></div></div></div><div class="card span-5"><h3>Override reason</h3><label class="field"><strong>Reason</strong><div class="textarea">Urgent same-day review due to escalating pain.</div></label><div class="chip-row"><button class="button ghost">Back</button><button class="button primary">Confirm booking</button></div></div></section>
-    </main>
+
+  <!-- ── State navigation ───────────────────────────────────────────────── -->
+  <nav class="state-nav" aria-label="Wireframe state tabs">
+    <button class="state-tab active" id="tab-step1"  onclick="showState('step1')">Step 1: Patient</button>
+    <button class="state-tab"        id="tab-step1b" onclick="showState('step1b')">1b: New Patient</button>
+    <button class="state-tab"        id="tab-step2"  onclick="showState('step2')">Step 2: Slot</button>
+    <button class="state-tab"        id="tab-step2b" onclick="showState('step2b')">2b: Conflict</button>
+    <button class="state-tab"        id="tab-step3"  onclick="showState('step3')">Step 3: Intake</button>
+    <button class="state-tab"        id="tab-step4"  onclick="showState('step4')">Step 4: Confirm</button>
+    <button class="state-tab"        id="tab-loading" onclick="showState('loading')">Loading</button>
+  </nav>
+
+  <!-- ─────────────────── STEP 1: Patient Select ─────────────────────────── -->
+  <div id="state-step1">
+    <div class="wizard-card">
+      <h1 class="wizard-title">Book on behalf of a patient</h1>
+      <p class="wizard-subtitle">Search by name or phone, or create a new patient profile (AC-1, AC-3).</p>
+
+      <div class="wizard-steps" role="list" aria-label="Wizard steps">
+        <div class="step-item active" role="listitem" aria-current="step">
+          <div class="step-circle" aria-label="Step 1, current">1</div>
+          <span class="step-label">Patient</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-item" role="listitem"><div class="step-circle">2</div><span class="step-label">Slot</span></div>
+        <div class="step-connector"></div>
+        <div class="step-item" role="listitem"><div class="step-circle">3</div><span class="step-label">Intake</span></div>
+        <div class="step-connector"></div>
+        <div class="step-item" role="listitem"><div class="step-circle">4</div><span class="step-label">Confirm</span></div>
+      </div>
+
+      <div class="search-field">
+        <span class="search-icon" aria-hidden="true">🔍</span>
+        <input type="search" class="search-input" value="Rahul"
+               placeholder="Search by name or phone number"
+               aria-label="Search patients by name or phone"
+               aria-autocomplete="list" aria-controls="pt-list">
+      </div>
+      <p class="self-note" aria-label="Self-booking restriction">
+        ℹ️ Your own profile is excluded — you cannot book for yourself (Edge Case 2).
+      </p>
+
+      <ul class="patient-list" id="pt-list" role="listbox" aria-label="Patient search results">
+        <li class="patient-item" role="option" tabindex="0" aria-selected="false">
+          <div class="patient-avatar" aria-hidden="true">RM</div>
+          <div><div class="patient-name">Rahul Menon</div><div class="patient-meta">DOB: 12 Mar 1985 · +91 98765 43210</div></div>
+        </li>
+        <li class="patient-item" role="option" tabindex="0" aria-selected="false">
+          <div class="patient-avatar" aria-hidden="true">RK</div>
+          <div><div class="patient-name">Riya Kapoor</div><div class="patient-meta">DOB: 5 Jun 1992 · +91 91234 56789</div></div>
+        </li>
+        <li class="patient-item" role="option" tabindex="0" aria-selected="false">
+          <div class="patient-avatar" aria-hidden="true">RS</div>
+          <div><div class="patient-name">Raj Sharma</div><div class="patient-meta">DOB: 22 Nov 1978 · +91 87654 32100</div></div>
+        </li>
+      </ul>
+
+      <span class="create-link" tabindex="0" role="button" aria-expanded="false">＋ Patient not found? Create a new profile</span>
+
+      <div class="action-row">
+        <span></span>
+        <button class="btn btn-next disabled" disabled aria-disabled="true">Next: Pick a Slot →</button>
+      </div>
+    </div>
   </div>
+
+  <!-- ─────────────────── STEP 1b: New Patient form ──────────────────────── -->
+  <div id="state-step1b" style="display:none">
+    <div class="wizard-card">
+      <h1 class="wizard-title">Book on behalf of a patient</h1>
+      <p class="wizard-subtitle">Create a basic patient profile to proceed (AC-3).</p>
+
+      <div class="wizard-steps" role="list" aria-label="Wizard steps">
+        <div class="step-item active" role="listitem" aria-current="step"><div class="step-circle">1</div><span class="step-label">Patient</span></div>
+        <div class="step-connector"></div>
+        <div class="step-item" role="listitem"><div class="step-circle">2</div><span class="step-label">Slot</span></div>
+        <div class="step-connector"></div>
+        <div class="step-item" role="listitem"><div class="step-circle">3</div><span class="step-label">Intake</span></div>
+        <div class="step-connector"></div>
+        <div class="step-item" role="listitem"><div class="step-circle">4</div><span class="step-label">Confirm</span></div>
+      </div>
+
+      <div class="inline-form" role="group" aria-labelledby="np-heading">
+        <p class="inline-form-title" id="np-heading">＋ New Patient Profile</p>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label" for="np-first">First Name *</label><input type="text" id="np-first" class="form-input" value="Priya" aria-required="true"></div>
+          <div class="form-group"><label class="form-label" for="np-last">Last Name *</label><input type="text" id="np-last" class="form-input" value="Nair" aria-required="true"></div>
+          <div class="form-group"><label class="form-label" for="np-phone">Phone *</label><input type="tel" id="np-phone" class="form-input" value="+91 99887 76655" aria-required="true"></div>
+          <div class="form-group"><label class="form-label" for="np-dob">Date of Birth *</label><input type="date" id="np-dob" class="form-input" value="1990-04-15" aria-required="true"></div>
+          <div class="form-group span-2"><label class="form-label" for="np-email">Email (optional)</label><input type="email" id="np-email" class="form-input" value="priya.nair@email.com"></div>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn btn-back">← Back to Search</button>
+        <button class="btn btn-next">Next: Pick a Slot →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────── STEP 2: Slot Pick ──────────────────────────────── -->
+  <div id="state-step2" style="display:none">
+    <div class="wizard-card">
+      <h1 class="wizard-title">Select an appointment slot</h1>
+      <p class="wizard-subtitle">Booking for <strong>Rahul Menon</strong></p>
+
+      <div class="wizard-steps" role="list" aria-label="Wizard steps">
+        <div class="step-item done" role="listitem"><div class="step-circle">✓</div><span class="step-label">Patient</span></div>
+        <div class="step-connector done"></div>
+        <div class="step-item active" role="listitem" aria-current="step"><div class="step-circle">2</div><span class="step-label">Slot</span></div>
+        <div class="step-connector"></div>
+        <div class="step-item" role="listitem"><div class="step-circle">3</div><span class="step-label">Intake</span></div>
+        <div class="step-connector"></div>
+        <div class="step-item" role="listitem"><div class="step-circle">4</div><span class="step-label">Confirm</span></div>
+      </div>
+
+      <div class="slot-filters" role="group" aria-label="Slot filters">
+        <div class="form-group"><label class="form-label" for="slot-date">Date</label><input type="date" id="slot-date" class="form-input" value="2026-05-06" style="width:160px"></div>
+        <div class="form-group"><label class="form-label" for="slot-dur">Duration</label><select id="slot-dur" class="form-input" style="width:140px"><option selected>30 min</option><option>15 min</option><option>60 min</option></select></div>
+        <div class="form-group"><label class="form-label" for="slot-prov">Provider</label><select id="slot-prov" class="form-input" style="width:180px"><option selected>Any</option><option>Dr. Patel</option><option>Dr. Rao</option></select></div>
+      </div>
+
+      <div class="slot-grid" role="listbox" aria-label="Available slots">
+        <div class="slot-chip" role="option" tabindex="0" aria-selected="false"><div class="slot-time">09:00 AM</div><div class="slot-provider">Dr. Patel</div></div>
+        <div class="slot-chip" role="option" tabindex="0" aria-selected="false"><div class="slot-time">09:30 AM</div><div class="slot-provider">Dr. Rao</div></div>
+        <div class="slot-chip selected" role="option" tabindex="0" aria-selected="true"><div class="slot-time">03:15 PM</div><div class="slot-provider">Dr. Patel</div></div>
+        <div class="slot-chip" role="option" tabindex="0" aria-selected="false"><div class="slot-time">03:45 PM</div><div class="slot-provider">Dr. Rao</div></div>
+        <div class="slot-chip unavailable" role="option" tabindex="-1" aria-disabled="true"><div class="slot-time">04:00 PM</div><div class="slot-provider">Dr. Patel</div></div>
+        <div class="slot-chip" role="option" tabindex="0" aria-selected="false"><div class="slot-time">04:30 PM</div><div class="slot-provider">Dr. Rao</div></div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn btn-back">← Back</button>
+        <button class="btn btn-next">Next: Intake →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────── STEP 2b: Slot Conflict ─────────────────────────── -->
+  <div id="state-step2b" style="display:none">
+    <div class="wizard-card">
+      <h1 class="wizard-title">Select an appointment slot</h1>
+      <p class="wizard-subtitle">Booking for <strong>Rahul Menon</strong></p>
+
+      <div class="wizard-steps" role="list">
+        <div class="step-item done" role="listitem"><div class="step-circle">✓</div><span class="step-label">Patient</span></div>
+        <div class="step-connector done"></div>
+        <div class="step-item active" role="listitem" aria-current="step"><div class="step-circle">2</div><span class="step-label">Slot</span></div>
+        <div class="step-connector"></div>
+        <div class="step-item" role="listitem"><div class="step-circle">3</div><span class="step-label">Intake</span></div>
+        <div class="step-connector"></div>
+        <div class="step-item" role="listitem"><div class="step-circle">4</div><span class="step-label">Confirm</span></div>
+      </div>
+
+      <!-- Edge Case 1: conflict warning -->
+      <div class="conflict-banner" role="alert">
+        <span style="font-size:20px" aria-hidden="true">⚠️</span>
+        <div style="flex:1">
+          <strong>Scheduling conflict detected (Edge Case 1)</strong>
+          <p>Rahul Menon already has a confirmed appointment at 3:15 PM today with Dr. Rao (Cardiology follow-up, 30 min).</p>
+          <div class="conflict-actions">
+            <button class="btn btn-back" style="padding:6px 14px;font-size:13px">Choose a different slot</button>
+            <button class="btn" style="padding:6px 14px;font-size:13px;background:#e65100;color:#fff" aria-label="Override conflict and proceed">
+              Proceed with override ⚠
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="slot-grid" role="listbox">
+        <div class="slot-chip" role="option" tabindex="0"><div class="slot-time">09:00 AM</div><div class="slot-provider">Dr. Patel</div></div>
+        <div class="slot-chip conflict-selected" role="option" tabindex="0" aria-selected="true"><div class="slot-time">03:15 PM</div><div class="slot-provider">Dr. Patel</div></div>
+        <div class="slot-chip" role="option" tabindex="0"><div class="slot-time">04:30 PM</div><div class="slot-provider">Dr. Rao</div></div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn btn-back">← Back</button>
+        <button class="btn btn-next">Next: Intake →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────── STEP 3: Intake / Override ──────────────────────── -->
+  <div id="state-step3" style="display:none">
+    <div class="wizard-card">
+      <h1 class="wizard-title">Visit intake &amp; override reason</h1>
+      <p class="wizard-subtitle">Rahul Menon · Today at 3:15 PM with Dr. Patel</p>
+
+      <div class="wizard-steps" role="list">
+        <div class="step-item done" role="listitem"><div class="step-circle">✓</div><span class="step-label">Patient</span></div>
+        <div class="step-connector done"></div>
+        <div class="step-item done" role="listitem"><div class="step-circle">✓</div><span class="step-label">Slot</span></div>
+        <div class="step-connector done"></div>
+        <div class="step-item active" role="listitem" aria-current="step"><div class="step-circle">3</div><span class="step-label">Intake</span></div>
+        <div class="step-connector"></div>
+        <div class="step-item" role="listitem"><div class="step-circle">4</div><span class="step-label">Confirm</span></div>
+      </div>
+
+      <div class="override-notice" role="status" aria-live="polite">
+        ⚠️ <div><strong>Override reason required</strong> — a scheduling constraint was bypassed. This reason is stored immutably in the audit log (AC-4).</div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:var(--space-4)">
+        <label class="form-label" for="visit-reason">Visit Reason *</label>
+        <textarea id="visit-reason" class="mock-textarea" maxlength="500" aria-required="true" aria-describedby="vr-hint"
+          >Cardiology follow-up review for hypertension management.</textarea>
+        <div class="char-row"><span id="vr-hint" aria-live="polite">52 / 500</span></div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:var(--space-4)">
+        <label class="form-label" for="override-reason">
+          Override Reason * <span style="font-size:11px;font-weight:400;color:var(--neutral-600)">(required — conflict bypassed)</span>
+        </label>
+        <textarea id="override-reason" class="mock-textarea" maxlength="300" aria-required="true" aria-describedby="or-hint"
+          >Urgent same-day review requested by attending physician. Patient escalated from triage.</textarea>
+        <div class="char-row"><span id="or-hint" aria-live="polite">87 / 300</span></div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn btn-back">← Back</button>
+        <button class="btn btn-next">Next: Review &amp; Confirm →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────── STEP 4: Confirm ────────────────────────────────── -->
+  <div id="state-step4" style="display:none">
+    <div class="wizard-card">
+      <h1 class="wizard-title">Review and confirm booking</h1>
+      <p class="wizard-subtitle">Review the details before creating the booking on behalf of this patient.</p>
+
+      <div class="wizard-steps" role="list">
+        <div class="step-item done" role="listitem"><div class="step-circle">✓</div><span class="step-label">Patient</span></div>
+        <div class="step-connector done"></div>
+        <div class="step-item done" role="listitem"><div class="step-circle">✓</div><span class="step-label">Slot</span></div>
+        <div class="step-connector done"></div>
+        <div class="step-item done" role="listitem"><div class="step-circle">✓</div><span class="step-label">Intake</span></div>
+        <div class="step-connector done"></div>
+        <div class="step-item active" role="listitem" aria-current="step"><div class="step-circle">4</div><span class="step-label">Confirm</span></div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-item"><div class="summary-label">Patient</div><div class="summary-value">Rahul Menon</div><div style="font-size:12px;color:var(--neutral-600)">DOB: 12 Mar 1985</div></div>
+        <div class="summary-item"><div class="summary-label">Slot</div><div class="summary-value">Today · 3:15 PM</div><div style="font-size:12px;color:var(--neutral-600)">Dr. Patel · 30 min</div></div>
+        <div class="summary-item"><div class="summary-label">Visit Reason</div><div class="summary-value" style="font-weight:400;font-size:13px">Cardiology follow-up review for hypertension management.</div></div>
+        <div class="summary-item" style="border-left:3px solid var(--warning)"><div class="summary-label" style="color:#e65100">Override Reason</div><div class="summary-value" style="font-weight:400;font-size:13px;color:#e65100">Urgent same-day review requested by attending physician.</div></div>
+      </div>
+
+      <div style="font-size:13px;color:var(--neutral-600);margin-bottom:var(--space-4)">
+        📧 A confirmation email &amp; ICS calendar invite will be sent to Rahul Menon. Booking attributed to your staff account in the audit log (AC-2, AC-4).
+      </div>
+
+      <div class="action-row">
+        <button class="btn btn-back">← Back</button>
+        <button class="btn btn-confirm" aria-label="Confirm and create booking">✓ Confirm Booking</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────── Loading (UXR-501) ───────────────────────────────── -->
+  <div id="state-loading" style="display:none">
+    <div class="wizard-card">
+      <h1 class="wizard-title">Review and confirm booking</h1>
+      <p class="wizard-subtitle">Creating booking…</p>
+
+      <div class="wizard-steps" role="list">
+        <div class="step-item done" role="listitem"><div class="step-circle">✓</div><span class="step-label">Patient</span></div>
+        <div class="step-connector done"></div>
+        <div class="step-item done" role="listitem"><div class="step-circle">✓</div><span class="step-label">Slot</span></div>
+        <div class="step-connector done"></div>
+        <div class="step-item done" role="listitem"><div class="step-circle">✓</div><span class="step-label">Intake</span></div>
+        <div class="step-connector done"></div>
+        <div class="step-item active" role="listitem"><div class="step-circle">4</div><span class="step-label">Confirm</span></div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-item"><div class="summary-label">Patient</div><div class="summary-value">Rahul Menon</div></div>
+        <div class="summary-item"><div class="summary-label">Slot</div><div class="summary-value">Today · 3:15 PM · Dr. Patel</div></div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn btn-back" disabled aria-disabled="true">← Back</button>
+        <button class="btn btn-confirm" disabled aria-busy="true" aria-label="Submitting booking…" style="background:#2e7d32;opacity:0.8">
+          <div class="spinner" aria-hidden="true"></div>
+          Submitting…
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showState(name) {
+      ['step1','step1b','step2','step2b','step3','step4','loading'].forEach(s => {
+        const el = document.getElementById('state-' + s);
+        if (el) el.style.display = s === name ? 'block' : 'none';
+        const tab = document.getElementById('tab-' + s);
+        if (tab) tab.classList.toggle('active', s === name);
+      });
+    }
+    document.getElementById('state-step1').style.display = 'block';
+  </script>
   <script defer src="./wireframe-interactions.js"></script>
 </body>
 </html>

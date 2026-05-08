@@ -75,9 +75,25 @@ export class MainLayoutComponent implements OnInit {
     { label: 'My Waitlist',      icon: 'queue',         route: '/waitlist' },
   ];
 
+  protected readonly staffNavItems: readonly NavItem[] = [
+    { label: 'Real-Time Queue',    icon: 'view_list',       route: '/staff/queue' },
+    { label: 'Daily Schedule',     icon: 'calendar_view_day', route: '/staff/schedule' },
+    { label: 'Book for Patient',   icon: 'book_online',     route: '/staff/booking' },
+    { label: 'Walk-In',            icon: 'directions_walk', route: '/staff/walkin' },
+    { label: 'Risk Scores',        icon: 'assessment',   route: '/queue' },
+    { label: 'Notifications',      icon: 'notifications', route: '/settings/notifications' },
+  ];
+
   protected readonly adminNavItems: readonly NavItem[] = [
     { label: 'User Management', icon: 'manage_accounts', route: '/admin/users' },
   ];
+
+  /** True for Staff, Admin, and Clinician roles — gates the staff nav section. */
+  protected readonly isStaff = computed(() => {
+    if (!this.tokenStorage.isAuthenticated()) return false;
+    const role = this.tokenStorage.getUserRole();
+    return role === 'Staff' || role === 'Admin' || role === 'Clinician';
+  });
 
   protected readonly isAdmin = computed(() => {
     // Re-evaluates when isAuthenticated signal changes (login/logout).

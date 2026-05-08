@@ -3,7 +3,7 @@ task_id: task_003
 user_story: us_043
 epic: EP-006
 layer: Database
-status: not-started
+status: completed
 effort_hours: 2
 ---
 
@@ -234,9 +234,9 @@ dotnet ef migrations script \
 
 ## Implementation Checklist
 
-- [ ] Create `document_category_type` PostgreSQL enum via migration raw SQL
-- [ ] Alter `category` column from `VARCHAR(50)` to `document_category_type` enum with safe USING cast
-- [ ] Add `display_name` (`VARCHAR(255) NULL`), `is_deleted` (`BOOLEAN NOT NULL DEFAULT false`), `deleted_at` (`TIMESTAMPTZ NULL`) columns
-- [ ] Create partial index `ix_clinical_documents_is_deleted` and composite index `ix_clinical_documents_patient_active`
-- [ ] Configure EF Core entity with enum mapping, column defaults, and index filters in `OnModelCreating`
-- [ ] Generate and verify migration; ensure Down migration reverses all changes cleanly
+- [X] Create `document_category_type` PostgreSQL enum via migration raw SQL
+- [X] Alter `category` column from `VARCHAR(50)` to `document_category_type` enum with safe USING cast
+- [X] Add `display_name` (`VARCHAR(255) NULL`), `is_deleted` (`BOOLEAN NOT NULL DEFAULT false`), `deleted_at` (`TIMESTAMPTZ NULL`) columns
+- [X] Create partial index `ix_clinical_documents_is_deleted` and composite index `ix_clinical_documents_patient_active`
+- [X] Configure EF Core entity with enum mapping, column defaults, and index filters in `OnModelCreating`
+- [X] Generate and verify migration; ensure Down migration reverses all changes cleanly

@@ -24,8 +24,10 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                 .HasAnnotation("ProductVersion", "9.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "app", "document_category_type", new[] { "lab_report", "referral", "prescription", "imaging", "insurance", "other" });
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "pg_trgm");
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "uuid-ossp");
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "vector");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("PropelIQ.Modules.Administration.Domain.Entities.InsuranceProfile", b =>
@@ -36,15 +38,66 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasColumnName("id")
                         .HasDefaultValueSql("gen_random_uuid()");
 
+                    b.Property<string>("CardImageBackKey")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("card_image_back_key");
+
+                    b.Property<string>("CardImageBackPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("card_image_back_path");
+
+                    b.Property<string>("CardImageFrontKey")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("card_image_front_key");
+
+                    b.Property<string>("CardImageFrontPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("card_image_front_path");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<string>("EncryptedGroupNumber")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("encrypted_group_number");
+
+                    b.Property<string>("EncryptedPolicyNumber")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("encrypted_policy_number");
+
+                    b.Property<string>("EncryptedProviderName")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("encrypted_provider_name");
+
+                    b.Property<string>("GroupNumber")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("group_number");
+
+                    b.Property<string>("GroupNumberHmac")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("group_number_hmac");
+
                     b.Property<bool>("IsPrimary")
                         .HasColumnType("boolean")
                         .HasColumnName("is_primary");
+
+                    b.Property<int>("KeyVersion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("key_version");
 
                     b.Property<string>("MemberId")
                         .IsRequired()
@@ -62,9 +115,26 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("payer_name");
 
+                    b.Property<string>("PolicyNumberHmac")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("policy_number_hmac");
+
+                    b.Property<string>("ProviderCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("provider_code");
+
+                    b.Property<string>("ProviderNameHmac")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("provider_name_hmac");
+
                     b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<string>("VerificationStatus")
                         .IsRequired()
@@ -75,10 +145,190 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_insurance_profiles");
 
+                    b.HasIndex("KeyVersion")
+                        .HasDatabaseName("ix_insurance_profiles_key_version");
+
                     b.HasIndex("PatientId")
                         .HasDatabaseName("ix_insurance_profiles_patient_id");
 
                     b.ToTable("insurance_profiles", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.Administration.Domain.Entities.InsuranceProvider", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("PolicyNumberPattern")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("policy_number_pattern");
+
+                    b.Property<string>("ProviderCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("provider_code");
+
+                    b.Property<string>("ProviderName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("provider_name");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.HasKey("Id")
+                        .HasName("pk_insurance_providers");
+
+                    b.HasIndex("ProviderCode")
+                        .IsUnique()
+                        .HasDatabaseName("ix_insurance_providers_active_code")
+                        .HasFilter("\"is_active\" = true");
+
+                    b.ToTable("insurance_providers", "app");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-0000-0000-0000-000000000001"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 5, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsActive = true,
+                            PolicyNumberPattern = "^[A-Z]{3}[0-9]{9}$",
+                            ProviderCode = "BCBS",
+                            ProviderName = "Blue Cross Blue Shield",
+                            UpdatedAt = new DateTimeOffset(new DateTime(2026, 5, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                        },
+                        new
+                        {
+                            Id = new Guid("11111111-0000-0000-0000-000000000002"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 5, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsActive = true,
+                            PolicyNumberPattern = "^W[0-9]{8,12}$",
+                            ProviderCode = "AETNA",
+                            ProviderName = "Aetna",
+                            UpdatedAt = new DateTimeOffset(new DateTime(2026, 5, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                        },
+                        new
+                        {
+                            Id = new Guid("11111111-0000-0000-0000-000000000003"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 5, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsActive = true,
+                            PolicyNumberPattern = "^[0-9]{9,11}$",
+                            ProviderCode = "UHC",
+                            ProviderName = "UnitedHealthcare",
+                            UpdatedAt = new DateTimeOffset(new DateTime(2026, 5, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                        },
+                        new
+                        {
+                            Id = new Guid("11111111-0000-0000-0000-000000000004"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 5, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsActive = true,
+                            PolicyNumberPattern = "^U[0-9]{8}$",
+                            ProviderCode = "CIGNA",
+                            ProviderName = "Cigna",
+                            UpdatedAt = new DateTimeOffset(new DateTime(2026, 5, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                        },
+                        new
+                        {
+                            Id = new Guid("11111111-0000-0000-0000-000000000005"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 5, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsActive = true,
+                            PolicyNumberPattern = "^H[A-Z0-9]{6,14}$",
+                            ProviderCode = "HUMANA",
+                            ProviderName = "Humana",
+                            UpdatedAt = new DateTimeOffset(new DateTime(2026, 5, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                        });
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.Administration.Domain.Entities.InsuranceValidationResult", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("patient_id");
+
+                    b.Property<string>("PolicyNumber")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("policy_number");
+
+                    b.Property<string>("ProviderCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("provider_code");
+
+                    b.Property<int>("RetryCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("retry_count");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Tier")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("tier");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("WarningsJson")
+                        .HasColumnType("text")
+                        .HasColumnName("warnings_json");
+
+                    b.HasKey("Id")
+                        .HasName("pk_insurance_validation_results");
+
+                    b.HasIndex("PatientId")
+                        .HasDatabaseName("ix_insurance_validation_results_patient_id");
+
+                    b.HasIndex("Status", "RetryCount")
+                        .HasDatabaseName("ix_insurance_validation_results_status_retry");
+
+                    b.ToTable("insurance_validation_results", "app");
                 });
 
             modelBuilder.Entity("PropelIQ.Modules.Administration.Domain.Entities.Patient", b =>
@@ -127,6 +377,18 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_patients");
+
+                    b.HasIndex("FirstName")
+                        .HasDatabaseName("ix_patients_first_name_trgm");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("FirstName"), "gin");
+                    NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("FirstName"), new[] { "gin_trgm_ops" });
+
+                    b.HasIndex("LastName")
+                        .HasDatabaseName("ix_patients_last_name_trgm");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("LastName"), "gin");
+                    NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("LastName"), new[] { "gin_trgm_ops" });
 
                     b.HasIndex("MRN")
                         .IsUnique()
@@ -211,10 +473,17 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("Category")
-                        .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("document_category_type")
                         .HasColumnName("category");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasDefaultValue("")
+                        .HasColumnName("content_type");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -222,10 +491,25 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DisplayName")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("display_name");
+
+                    b.Property<string>("ExtractedText")
+                        .HasColumnType("text")
+                        .HasColumnName("extracted_text");
+
                     b.Property<string>("ExtractionStatus")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
+                        .HasDefaultValue("Queued")
                         .HasColumnName("extraction_status");
 
                     b.Property<string>("FileName")
@@ -234,9 +518,38 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("file_name");
 
+                    b.Property<long>("FileSizeBytes")
+                        .HasColumnType("bigint")
+                        .HasColumnName("file_size_bytes");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("NeedsManualReview")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("needs_manual_review");
+
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uuid")
                         .HasColumnName("patient_id");
+
+                    b.Property<string>("R2ObjectKey")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("r2_object_key");
+
+                    b.Property<string>("ScanResult")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasDefaultValue("PendingScan")
+                        .HasColumnName("scan_result");
 
                     b.Property<string>("StoragePath")
                         .HasMaxLength(1000)
@@ -250,10 +563,24 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_clinical_documents");
 
-                    b.HasIndex("PatientId")
-                        .HasDatabaseName("ix_clinical_documents_patient_id");
+                    b.HasIndex("ExtractionStatus")
+                        .HasDatabaseName("ix_clinical_documents_extraction_status");
 
-                    b.ToTable("clinical_documents", "app");
+                    b.HasIndex("IsDeleted")
+                        .HasDatabaseName("ix_clinical_documents_is_deleted")
+                        .HasFilter("is_deleted = false");
+
+                    b.HasIndex("ScanResult")
+                        .HasDatabaseName("ix_clinical_documents_scan_result");
+
+                    b.HasIndex("PatientId", "IsDeleted")
+                        .HasDatabaseName("ix_clinical_documents_patient_active")
+                        .HasFilter("is_deleted = false");
+
+                    b.ToTable("clinical_documents", "app", t =>
+                        {
+                            t.HasCheckConstraint("chk_clinical_documents_file_size", "file_size_bytes <= 10485760");
+                        });
                 });
 
             modelBuilder.Entity("PropelIQ.Modules.ClinicalIntelligence.Domain.Entities.ClinicalFact", b =>
@@ -279,6 +606,14 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("document_id");
 
+                    b.Property<Vector>("Embedding")
+                        .HasColumnType("vector(1536)")
+                        .HasColumnName("embedding");
+
+                    b.Property<DateTimeOffset?>("FactDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fact_date");
+
                     b.Property<string>("FactType")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -292,6 +627,31 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                     b.Property<Guid?>("LastReviewedByUserId")
                         .HasColumnType("uuid")
                         .HasColumnName("last_reviewed_by_user_id");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("name");
+
+                    b.Property<bool>("NeedsReview")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("needs_review");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("patient_id");
+
+                    b.Property<int>("RowVersion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1)
+                        .HasColumnName("row_version");
+
+                    b.Property<string>("SourceText")
+                        .HasColumnType("text")
+                        .HasColumnName("source_text");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -308,13 +668,49 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("verification_state");
 
+                    b.Property<bool>("Verified")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("verified");
+
+                    b.Property<DateTimeOffset?>("VerifiedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("verified_at");
+
+                    b.Property<Guid?>("VerifiedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("verified_by");
+
                     b.HasKey("Id")
                         .HasName("pk_clinical_facts");
 
                     b.HasIndex("DocumentId")
                         .HasDatabaseName("ix_clinical_facts_document_id");
 
-                    b.ToTable("clinical_facts", "app");
+                    b.HasIndex("Embedding")
+                        .HasDatabaseName("ix_clinical_facts_embedding");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Embedding"), "hnsw");
+                    NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("Embedding"), new[] { "vector_cosine_ops" });
+
+                    b.HasIndex("NeedsReview")
+                        .HasDatabaseName("ix_clinical_facts_needs_review")
+                        .HasFilter("needs_review = true");
+
+                    b.HasIndex("PatientId")
+                        .HasDatabaseName("ix_clinical_facts_patient_id");
+
+                    b.HasIndex("VerifiedBy")
+                        .HasDatabaseName("ix_clinical_facts_verified_by");
+
+                    b.HasIndex("Id", "RowVersion")
+                        .HasDatabaseName("ix_clinical_facts_row_version");
+
+                    b.ToTable("clinical_facts", "app", t =>
+                        {
+                            t.HasCheckConstraint("chk_clinical_facts_confidence", "confidence_score >= 0.0 AND confidence_score <= 1.0");
+                        });
                 });
 
             modelBuilder.Entity("PropelIQ.Modules.ClinicalIntelligence.Domain.Entities.CodingDecision", b =>
@@ -345,6 +741,10 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                     b.Property<Guid>("DocumentId")
                         .HasColumnType("uuid")
                         .HasColumnName("document_id");
+
+                    b.Property<Guid?>("FactId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("fact_id");
 
                     b.Property<string>("FinalizedCode")
                         .HasMaxLength(20)
@@ -385,10 +785,241 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                     b.HasIndex("DocumentId")
                         .HasDatabaseName("ix_coding_decisions_document_id");
 
+                    b.HasIndex("FactId")
+                        .HasDatabaseName("ix_coding_decisions_fact_id");
+
                     b.HasIndex("PatientId")
                         .HasDatabaseName("ix_coding_decisions_patient_id");
 
                     b.ToTable("coding_decisions", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.ClinicalIntelligence.Domain.Entities.ConflictAlert", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<bool>("Acknowledged")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("acknowledged");
+
+                    b.Property<DateTimeOffset?>("AcknowledgedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("acknowledged_at");
+
+                    b.Property<Guid?>("AcknowledgedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("acknowledged_by");
+
+                    b.Property<string>("ConflictType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("conflict_type");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("DrugA")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("drug_a");
+
+                    b.Property<string>("DrugB")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("drug_b");
+
+                    b.Property<Guid>("FactIdA")
+                        .HasColumnType("uuid")
+                        .HasColumnName("fact_id_a");
+
+                    b.Property<Guid?>("FactIdB")
+                        .HasColumnType("uuid")
+                        .HasColumnName("fact_id_b");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("patient_id");
+
+                    b.Property<Guid>("RuleId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("rule_id");
+
+                    b.Property<string>("Severity")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("severity");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_conflict_alerts");
+
+                    b.HasIndex("AcknowledgedBy")
+                        .HasDatabaseName("ix_conflict_alerts_acknowledged_by");
+
+                    b.HasIndex("FactIdA")
+                        .HasDatabaseName("ix_conflict_alerts_fact_id_a");
+
+                    b.HasIndex("FactIdB")
+                        .HasDatabaseName("ix_conflict_alerts_fact_id_b");
+
+                    b.HasIndex("PatientId")
+                        .HasDatabaseName("ix_conflict_alerts_patient_id");
+
+                    b.HasIndex("RuleId")
+                        .HasDatabaseName("ix_conflict_alerts_rule_id");
+
+                    b.HasIndex("PatientId", "Severity")
+                        .HasDatabaseName("ix_conflict_alerts_unacknowledged")
+                        .HasFilter("acknowledged = false");
+
+                    b.HasIndex("PatientId", "FactIdA", "FactIdB")
+                        .IsUnique()
+                        .HasDatabaseName("uq_conflict_alerts_pair");
+
+                    b.ToTable("conflict_alerts", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.ClinicalIntelligence.Domain.Entities.ConflictRule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("DrugAName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("drug_a_name");
+
+                    b.Property<string>("DrugBName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("drug_b_name");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<DateTimeOffset>("LastUpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_updated_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("RuleType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("rule_type");
+
+                    b.Property<string>("Severity")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("severity");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasDefaultValue("system")
+                        .HasColumnName("source");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_conflict_rules");
+
+                    b.HasIndex("RuleType", "DrugAName", "DrugBName")
+                        .HasDatabaseName("ix_conflict_rules_type_drugs")
+                        .HasFilter("is_active = true");
+
+                    b.ToTable("conflict_rules", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.ClinicalIntelligence.Domain.Entities.DeadLetterEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("DocumentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("document_id");
+
+                    b.Property<string>("ErrorMessage")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("error_message");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("retry_count");
+
+                    b.Property<string>("StackTrace")
+                        .HasColumnType("text")
+                        .HasColumnName("stack_trace");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_ocr_dead_letter_queue");
+
+                    b.HasIndex("DocumentId")
+                        .HasDatabaseName("ix_ocr_dead_letter_queue_document_id");
+
+                    b.ToTable("ocr_dead_letter_queue", "app");
                 });
 
             modelBuilder.Entity("PropelIQ.Modules.Scheduling.Domain.Entities.Appointment", b =>
@@ -404,6 +1035,10 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("appointment_type");
+
+                    b.Property<DateTimeOffset?>("ArrivedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("arrived_at");
 
                     b.Property<bool>("ArtifactsGenerated")
                         .ValueGeneratedOnAdd()
@@ -431,6 +1066,10 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("now()");
+
+                    b.Property<Guid?>("CreatedByStaffId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by_staff_id");
 
                     b.Property<int>("DurationMinutes")
                         .HasColumnType("integer")
@@ -532,6 +1171,14 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
+                    b.Property<DateTimeOffset?>("VisitEndedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("visit_ended_at");
+
+                    b.Property<DateTimeOffset?>("VisitStartedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("visit_started_at");
+
                     b.HasKey("Id")
                         .HasName("pk_appointments");
 
@@ -539,6 +1186,10 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_appointments_confirmation_code")
                         .HasFilter("confirmation_code IS NOT NULL");
+
+                    b.HasIndex("CreatedByStaffId")
+                        .HasDatabaseName("ix_appointments_created_by_staff_id")
+                        .HasFilter("created_by_staff_id IS NOT NULL");
 
                     b.HasIndex("PatientId")
                         .HasDatabaseName("ix_appointments_patient_id");
@@ -553,6 +1204,12 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
 
                     b.HasIndex("StaffUserId")
                         .HasDatabaseName("ix_appointments_staff_user_id");
+
+                    b.HasIndex("PatientId", "ScheduledAt")
+                        .HasDatabaseName("ix_appointments_patient_datetime");
+
+                    b.HasIndex("ScheduledAt", "QueueState")
+                        .HasDatabaseName("ix_appointments_queue_date");
 
                     b.HasIndex("PatientId", "ScheduledAt", "Status")
                         .IsDescending(false, true, false)
@@ -1103,6 +1760,77 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                     b.ToTable("waitlist_entries", "app");
                 });
 
+            modelBuilder.Entity("PropelIQ.Modules.Scheduling.Domain.Entities.WalkIn", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<Guid?>("AppointmentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("appointment_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by_user_id");
+
+                    b.Property<bool>("IsConverted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_converted");
+
+                    b.Property<Guid?>("PatientId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("patient_id");
+
+                    b.Property<string>("PatientName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("patient_name");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("phone");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("VisitReason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("visit_reason");
+
+                    b.HasKey("Id")
+                        .HasName("pk_walk_ins");
+
+                    b.HasIndex("AppointmentId")
+                        .HasDatabaseName("ix_walk_ins_appointment_id");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("ix_walk_ins_created_at");
+
+                    b.HasIndex("CreatedByUserId")
+                        .HasDatabaseName("ix_walk_ins_created_by_user_id");
+
+                    b.HasIndex("PatientId")
+                        .HasDatabaseName("ix_walk_ins_patient_id");
+
+                    b.ToTable("walk_ins", "app");
+                });
+
             modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.AuditRecord", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1125,6 +1853,21 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("occurred_at");
 
+                    b.Property<string>("OverrideAction")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("override_action");
+
+                    b.Property<string>("OverrideConstraintType")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("override_constraint_type");
+
+                    b.Property<string>("OverrideReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("override_reason");
+
                     b.Property<Guid?>("TargetEntityId")
                         .HasColumnType("uuid")
                         .HasColumnName("target_entity_id");
@@ -1141,8 +1884,15 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                     b.HasIndex("ActorUserId")
                         .HasDatabaseName("ix_audit_records_actor_user_id");
 
+                    b.HasIndex("EventType")
+                        .HasDatabaseName("ix_audit_records_event_type");
+
                     b.HasIndex("OccurredAt")
                         .HasDatabaseName("ix_audit_records_occurred_at");
+
+                    b.HasIndex("EventType", "OccurredAt")
+                        .IsDescending(false, true)
+                        .HasDatabaseName("ix_audit_records_event_type_occurred_at");
 
                     b.ToTable("audit_records", "app");
                 });
@@ -1266,6 +2016,19 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_clinical_facts_clinical_documents_document_id");
 
+                    b.HasOne("PropelIQ.Modules.Administration.Domain.Entities.Patient", null)
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_clinical_facts_patients_patient_id");
+
+                    b.HasOne("PropelIQ.Modules.Administration.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("VerifiedBy")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_clinical_facts_users_verified_by");
+
                     b.Navigation("Document");
                 });
 
@@ -1278,6 +2041,12 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_coding_decisions_clinical_documents_document_id");
 
+                    b.HasOne("PropelIQ.Modules.ClinicalIntelligence.Domain.Entities.ClinicalFact", null)
+                        .WithMany()
+                        .HasForeignKey("FactId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_coding_decisions_clinical_facts_fact_id");
+
                     b.HasOne("PropelIQ.Modules.Administration.Domain.Entities.Patient", null)
                         .WithMany()
                         .HasForeignKey("PatientId")
@@ -1288,8 +2057,50 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                     b.Navigation("Document");
                 });
 
+            modelBuilder.Entity("PropelIQ.Modules.ClinicalIntelligence.Domain.Entities.ConflictAlert", b =>
+                {
+                    b.HasOne("PropelIQ.Modules.Administration.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("AcknowledgedBy")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_conflict_alerts_users_acknowledged_by");
+
+                    b.HasOne("PropelIQ.Modules.ClinicalIntelligence.Domain.Entities.ClinicalFact", null)
+                        .WithMany()
+                        .HasForeignKey("FactIdA")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_conflict_alerts_clinical_facts_fact_id_a");
+
+                    b.HasOne("PropelIQ.Modules.ClinicalIntelligence.Domain.Entities.ClinicalFact", null)
+                        .WithMany()
+                        .HasForeignKey("FactIdB")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("fk_conflict_alerts_clinical_facts_fact_id_b");
+
+                    b.HasOne("PropelIQ.Modules.Administration.Domain.Entities.Patient", null)
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_conflict_alerts_patients_patient_id");
+
+                    b.HasOne("PropelIQ.Modules.ClinicalIntelligence.Domain.Entities.ConflictRule", null)
+                        .WithMany()
+                        .HasForeignKey("RuleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_conflict_alerts_conflict_rules_rule_id");
+                });
+
             modelBuilder.Entity("PropelIQ.Modules.Scheduling.Domain.Entities.Appointment", b =>
                 {
+                    b.HasOne("PropelIQ.Modules.Administration.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByStaffId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_appointments_users_created_by_staff_id");
+
                     b.HasOne("PropelIQ.Modules.Administration.Domain.Entities.Patient", null)
                         .WithMany()
                         .HasForeignKey("PatientId")
@@ -1332,6 +2143,28 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasConstraintName("fk_waitlist_entries_patients_patient_id");
 
                     b.Navigation("Appointment");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.Scheduling.Domain.Entities.WalkIn", b =>
+                {
+                    b.HasOne("PropelIQ.Modules.Scheduling.Domain.Entities.Appointment", null)
+                        .WithMany()
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_walk_ins_appointments_appointment_id");
+
+                    b.HasOne("PropelIQ.Modules.Administration.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_walk_ins_users_created_by_user_id");
+
+                    b.HasOne("PropelIQ.Modules.Administration.Domain.Entities.Patient", null)
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_walk_ins_patients_patient_id");
                 });
 
             modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.AuditRecord", b =>

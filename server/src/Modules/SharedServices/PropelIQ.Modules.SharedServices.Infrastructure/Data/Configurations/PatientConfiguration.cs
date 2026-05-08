@@ -41,5 +41,19 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
 
         builder.Property(p => p.CreatedAt)
             .HasDefaultValueSql("now()");
+
+        // Edge Case 1 (US_033): trigram GIN indexes for fast ILIKE search on
+        // patient name and phone in PatientSearchService.  pg_trgm must be
+        // enabled (docker/postgres/init/01-create-extensions.sql already does this;
+        // the migration also emits CREATE EXTENSION IF NOT EXISTS pg_trgm).
+        builder.HasIndex(p => p.FirstName)
+            .HasDatabaseName("ix_patients_first_name_trgm")
+            .HasMethod("gin")
+            .HasOperators("gin_trgm_ops");
+
+        builder.HasIndex(p => p.LastName)
+            .HasDatabaseName("ix_patients_last_name_trgm")
+            .HasMethod("gin")
+            .HasOperators("gin_trgm_ops");
     }
 }

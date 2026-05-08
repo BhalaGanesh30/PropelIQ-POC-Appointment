@@ -14,5 +14,8 @@ public sealed class CodingDecision : BaseEntity
     public string? FinalizedCode { get; set; }
     public Guid? ReviewedByUserId { get; set; }
 
+    /// <summary>FK to the clinical fact this decision was derived from. Null for document-level decisions (US_047 Edge Case 2).</summary>
+    public Guid? FactId { get; set; }
+
     public ClinicalDocument Document { get; set; } = null!;
 }

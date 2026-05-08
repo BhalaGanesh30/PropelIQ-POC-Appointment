@@ -1,0 +1,138 @@
+// =============================================================================
+// OverrideAuditLogComponent Styles — EP-004 US_034 AC-4
+// UXR-201: WCAG AA contrast (≥4.5:1 for body text, ≥3:1 for UI components).
+// UXR-202: Visible focus rings on all interactive elements.
+// =============================================================================
+
+// ── Panel container ───────────────────────────────────────────────────────────
+
+.audit-log-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  max-width: 1100px;
+  width: 100%;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+.audit-header {
+  h2 {
+    margin: 0 0 4px;
+    font-size: 20px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+
+.audit-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+// ── Filter row ────────────────────────────────────────────────────────────────
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.filter-field {
+  width: 180px;
+}
+
+// ── State banners (loading / error / empty) ───────────────────────────────────
+
+.loading-row,
+.empty-row,
+.error-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+.loading-row {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.empty-row {
+  background: #f5f5f5;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.error-row {
+  background: #fce4ec;          // Pink-50
+  color: #b71c1c;               // Red-900 — 8.4:1 on #fce4ec ✓
+}
+
+// ── Table wrapper (scrollable) ────────────────────────────────────────────────
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.14);
+
+  // Keyboard-navigable scroll region (UXR-202).
+  &:focus-visible {
+    outline: 2px solid #1976d2;
+    outline-offset: 2px;
+  }
+}
+
+// ── Table ─────────────────────────────────────────────────────────────────────
+
+.audit-table {
+  width: 100%;
+
+  .mat-mdc-header-cell {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(0, 0, 0, 0.6);
+    background: #f5f5f5;
+    white-space: nowrap;
+  }
+
+  .mat-mdc-row {
+    transition: background 150ms ease;
+
+    &:hover .mat-mdc-cell {
+      background: #f9f9f9;
+    }
+
+    // Keyboard focus row highlight (UXR-202).
+    &:focus-visible .mat-mdc-cell {
+      background: #e3f2fd;      // Blue-50
+    }
+  }
+}
+
+// ── Role chip ─────────────────────────────────────────────────────────────────
+
+.role-chip {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #fff3e0;          // Amber-50
+  color: #7c4e00;               // 8.1:1 on #fff3e0 ✓ (UXR-201)
+  border: 1px solid #ffcc80;
+}
+
+// ── Reason cell ───────────────────────────────────────────────────────────────
+
+.reason-cell {
+  max-width: 320px;
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.7);
+  cursor: default;
+}

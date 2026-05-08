@@ -1,0 +1,520 @@
+// ── Document Upload Component — SCSS ────────────────────────────────────────
+// SCR-011 UXR-301 (375 / 768 / 1440 px), UXR-404 status badge colours,
+// UXR-505 drag-and-drop drop zone.
+
+.upload-host {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+// ── Visually hidden (accessible label for file input) ─────────────────────
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// ── Page header ────────────────────────────────────────────────────────────
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #1976d2;
+  margin-bottom: 4px;
+}
+
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #212121;
+  margin: 0 0 4px;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: #616161;
+  margin: 0;
+}
+
+.format-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: #e3f2fd;
+  color: #0d47a1;
+  white-space: nowrap;
+}
+
+.pill-success {
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+
+// ── Drop zone (UXR-505) ────────────────────────────────────────────────────
+
+.drop-card {
+  border: 2px dashed #90caf9;
+  border-radius: 12px;
+  background: #fafcff;
+  transition: border-color 0.15s, background 0.15s;
+  margin-bottom: 28px;
+  outline: none;
+
+  &:focus-within {
+    border-color: #1976d2;
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
+  }
+
+  &.drag-active {
+    border-color: #1976d2;
+    background: #e3f2fd;
+
+    .drop-icon {
+      color: #1976d2;
+    }
+  }
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 32px;
+  text-align: center;
+  gap: 12px;
+}
+
+.drop-icon {
+  font-size: 56px;
+  width: 56px;
+  height: 56px;
+  color: #90caf9;
+  transition: color 0.15s;
+}
+
+.drop-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #212121;
+  margin: 0;
+}
+
+.drop-subtitle {
+  font-size: 14px;
+  color: #616161;
+  max-width: 420px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.browse-btn {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+// ── Upload queue ───────────────────────────────────────────────────────────
+
+.queue-section {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.queue-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #212121;
+  padding: 14px 16px;
+  margin: 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.queue-count {
+  font-size: 13px;
+  font-weight: 400;
+  color: #757575;
+  background: #f5f5f5;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.file-list {
+  padding: 8px 0;
+}
+
+// ── File row ───────────────────────────────────────────────────────────────
+
+.file-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f5f5f5;
+  transition: background 0.1s;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: #fafafa;
+  }
+}
+
+.file-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  color: #9e9e9e;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.file-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.file-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #212121;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-meta {
+  font-size: 12px;
+  color: #757575;
+}
+
+.upload-progress {
+  margin-top: 4px;
+  border-radius: 4px;
+  height: 4px;
+}
+
+// ── Error + banner states ──────────────────────────────────────────────────
+
+.file-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #b71c1c;
+  margin-top: 4px;
+}
+
+.error-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.retry-btn {
+  font-size: 12px;
+  min-width: unset;
+  padding: 0 8px;
+  height: 24px;
+}
+
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-top: 6px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+}
+
+.banner-error {
+  background: #ffebee;
+  border: 1px solid #ef9a9a;
+  color: #b71c1c;
+
+  mat-icon {
+    color: #c62828;
+  }
+}
+
+.banner-warning {
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  color: #e65100;
+
+  mat-icon {
+    color: #ef6c00;
+  }
+}
+
+// ── Status badge (UXR-404) ─────────────────────────────────────────────────
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+  text-transform: uppercase;
+  flex-shrink: 0;
+
+  &.badge-success {
+    background: #e8f5e9;
+    color: #1b5e20;
+  }
+
+  &.badge-warning {
+    background: #fff8e1;
+    color: #e65100;
+  }
+
+  &.badge-error {
+    background: #ffebee;
+    color: #b71c1c;
+  }
+
+  &.badge-info {
+    background: #e3f2fd;
+    color: #0d47a1;
+  }
+}
+
+.badge-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+}
+
+// ── Scanning/processing spinner dot animation ──────────────────────────────
+
+.spinner-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50%       { opacity: 1;   transform: scale(1.1); }
+}
+
+// ── Remove button ──────────────────────────────────────────────────────────
+
+.remove-btn {
+  flex-shrink: 0;
+  opacity: 0.5;
+  transition: opacity 0.1s;
+
+  &:hover:not(:disabled) {
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1976d2;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+// ── Responsive (UXR-301) ───────────────────────────────────────────────────
+
+@media (max-width: 767px) {
+  .upload-host {
+    padding: 16px 12px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dropzone {
+    padding: 32px 16px;
+  }
+
+  .drop-title {
+    font-size: 18px;
+  }
+
+  .file-row {
+    flex-wrap: wrap;
+  }
+
+  .status-badge {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 374px) {
+  .drop-title {
+    font-size: 16px;
+  }
+
+  .drop-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+// ── OCR status area (US_041) ───────────────────────────────────────────────
+
+.ocr-status-area {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.ocr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+// Neutral badge variant for "Queued" state (grey, UXR-404)
+.badge-neutral {
+  background: #f5f5f5;
+  color: #616161;
+}
+
+.ocr-spinner {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+// Retry OCR button (UXR-501)
+.retry-ocr-btn {
+  font-size: 12px;
+  height: 28px;
+  line-height: 28px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .btn-spinner {
+    display: inline-flex;
+  }
+}
+
+.dead-letter-msg {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+// ── Extracted text expansion panel (US_041 AC-3) ──────────────────────────
+
+.extracted-text-panel {
+  margin: 0 16px 8px;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  border: 1px solid #e0e0e0;
+
+  ::ng-deep .mat-expansion-panel-body {
+    padding: 8px 16px 12px;
+  }
+
+  ::ng-deep .mat-expansion-panel-header {
+    height: 40px;
+    padding: 0 12px;
+  }
+}
+
+.panel-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: #757575;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.extracted-text {
+  font-size: 13px;
+  color: #424242;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 0 0 8px;
+  padding: 8px;
+  background: #fafafa;
+  border-radius: 4px;
+  border: 1px solid #eeeeee;
+}
+
+.extracted-text-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #757575;
+  margin: 0;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}

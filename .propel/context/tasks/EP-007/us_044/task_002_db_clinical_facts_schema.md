@@ -3,7 +3,7 @@ task_id: task_002
 user_story: us_044
 epic: EP-007
 layer: Database
-status: not-started
+status: completed
 effort_hours: 3
 ---
 
@@ -273,9 +273,9 @@ dotnet ef migrations script \
 
 ## Implementation Checklist
 
-- [ ] Enable pgvector extension via `CREATE EXTENSION IF NOT EXISTS vector`
-- [ ] Create `fact_type_enum` PostgreSQL enum with `medication`, `allergy`, `diagnosis`, `finding`
-- [ ] Create `clinical_facts` table with all columns: `fact_id`, `patient_id`, `document_id`, `fact_type`, `name`, `value`, `confidence_score`, `needs_review`, `source_text`, `verified`, `verified_by`, `fact_date`, `embedding`, `created_at`
-- [ ] Add PK, FKs (patients, clinical_documents, users), and CHECK constraint on `confidence_score`
-- [ ] Create B-tree indexes on `patient_id`, `document_id`, partial index on `needs_review`, HNSW index on `embedding`
-- [ ] Configure EF Core entity with pgvector mapping, enum mapping, FKs, and constraints in `OnModelCreating`
+- [x] Enable pgvector extension via `CREATE EXTENSION IF NOT EXISTS vector`
+- [x] Create `fact_type_enum` PostgreSQL enum with `medication`, `allergy`, `diagnosis`, `finding`
+- [x] Create `clinical_facts` table with all columns: `fact_id`, `patient_id`, `document_id`, `fact_type`, `name`, `value`, `confidence_score`, `needs_review`, `source_text`, `verified`, `verified_by`, `fact_date`, `embedding`, `created_at`
+- [x] Add PK, FKs (patients, clinical_documents, users), and CHECK constraint on `confidence_score`
+- [x] Create B-tree indexes on `patient_id`, `document_id`, partial index on `needs_review`, HNSW index on `embedding`
+- [x] Configure EF Core entity with pgvector mapping, enum mapping, FKs, and constraints in `OnModelCreating`

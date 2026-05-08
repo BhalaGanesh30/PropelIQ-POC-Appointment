@@ -42,5 +42,29 @@ public sealed class AuditRecordConfiguration : IEntityTypeConfiguration<AuditRec
 
         builder.HasIndex(a => a.ActorUserId);
         builder.HasIndex(a => a.OccurredAt);
+
+        // ── Override-specific columns (EP-004 US_034 task_003, DR-007 additive) ──────
+
+        builder.Property(a => a.OverrideConstraintType)
+            .IsRequired(false)
+            .HasMaxLength(50);
+
+        builder.Property(a => a.OverrideReason)
+            .IsRequired(false)
+            .HasMaxLength(500);
+
+        builder.Property(a => a.OverrideAction)
+            .IsRequired(false)
+            .HasMaxLength(20);
+
+        // B-tree index on event_type for AC-4 filtered override queries.
+        builder.HasIndex(a => a.EventType)
+            .HasDatabaseName("ix_audit_records_event_type");
+
+        // Composite index (event_type, occurred_at DESC) for time-range
+        // filtered admin audit log queries (AC-4 + NFR-010 query performance).
+        builder.HasIndex(a => new { a.EventType, a.OccurredAt })
+            .HasDatabaseName("ix_audit_records_event_type_occurred_at")
+            .IsDescending(false, true);
     }
 }

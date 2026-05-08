@@ -1,0 +1,182 @@
+<!-- Realtime Queue Dashboard — EP-004 US_031                              -->
+<!-- UXR-106: Auto-refresh spinner + "every 15 s" hint in the header       -->
+<!-- UXR-203: aria-live regions for screen-reader announcements             -->
+<!-- UXR-303: Overdue rows highlighted with amber left border + warning     -->
+
+<div class="queue-page">
+
+  <!-- ── Page header ──────────────────────────────────────────────────── -->
+  <div class="page-header">
+    <h1 class="page-title">Today's Queue</h1>
+
+    <span class="poll-hint" aria-live="polite" aria-atomic="true">
+      @if (isLoading()) {
+        <mat-spinner diameter="16" aria-label="Loading queue data"></mat-spinner>
+        <span class="sr-only">Loading…</span>
+      } @else {
+        <span aria-hidden="true">Auto-refreshes every 15 s</span>
+      }
+    </span>
+  </div>
+
+  <!-- ── Reconnecting banner (Edge Case 1) ────────────────────────────── -->
+  @if (connectionError()) {
+    <div class="reconnect-banner" role="alert" aria-live="assertive" aria-atomic="true">
+      <mat-icon class="banner-icon" aria-hidden="true">wifi_off</mat-icon>
+      <span>Connection lost — reconnecting every 10 seconds…</span>
+    </div>
+  }
+
+  <!-- ── Status filter (AC-4) ─────────────────────────────────────────── -->
+  <div class="filter-bar">
+    <mat-button-toggle-group
+      [value]="statusFilter()"
+      (change)="statusFilter.set($event.value)"
+      aria-label="Filter appointments by status"
+      hideSingleSelectionIndicator>
+      @for (opt of filterOptions; track opt.value) {
+        <mat-button-toggle [value]="opt.value">{{ opt.label }}</mat-button-toggle>
+      }
+    </mat-button-toggle-group>
+  </div>
+
+  <!-- ── Loading skeleton (Default loading state) ─────────────────────── -->
+  @if (isLoading()) {
+    <mat-card class="table-card" aria-busy="true" aria-label="Loading queue">
+      <mat-card-content>
+        @for (i of [1, 2, 3, 4, 5]; track i) {
+          <div class="skeleton-row" aria-hidden="true">
+            <div class="skeleton-cell skeleton-cell--name"></div>
+            <div class="skeleton-cell skeleton-cell--type"></div>
+            <div class="skeleton-cell skeleton-cell--time"></div>
+            <div class="skeleton-cell skeleton-cell--badge"></div>
+            <div class="skeleton-cell skeleton-cell--wait"></div>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- ── Empty state ───────────────────────────────────────────────────── -->
+  @if (!isLoading() && filteredEntries().length === 0 && !connectionError()) {
+    <div class="empty-state" role="status" aria-live="polite">
+      <mat-icon class="empty-icon" aria-hidden="true">event_available</mat-icon>
+      <p class="empty-title">No patients in today's queue</p>
+      <p class="empty-subtitle">
+        @if (statusFilter() !== 'ALL') {
+          No appointments match the selected filter.
+        } @else {
+          All appointments have been cleared for today.
+        }
+      </p>
+    </div>
+  }
+
+  <!-- ── Data table (AC-1, AC-3) ──────────────────────────────────────── -->
+  @if (!isLoading() && filteredEntries().length > 0) {
+    <mat-card class="table-card">
+      <mat-card-content>
+
+        <!-- ARIA live region: announces row count to screen readers on update -->
+        <div
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          class="sr-only">
+          Queue updated. Showing {{ filteredEntries().length }}
+          {{ filteredEntries().length === 1 ? 'appointment' : 'appointments' }}.
+        </div>
+
+        <!-- Scroll container: caps viewport height so 100+ rows don't overflow -->
+        <div class="table-scroll-container">
+          <table
+            mat-table
+            [dataSource]="filteredEntries()"
+            aria-label="Today's appointment queue"
+            class="queue-table">
+
+            <!-- Patient Name -->
+            <ng-container matColumnDef="patientName">
+              <th mat-header-cell *matHeaderCellDef scope="col">Patient</th>
+              <td mat-cell *matCellDef="let entry">
+                {{ entry.patientName }}
+                @if (entry.isWalkin) {
+                  <span class="walkin-badge" aria-label="Walk-in patient">Walk-In</span>
+                }
+              </td>
+            </ng-container>
+
+            <!-- Appointment Type -->
+            <ng-container matColumnDef="appointmentType">
+              <th mat-header-cell *matHeaderCellDef scope="col">Type</th>
+              <td mat-cell *matCellDef="let entry">{{ entry.appointmentType }}</td>
+            </ng-container>
+
+            <!-- Arrived At -->
+            <ng-container matColumnDef="arrivedAt">
+              <th mat-header-cell *matHeaderCellDef scope="col">Arrived</th>
+              <td mat-cell *matCellDef="let entry">
+                {{ entry.arrivedAt | date: 'h:mm a' }}
+              </td>
+            </ng-container>
+
+            <!-- Status badge (AC-1, UXR-201/404) -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef scope="col">Status</th>
+              <td mat-cell *matCellDef="let entry">
+                <span
+                  class="status-badge"
+                  [style.background-color]="getStatusColor(entry.status)"
+                  [attr.aria-label]="'Status: ' + getStatusLabel(entry.status)">
+                  {{ getStatusLabel(entry.status) }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Wait Time with overdue indicator (AC-3, UXR-303) -->
+            <ng-container matColumnDef="waitTime">
+              <th mat-header-cell *matHeaderCellDef scope="col">Wait Time</th>
+              <td
+                mat-cell
+                *matCellDef="let entry"
+                [class.overdue-cell]="entry.isOverdue">
+                <span>{{ getWaitLabel(entry) }}</span>
+                @if (entry.isOverdue) {
+                  <mat-icon
+                    class="overdue-icon"
+                    aria-label="Waiting longer than estimated"
+                    matTooltip="Patient waiting longer than estimated wait time">
+                    warning
+                  </mat-icon>
+                }
+              </td>
+            </ng-container>
+
+            <!-- Actions (US_032 AC-1 – AC-4) -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef scope="col">Actions</th>
+              <td mat-cell *matCellDef="let entry">
+                <app-checkin-actions
+                  [entry]="entry"
+                  (stateChanged)="onStateChanged($event)">
+                </app-checkin-actions>
+              </td>
+            </ng-container>
+
+            <tr
+              mat-header-row
+              *matHeaderRowDef="displayedColumns; sticky: true">
+            </tr>
+            <tr
+              mat-row
+              *matRowDef="let entry; columns: displayedColumns;"
+              [class.overdue]="entry.isOverdue">
+            </tr>
+          </table>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+  }
+
+</div>

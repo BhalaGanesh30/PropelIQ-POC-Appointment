@@ -5,6 +5,7 @@ using PropelIQ.Modules.Scheduling.Application.Abstractions;
 using PropelIQ.Modules.Scheduling.Application.AI;
 using PropelIQ.Modules.Scheduling.Application.AI.Models;
 using PropelIQ.Modules.Scheduling.Application.Booking.Artifacts;
+using PropelIQ.Modules.Scheduling.Application.Queue;
 using PropelIQ.Modules.Scheduling.Application.Reminders;
 using PropelIQ.Modules.Scheduling.Application.Scheduling.Validators;
 using PropelIQ.Modules.Scheduling.Application.Waitlist;
@@ -13,10 +14,15 @@ using PropelIQ.Modules.Scheduling.Infrastructure.AI;
 using PropelIQ.Modules.Scheduling.Infrastructure.Booking;
 using PropelIQ.Modules.Scheduling.Infrastructure.Caching;
 using PropelIQ.Modules.Scheduling.Infrastructure.Intake;
+using PropelIQ.Modules.Scheduling.Infrastructure.Queue;
+using PropelIQ.Modules.Scheduling.Infrastructure.Appointments;
 using PropelIQ.Modules.Scheduling.Infrastructure.Reminders;
 using PropelIQ.Modules.Scheduling.Infrastructure.Scheduling;
 using PropelIQ.Modules.Scheduling.Infrastructure.Waitlist;
-using PropelIQ.Modules.Scheduling.Infrastructure.Appointments;
+using PropelIQ.Modules.Scheduling.Infrastructure.Override;
+using PropelIQ.Modules.Scheduling.Infrastructure.Walkin;
+using PropelIQ.Modules.Scheduling.Infrastructure.StaffBooking;
+using PropelIQ.Modules.Scheduling.Infrastructure.Schedule;
 using SendGrid;
 using System.Threading.Channels;
 using Twilio.Clients;
@@ -221,6 +227,53 @@ public static class SchedulingServiceRegistration
         // Background workers — hosted services (singleton, scoped deps via factory)
         services.AddHostedService<RiskScoreRefreshWorker>();
         services.AddHostedService<HighRiskNotificationWorker>();
+
+        // ── Queue API (EP-004 US_031) ─────────────────────────────────────────
+
+        // Options — binds Queue:CacheTtlSeconds from appsettings.json.
+        services.Configure<QueueOptions>(configuration.GetSection(QueueOptions.SectionName));
+
+        // Options — binds WaitTime:DefaultServiceDurationMinutes and
+        // WaitTime:AppointmentTypeDurations from appsettings.json.
+        services.Configure<WaitTimeOptions>(configuration.GetSection(WaitTimeOptions.SectionName));
+
+        // Wait-time estimation — singleton: pure service with read-only config state.
+        // task_003 implementation; replaces StubWaitTimeEstimationService.
+        services.AddSingleton<IWaitTimeEstimationService, WaitTimeEstimationService>();
+
+        // Queue service — scoped (depends on AppDbContext + IDistributedCache + singleton wait-time)
+        services.AddScoped<IQueueService, QueueService>();
+
+        // ── Appointment state machine (EP-004 US_032) ─────────────────────────
+
+        // Scoped: owns EF Core unit-of-work for the state transition + audit write.
+        services.AddScoped<IAppointmentStateMachineService, AppointmentStateMachineService>();
+
+        // ── Walk-in registration (EP-004 US_033) ──────────────────────────────
+
+        // Options — binds WalkIn:CapacityThreshold from appsettings.json.
+        services.Configure<WalkinOptions>(configuration.GetSection(WalkinOptions.SectionName));
+
+        // Walk-in service — scoped (EF Core unit-of-work + cache invalidation).
+        services.AddScoped<IWalkinService, WalkinService>();
+
+        // Patient search service — scoped (read-only EF Core query).
+        services.AddScoped<IPatientSearchService, PatientSearchService>();
+
+        // ── Scheduling override (EP-004 US_034) ───────────────────────────────
+
+        // Override service — scoped (EF Core transaction + IAuditService).
+        services.AddScoped<ISchedulingOverrideService, SchedulingOverrideService>();
+
+        // ── Staff-assisted booking (EP-004 US_035) ────────────────────────────
+
+        // Staff booking service — scoped (EF Core transaction + IAuditService + IDistributedCache).
+        services.AddScoped<IStaffBookingService, StaffBookingService>();
+
+        // ── Daily schedule calendar (EP-004 US_036) ───────────────────────────
+
+        // Schedule service — scoped (EF Core + IDistributedCache + IAuditService).
+        services.AddScoped<IScheduleService, ScheduleService>();
 
         return services;
     }

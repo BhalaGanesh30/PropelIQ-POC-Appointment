@@ -1,13 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\PropelIQ.Modules.ClinicalIntelligence.Domain\PropelIQ.Modules.ClinicalIntelligence.Domain.csproj" />
-    <ProjectReference Include="..\PropelIQ.Modules.ClinicalIntelligence.Application\PropelIQ.Modules.ClinicalIntelligence.Application.csproj" />
+    <EmbeddedResource Include="Prompts\clinical-extraction\system.txt" />
+    <EmbeddedResource Include="Prompts\clinical-extraction\examples.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PropelIQ.Modules.ClinicalIntelligence.Domain\PropelIQ.Modules.ClinicalIntelligence.Domain.csproj" />
+    <ProjectReference Include="..\PropelIQ.Modules.ClinicalIntelligence.Application\PropelIQ.Modules.ClinicalIntelligence.Application.csproj" />
+    <ProjectReference Include="..\..\SharedServices\PropelIQ.Modules.SharedServices.Infrastructure\PropelIQ.Modules.SharedServices.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Insurance\PropelIQ.Modules.Insurance.Infrastructure\PropelIQ.Modules.Insurance.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\PropelIQ.SharedKernel\PropelIQ.SharedKernel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.7.*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.*" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.6" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.*" />
+    <PackageReference Include="nClam" Version="5.*" />
+    <PackageReference Include="Tesseract" Version="5.*" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -1,0 +1,165 @@
+// =============================================================================
+// Patient Profile — SCR-014
+// Design tokens from designsystem.md; UXR-107
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// Layout shell
+// ---------------------------------------------------------------------------
+
+.profile-host {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px;
+  max-width: 1280px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+
+  @media (max-width: 375px) {
+    padding: 16px 12px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Page header
+// ---------------------------------------------------------------------------
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-header__text {
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--color-neutral-700);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+    color: var(--color-neutral-900);
+    margin: 0 0 4px;
+  }
+
+  .page-subtitle {
+    font-size: 14px;
+    color: var(--color-neutral-700);
+    margin: 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Patient card
+// ---------------------------------------------------------------------------
+
+.patient-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: #fff;
+  border: 1px solid var(--color-neutral-200, #e0e0e0);
+  border-radius: 10px;
+  min-height: 84px;
+}
+
+.patient-card__loading,
+.patient-card__error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-neutral-700, #616161);
+  font-size: 14px;
+
+  mat-icon { color: #c62828; }
+}
+
+.patient-card__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-primary-50, #e3f2fd);
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+    color: var(--color-primary-700, #1976d2);
+  }
+}
+
+.patient-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.patient-card__name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-neutral-900, #212121);
+  margin: 0;
+}
+
+.patient-card__meta {
+  display: flex;
+  gap: 4px 16px;
+  flex-wrap: wrap;
+  margin: 0;
+  font-size: 13px;
+
+  dt {
+    font-weight: 500;
+    color: var(--color-neutral-600, #757575);
+  }
+
+  dd {
+    margin: 0;
+    color: var(--color-neutral-900, #212121);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Tab panel
+// ---------------------------------------------------------------------------
+
+.profile-tabs {
+  background: #fff;
+  border: 1px solid var(--color-neutral-200, #e0e0e0);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tab-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.tab-content {
+  padding: 20px 24px;
+  min-height: 240px;
+
+  @media (max-width: 375px) {
+    padding: 16px 12px;
+  }
+}

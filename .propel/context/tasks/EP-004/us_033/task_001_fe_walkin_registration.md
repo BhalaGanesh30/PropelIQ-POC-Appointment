@@ -32,7 +32,7 @@ effort_hours: 6
 | **Figma URL** | N/A (Figma project not yet linked) |
 | **Wireframe Status** | PENDING |
 | **Wireframe Type** | N/A |
-| **Wireframe Path/URL** | TODO: Upload to `.propel/context/wireframes/Hi-Fi/wireframe-SCR-029-walkin-registration.[html\|png\|jpg]` or provide external URL |
+| **Wireframe Path/URL** | TODO: Upload to `.propel/context/wireframes/Hi-Fi/wireframe-SCR-029-walk-in-registration.[html\|png\|jpg]` or provide external URL |
 | **Screen Spec** | [figma_spec.md#SCR-029](.propel/context/docs/figma_spec.md#SCR-029) |
 | **UXR Requirements** | UXR-201, UXR-202, UXR-205, UXR-301, UXR-501 |
 | **Design Tokens** | [designsystem.md#colors](.propel/context/docs/designsystem.md), [designsystem.md#typography](.propel/context/docs/designsystem.md), [designsystem.md#spacing](.propel/context/docs/designsystem.md) |

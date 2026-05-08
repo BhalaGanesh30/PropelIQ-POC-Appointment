@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wireframe — SCR-028 Insurance Verification Report (EP-005 US_039)</title>
+  <style>
+    /* ── Reset / Base ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      background: #f5f7fa;
+      color: #212121;
+    }
+    /* ── Design tokens (designsystem.md) ─────────────────────────────── */
+    :root {
+      --primary:        #1976d2;
+      --primary-light:  #e3f2fd;
+      --accent:         #26a69a;
+      --surface:        #ffffff;
+      --surface-card:   #ffffff;
+      --border:         #e0e0e0;
+      --text-primary:   #212121;
+      --text-secondary: #616161;
+      --text-tertiary:  #9e9e9e;
+      --success-bg:     #e8f5e9;
+      --success-text:   #1b5e20;
+      --warning-bg:     #fff8e1;
+      --warning-text:   #e65100;
+      --error-bg:       #ffebee;
+      --error-text:     #b71c1c;
+      --info-bg:        #e3f2fd;
+      --info-text:      #0d47a1;
+      --skeleton-bg:    #eeeeee;
+      --radius:         8px;
+      --shadow-card:    0 1px 4px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.04);
+    }
+
+    /* ── Layout shell ─────────────────────────────────────────────────── */
+    .shell {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .topbar {
+      background: var(--primary);
+      color: #fff;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,.2);
+      flex-shrink: 0;
+    }
+    .topbar-logo { font-size: 18px; font-weight: 700; letter-spacing: .5px; }
+    .topbar-spacer { flex: 1; }
+    .topbar-role {
+      font-size: 12px;
+      background: rgba(255,255,255,.18);
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+    .main-content {
+      max-width: 1200px;
+      width: 100%;
+      margin: 32px auto;
+      padding: 0 24px;
+      flex: 1;
+    }
+
+    /* ── Page header ─────────────────────────────────────────────────── */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .page-header__titles h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .page-header__titles p {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .breadcrumb {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .breadcrumb a { color: var(--primary); text-decoration: none; }
+    .breadcrumb-sep { color: var(--text-tertiary); }
+
+    /* ── Filter bar ───────────────────────────────────────────────────── */
+    .filter-bar {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-card);
+    }
+    .filter-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+    .filter-select {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 32px 8px 12px;
+      font-size: 14px;
+      color: var(--text-primary);
+      background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23616161' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat right 10px center;
+      appearance: none;
+      min-width: 200px;
+      cursor: pointer;
+      outline: none;
+    }
+    .filter-select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light); }
+    .filter-spacer { flex: 1; }
+
+    /* Export buttons */
+    .btn { display: inline-flex; align-items: center; gap: 6px; border-radius: 6px; font-size: 13px; font-weight: 600; padding: 8px 16px; cursor: pointer; border: none; transition: opacity .15s; }
+    .btn:hover { opacity: .88; }
+    .btn-outline { border: 1.5px solid var(--primary); color: var(--primary); background: transparent; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    .btn-icon { font-size: 16px; line-height: 1; }
+
+    /* ── Active filter chips ──────────────────────────────────────────── */
+    .chip-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      min-height: 32px;
+    }
+    .chip-label { font-size: 12px; color: var(--text-secondary); }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid #90caf9;
+      border-radius: 16px;
+      padding: 4px 10px 4px 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .chip-remove {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--primary);
+      font-size: 14px;
+      line-height: 1;
+      padding: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    /* ── Metrics strip ────────────────────────────────────────────────── */
+    .metrics-strip {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .metric-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      flex: 1;
+      min-width: 150px;
+      box-shadow: var(--shadow-card);
+    }
+    .metric-value { font-size: 24px; font-weight: 700; margin-bottom: 2px; }
+    .metric-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .5px; }
+    .metric-card.green .metric-value { color: var(--success-text); }
+    .metric-card.amber .metric-value { color: var(--warning-text); }
+    .metric-card.red   .metric-value { color: var(--error-text); }
+    .metric-card.blue  .metric-value { color: var(--primary); }
+
+    /* ── Data table ───────────────────────────────────────────────────── */
+    .table-wrapper {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .table-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .table-toolbar__title { font-size: 15px; font-weight: 700; }
+    .table-toolbar__count { font-size: 12px; color: var(--text-secondary); margin-left: 8px; font-weight: 400; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    thead tr {
+      background: #fafafa;
+      border-bottom: 2px solid var(--border);
+    }
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      user-select: none;
+    }
+    th .sort-icon { font-size: 12px; margin-left: 4px; opacity: .5; }
+    th.sorted { color: var(--primary); }
+    th.sorted .sort-icon { opacity: 1; }
+    td { padding: 14px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #f9fafb; }
+
+    /* Status badge (UXR-404) */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border-radius: 12px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .badge::before { content: '●'; font-size: 8px; }
+    .badge-success { background: var(--success-bg); color: var(--success-text); }
+    .badge-warning { background: var(--warning-bg); color: var(--warning-text); }
+    .badge-error   { background: var(--error-bg);   color: var(--error-text); }
+    .badge-info    { background: var(--info-bg);     color: var(--info-text); }
+
+    /* ── Skeleton rows ───────────────────────────────────────────────── */
+    .skeleton {
+      display: inline-block;
+      height: 14px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--skeleton-bg) 25%, #f5f5f5 50%, var(--skeleton-bg) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+    @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+    /* ── Pagination ───────────────────────────────────────────────────── */
+    .pagination-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      gap: 12px;
+      flex-wrap: wrap;
+      background: #fafafa;
+    }
+    .pagination-info { font-size: 12px; color: var(--text-secondary); }
+    .pagination-controls { display: flex; align-items: center; gap: 4px; }
+    .page-btn {
+      width: 32px; height: 32px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      background: var(--surface);
+      cursor: pointer;
+      color: var(--text-primary);
+    }
+    .page-btn:hover { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+    .page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .page-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .page-size-select { font-size: 12px; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; color: var(--text-secondary); }
+
+    /* ── Empty state ──────────────────────────────────────────────────── */
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 12px;
+      padding: 56px 32px;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+    .empty-icon { font-size: 48px; opacity: .35; }
+    .empty-title { font-size: 17px; font-weight: 600; color: var(--text-primary); }
+    .empty-body  { font-size: 13px; max-width: 360px; }
+
+    /* ── Error banner ─────────────────────────────────────────────────── */
+    .banner {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 20px; border-radius: var(--radius);
+      margin-bottom: 16px; font-size: 13px;
+    }
+    .banner.error { background: var(--error-bg); color: var(--error-text); border: 1px solid #ef9a9a; }
+    .banner.info  { background: var(--info-bg);  color: var(--info-text);  border: 1px solid #90caf9; }
+    .banner-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ── Section divider / link ────────────────────────────────────────── */
+    .report-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 600; color: var(--primary);
+      text-decoration: none; padding: 6px 0; margin-top: 8px;
+    }
+    .report-link:hover { text-decoration: underline; }
+
+    /* ── Toast (export success) ───────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: #323232; color: #fff;
+      border-radius: 8px; padding: 12px 20px;
+      font-size: 13px; font-weight: 500;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.25);
+    }
+    .toast-dismiss { background: none; border: none; color: #bbb; cursor: pointer; font-size: 16px; padding: 0; margin-left: 8px; }
+
+    /* ── Responsive: mobile card layout (UXR-303) ────────────────────── */
+    @media (max-width: 767px) {
+      .main-content { padding: 0 16px; margin: 16px auto; }
+      table, thead, tbody, tr, th, td { display: block; }
+      thead tr { position: absolute; top: -9999px; left: -9999px; } /* visually hidden */
+      tbody tr {
+        background: var(--surface-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 12px;
+        padding: 12px 16px;
+        box-shadow: var(--shadow-card);
+      }
+      td {
+        padding: 6px 0;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      td::before {
+        content: attr(data-label);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: var(--text-secondary);
+        flex-shrink: 0;
+        width: 110px;
+      }
+      .table-toolbar { flex-direction: column; align-items: flex-start; }
+      .filter-bar { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .filter-select { min-width: 100%; }
+      .metrics-strip { flex-direction: column; }
+    }
+
+    /* ── State annotation ─────────────────────────────────────────────── */
+    .state-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .8px; color: var(--text-tertiary);
+      margin-bottom: 6px;
+    }
+    .wireframe-note {
+      background: #fff9c4; border: 1px solid #f9a825;
+      border-radius: 6px; padding: 10px 14px;
+      font-size: 12px; color: #6d4c00; margin-bottom: 20px;
+    }
+    hr.divider { border: none; border-top: 2px dashed var(--border); margin: 40px 0; }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- ══ TOP BAR ══════════════════════════════════════════════════════════ -->
+  <header class="topbar" role="banner">
+    <span class="topbar-logo">PropelIQ</span>
+    <span class="topbar-spacer"></span>
+    <span class="topbar-role">Staff</span>
+  </header>
+
+  <main class="main-content" id="main">
+
+    <div class="wireframe-note">
+      📐 <strong>Wireframe — SCR-028 Insurance Verification Report</strong> (EP-005 US_039)
+      — Hi-Fi annotated wireframe covering Default, Loading, Empty, Error, and Validation states.
+      Responsive breakpoints: 375px · 768px · 1440px (UXR-301, UXR-303).
+    </div>
+
+    <!-- ══ STATE 1: DEFAULT ═════════════════════════════════════════════ -->
+    <p class="state-label">State 1 — Default (loaded, no active filter)</p>
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="#">Insurance Verification</a>
+      <span class="breadcrumb-sep">›</span>
+      <span>Verification Report</span>
+    </nav>
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div class="page-header__titles">
+        <h1>Insurance Verification Report</h1>
+        <p>All patient insurance records with soft-validation outcomes. Staff / Admin only.</p>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-outline" aria-label="Export filtered records as PDF">
+          <span class="btn-icon">📄</span> Export PDF
+        </button>
+        <button class="btn btn-primary" aria-label="Export filtered records as CSV">
+          <span class="btn-icon">⬇</span> Export CSV
+        </button>
+      </div>
+    </div>
+
+    <!-- Metrics strip -->
+    <div class="metrics-strip" role="region" aria-label="Report summary">
+      <div class="metric-card blue">
+        <div class="metric-value">1,247</div>
+        <div class="metric-label">Total Records</div>
+      </div>
+      <div class="metric-card green">
+        <div class="metric-value">891</div>
+        <div class="metric-label">Soft Validated</div>
+      </div>
+      <div class="metric-card amber">
+        <div class="metric-value">218</div>
+        <div class="metric-label">Pending</div>
+      </div>
+      <div class="metric-card red">
+        <div class="metric-value">138</div>
+        <div class="metric-label">Failed</div>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar" role="search" aria-label="Filter insurance records">
+      <span class="filter-label" id="status-filter-label">Filter by status:</span>
+      <select class="filter-select" aria-labelledby="status-filter-label">
+        <option selected>All Statuses</option>
+        <option>Soft Validated</option>
+        <option>Validation Failed</option>
+        <option>Validation Pending</option>
+      </select>
+      <span class="filter-spacer"></span>
+      <label for="search-input" style="font-size:12px;color:var(--text-secondary);">Search:</label>
+      <input id="search-input" type="search" placeholder="Patient name or policy…"
+        style="border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:13px;width:220px;"
+        aria-label="Search by patient name or policy number" />
+    </div>
+
+    <!-- No active filter chip — chip row hidden when no filter active -->
+    <div class="chip-row" aria-label="Active filters" aria-live="polite">
+      <!-- empty when no filter active -->
+    </div>
+
+    <!-- Data table — Default state -->
+    <div class="table-wrapper">
+      <div class="table-toolbar">
+        <span>
+          <span class="table-toolbar__title">Records</span>
+          <span class="table-toolbar__count">1,247 results</span>
+        </span>
+        <div style="display:flex;gap:8px;">
+          <label style="font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px;">
+            Rows per page:
+            <select class="page-size-select" aria-label="Rows per page">
+              <option>25</option><option>50</option><option>100</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <table aria-label="Insurance verification records">
+        <thead>
+          <tr>
+            <th>Patient Name <span class="sort-icon">↕</span></th>
+            <th class="sorted">Insurance Provider <span class="sort-icon">↑</span></th>
+            <th>Policy Number <span class="sort-icon">↕</span></th>
+            <th>Validation Status <span class="sort-icon">↕</span></th>
+            <th>Validated Date <span class="sort-icon">↕</span></th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="Patient Name">Amara Okonkwo</td>
+            <td data-label="Insurance Provider">Blue Cross Blue Shield</td>
+            <td data-label="Policy Number"><code>BCB1234567890</code></td>
+            <td data-label="Validation Status"><span class="badge badge-success">SoftValidated</span></td>
+            <td data-label="Validated Date">06 May 2026</td>
+            <td data-label="Actions"><button class="btn btn-outline btn-sm">View</button></td>
+          </tr>
+          <tr>
+            <td data-label="Patient Name">Marcus Chen</td>
+            <td data-label="Insurance Provider">Aetna</td>
+            <td data-label="Policy Number"><code>W123456789</code></td>
+            <td data-label="Validation Status"><span class="badge badge-warning">ValidationPending</span></td>
+            <td data-label="Validated Date">06 May 2026</td>
+            <td data-label="Actions"><button class="btn btn-outline btn-sm">View</button></td>
+          </tr>
+          <tr>
+            <td data-label="Patient Name">Sofia Herrera</td>
+            <td data-label="Insurance Provider">United Health Care</td>
+            <td data-label="Policy Number"><code>12345678901</code></td>
+            <td data-label="Validation Status"><span class="badge badge-error">ValidationFailed</span></td>
+            <td data-label="Validated Date">05 May 2026</td>
+            <td data-label="Actions"><button class="btn btn-outline btn-sm">View</button></td>
+          </tr>
+          <tr>
+            <td data-label="Patient Name">James O'Brien</td>
+            <td data-label="Insurance Provider">Cigna</td>
+            <td data-label="Policy Number"><code>U87654321</code></td>
+            <td data-label="Validation Status"><span class="badge badge-success">SoftValidated</span></td>
+            <td data-label="Validated Date">05 May 2026</td>
+            <td data-label="Actions"><button class="btn btn-outline btn-sm">View</button></td>
+          </tr>
+          <tr>
+            <td data-label="Patient Name">Priya Nair</td>
+            <td data-label="Insurance Provider">Humana</td>
+            <td data-label="Policy Number"><code>HA1B2C3D4</code></td>
+            <td data-label="Validation Status"><span class="badge badge-success">SoftValidated</span></td>
+            <td data-label="Validated Date">04 May 2026</td>
+            <td data-label="Actions"><button class="btn btn-outline btn-sm">View</button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination bar -->
+      <div class="pagination-bar">
+        <span class="pagination-info">Showing 1–25 of 1,247 records</span>
+        <nav class="pagination-controls" aria-label="Pagination">
+          <button class="page-btn" disabled aria-label="Previous page">‹</button>
+          <button class="page-btn active" aria-current="page" aria-label="Page 1">1</button>
+          <button class="page-btn" aria-label="Page 2">2</button>
+          <button class="page-btn" aria-label="Page 3">3</button>
+          <span style="padding:0 4px;color:var(--text-tertiary)">…</span>
+          <button class="page-btn" aria-label="Page 50">50</button>
+          <button class="page-btn" aria-label="Next page">›</button>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Report link (SCR-028 layout: accessible from insurance form) -->
+    <a class="report-link" href="#" aria-label="Navigate to Insurance Verification Report">
+      📋 View Verification Report
+    </a>
+
+    <hr class="divider" />
+
+    <!-- ══ STATE 2: LOADING ═════════════════════════════════════════════ -->
+    <p class="state-label">State 2 — Loading (skeleton rows)</p>
+
+    <div class="filter-bar" style="margin-bottom:12px;" aria-busy="true">
+      <span class="filter-label">Filter by status:</span>
+      <div class="skeleton" style="width:200px;"></div>
+      <span class="filter-spacer"></span>
+      <div class="skeleton" style="width:220px;"></div>
+    </div>
+    <div class="chip-row"></div>
+    <div class="table-wrapper" aria-busy="true" aria-label="Loading insurance records">
+      <div class="table-toolbar">
+        <span class="table-toolbar__title">Records</span>
+      </div>
+      <table aria-hidden="true">
+        <thead>
+          <tr><th>Patient Name</th><th>Insurance Provider</th><th>Policy Number</th><th>Validation Status</th><th>Validated Date</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          <!-- 5 skeleton rows -->
+          <tr><td><span class="skeleton" style="width:140px;"></span></td><td><span class="skeleton" style="width:160px;"></span></td><td><span class="skeleton" style="width:110px;"></span></td><td><span class="skeleton" style="width:100px;height:20px;border-radius:10px;"></span></td><td><span class="skeleton" style="width:90px;"></span></td><td><span class="skeleton" style="width:48px;"></span></td></tr>
+          <tr><td><span class="skeleton" style="width:120px;"></span></td><td><span class="skeleton" style="width:130px;"></span></td><td><span class="skeleton" style="width:90px;"></span></td><td><span class="skeleton" style="width:120px;height:20px;border-radius:10px;"></span></td><td><span class="skeleton" style="width:85px;"></span></td><td><span class="skeleton" style="width:48px;"></span></td></tr>
+          <tr><td><span class="skeleton" style="width:155px;"></span></td><td><span class="skeleton" style="width:145px;"></span></td><td><span class="skeleton" style="width:100px;"></span></td><td><span class="skeleton" style="width:110px;height:20px;border-radius:10px;"></span></td><td><span class="skeleton" style="width:90px;"></span></td><td><span class="skeleton" style="width:48px;"></span></td></tr>
+          <tr><td><span class="skeleton" style="width:110px;"></span></td><td><span class="skeleton" style="width:170px;"></span></td><td><span class="skeleton" style="width:95px;"></span></td><td><span class="skeleton" style="width:90px;height:20px;border-radius:10px;"></span></td><td><span class="skeleton" style="width:88px;"></span></td><td><span class="skeleton" style="width:48px;"></span></td></tr>
+          <tr><td><span class="skeleton" style="width:135px;"></span></td><td><span class="skeleton" style="width:125px;"></span></td><td><span class="skeleton" style="width:105px;"></span></td><td><span class="skeleton" style="width:115px;height:20px;border-radius:10px;"></span></td><td><span class="skeleton" style="width:82px;"></span></td><td><span class="skeleton" style="width:48px;"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ══ STATE 3: FILTERED (ValidationFailed active) ═════════════════ -->
+    <p class="state-label">State 3 — Filtered (ValidationFailed active with removable chip)</p>
+
+    <div class="filter-bar">
+      <span class="filter-label" id="filter-label-state3">Filter by status:</span>
+      <select class="filter-select" aria-labelledby="filter-label-state3">
+        <option>All Statuses</option>
+        <option selected>Validation Failed</option>
+        <option>Soft Validated</option>
+        <option>Validation Pending</option>
+      </select>
+      <span class="filter-spacer"></span>
+      <button class="btn btn-outline" aria-label="Export filtered PDF (138 records)">📄 Export PDF</button>
+      <button class="btn btn-primary" aria-label="Export filtered CSV (138 records)">⬇ Export CSV</button>
+    </div>
+    <div class="chip-row" aria-label="Active filters" aria-live="polite">
+      <span class="chip-label">Active filter:</span>
+      <span class="chip" role="status">
+        ValidationFailed
+        <button class="chip-remove" aria-label="Remove ValidationFailed filter">✕</button>
+      </span>
+    </div>
+
+    <div class="table-wrapper">
+      <div class="table-toolbar">
+        <span>
+          <span class="table-toolbar__title">Records</span>
+          <span class="table-toolbar__count">138 results</span>
+        </span>
+      </div>
+      <table aria-label="Insurance verification records filtered by ValidationFailed">
+        <thead>
+          <tr>
+            <th>Patient Name <span class="sort-icon">↕</span></th>
+            <th>Insurance Provider <span class="sort-icon">↕</span></th>
+            <th>Policy Number <span class="sort-icon">↕</span></th>
+            <th class="sorted">Validation Status <span class="sort-icon">↓</span></th>
+            <th>Validated Date <span class="sort-icon">↕</span></th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="Patient Name">Sofia Herrera</td>
+            <td data-label="Insurance Provider">United Health Care</td>
+            <td data-label="Policy Number"><code>12345678901</code></td>
+            <td data-label="Validation Status"><span class="badge badge-error">ValidationFailed</span></td>
+            <td data-label="Validated Date">05 May 2026</td>
+            <td data-label="Actions"><button class="btn btn-outline btn-sm">View</button></td>
+          </tr>
+          <tr>
+            <td data-label="Patient Name">Leon Müller</td>
+            <td data-label="Insurance Provider">Blue Cross Blue Shield</td>
+            <td data-label="Policy Number"><code>BCB9999XXXXX</code></td>
+            <td data-label="Validation Status"><span class="badge badge-error">ValidationFailed</span></td>
+            <td data-label="Validated Date">04 May 2026</td>
+            <td data-label="Actions"><button class="btn btn-outline btn-sm">View</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination-bar">
+        <span class="pagination-info">Showing 1–25 of 138 records</span>
+        <nav class="pagination-controls" aria-label="Pagination">
+          <button class="page-btn" disabled>‹</button>
+          <button class="page-btn active" aria-current="page">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">›</button>
+        </nav>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ══ STATE 4: EMPTY ═══════════════════════════════════════════════ -->
+    <p class="state-label">State 4 — Empty (no records match filter)</p>
+
+    <div class="filter-bar">
+      <span class="filter-label">Filter by status:</span>
+      <select class="filter-select"><option>Validation Pending</option></select>
+    </div>
+    <div class="chip-row">
+      <span class="chip-label">Active filter:</span>
+      <span class="chip">ValidationPending <button class="chip-remove">✕</button></span>
+    </div>
+    <div class="table-wrapper">
+      <div class="table-toolbar">
+        <span class="table-toolbar__title">Records <span class="table-toolbar__count">0 results</span></span>
+      </div>
+      <div class="empty-state" role="status">
+        <span class="empty-icon">🔍</span>
+        <p class="empty-title">No insurance records match the selected filter</p>
+        <p class="empty-body">Try clearing the filter or selecting a different status to see records.</p>
+        <button class="btn btn-outline" style="margin-top:8px;">Clear Filter</button>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ══ STATE 5: ERROR ═══════════════════════════════════════════════ -->
+    <p class="state-label">State 5 — Error (load failure)</p>
+
+    <div class="banner error" role="alert">
+      <span class="banner-icon">⚠️</span>
+      <div>
+        <strong>Failed to load insurance records.</strong>
+        The report could not be retrieved. Please check your connection and try again.
+        <br /><button class="btn btn-outline btn-sm" style="margin-top:8px;">Retry</button>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ══ STATE 6: EXPORT SUCCESS TOAST ════════════════════════════════ -->
+    <p class="state-label">State 6 — Export success toast notification</p>
+    <div style="position:relative;height:64px;">
+      <div class="toast" style="position:absolute;bottom:0;right:0;" role="status" aria-live="polite">
+        ✅ CSV export downloaded successfully
+        <button class="toast-dismiss" aria-label="Dismiss notification">✕</button>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ══ MOBILE CARD VIEW ANNOTATION ═════════════════════════════════ -->
+    <p class="state-label">Annotation — Mobile card layout (UXR-303, &lt;768px)</p>
+    <div class="banner info">
+      <span class="banner-icon">ℹ️</span>
+      At viewport widths below 768 px the <code>mat-table</code> switches to a
+      card-based stacked layout: each row renders as a bordered card with field
+      labels prepended via CSS <code>data-label</code> attributes.
+      Resize this window to 375 px to preview (UXR-301).
+    </div>
+    <!-- Preview of a single card row -->
+    <div style="max-width:375px;margin-top:12px;">
+      <div style="background:var(--surface-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow-card);">
+        <div style="display:flex;justify-content:space-between;"><span style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-secondary);">Patient Name</span><span>Amara Okonkwo</span></div>
+        <div style="display:flex;justify-content:space-between;"><span style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-secondary);">Provider</span><span>Blue Cross Blue Shield</span></div>
+        <div style="display:flex;justify-content:space-between;"><span style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-secondary);">Policy Number</span><code>BCB1234567890</code></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-secondary);">Status</span><span class="badge badge-success">SoftValidated</span></div>
+        <div style="display:flex;justify-content:space-between;"><span style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-secondary);">Validated Date</span><span>06 May 2026</span></div>
+        <div style="display:flex;justify-content:flex-end;padding-top:4px;"><button class="btn btn-outline btn-sm">View</button></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

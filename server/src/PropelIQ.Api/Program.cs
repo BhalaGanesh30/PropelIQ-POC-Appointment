@@ -22,6 +22,7 @@ using PropelIQ.SharedKernel.Persistence;
 using PropelIQ.Modules.Scheduling.Infrastructure;
 using PropelIQ.Modules.ClinicalIntelligence.Infrastructure;
 using PropelIQ.Modules.Administration.Infrastructure;
+using PropelIQ.Modules.Insurance.Infrastructure;
 using PropelIQ.Modules.SharedServices.Infrastructure;
 using PropelIQ.Modules.SharedServices.Infrastructure.Data;
 using PropelIQ.Modules.SharedServices.Infrastructure.Identity;
@@ -246,6 +247,7 @@ builder.Services
     .AddSchedulingInfrastructure(builder.Configuration)
     .AddClinicalIntelligenceInfrastructure(builder.Configuration)
     .AddAdministrationInfrastructure(builder.Configuration)
+    .AddInsuranceInfrastructure(builder.Configuration)
     .AddSharedServicesInfrastructure(builder.Configuration);
 
 // ── Unit of Work & Bulk Import (DR-002, AC-2) ───────────────────────────────

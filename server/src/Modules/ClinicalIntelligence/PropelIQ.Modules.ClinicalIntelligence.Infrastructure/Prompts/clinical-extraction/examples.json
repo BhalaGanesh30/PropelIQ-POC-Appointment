@@ -1,0 +1,58 @@
+[
+  {
+    "input": "Patient is taking Lisinopril 10mg daily for hypertension. He reports a penicillin allergy with rash.",
+    "output": {
+      "facts": [
+        {
+          "fact_type": "medication",
+          "name": "lisinopril",
+          "value": "10mg daily",
+          "confidence": 0.97,
+          "source_text": "taking Lisinopril 10mg daily"
+        },
+        {
+          "fact_type": "diagnosis",
+          "name": "hypertension",
+          "value": "hypertension (I10)",
+          "confidence": 0.93,
+          "source_text": "for hypertension"
+        },
+        {
+          "fact_type": "allergy",
+          "name": "penicillin",
+          "value": "penicillin allergy – rash",
+          "confidence": 0.98,
+          "source_text": "penicillin allergy with rash"
+        }
+      ]
+    }
+  },
+  {
+    "input": "Impression: Type 2 diabetes mellitus, uncontrolled. HbA1c 9.1%. Started metformin 500mg BID. CT abdomen shows mild hepatic steatosis.",
+    "output": {
+      "facts": [
+        {
+          "fact_type": "diagnosis",
+          "name": "type 2 diabetes mellitus, uncontrolled",
+          "value": "Type 2 diabetes mellitus, uncontrolled (E11.65); HbA1c 9.1%",
+          "confidence": 0.96,
+          "source_text": "Type 2 diabetes mellitus, uncontrolled. HbA1c 9.1%"
+        },
+        {
+          "fact_type": "medication",
+          "name": "metformin",
+          "value": "500mg twice daily",
+          "confidence": 0.97,
+          "source_text": "Started metformin 500mg BID"
+        },
+        {
+          "fact_type": "finding",
+          "name": "hepatic steatosis",
+          "value": "mild hepatic steatosis on CT abdomen",
+          "confidence": 0.89,
+          "source_text": "CT abdomen shows mild hepatic steatosis"
+        }
+      ]
+    }
+  }
+]

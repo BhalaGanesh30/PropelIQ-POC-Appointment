@@ -1,0 +1,277 @@
+<div class="upload-host">
+
+  <!-- ── Page header ──────────────────────────────────────────────────────── -->
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">SCR-011</div>
+      <h1 id="upload-heading">Upload Clinical Documents</h1>
+      <p class="page-subtitle">Accepted formats: {{ acceptedFormatLabel }} &mdash; up to 10 MB per file. All files are malware-scanned before storage.</p>
+    </div>
+    <div class="format-pills" aria-label="Accepted file formats">
+      <span class="pill">PDF</span>
+      <span class="pill">JPG</span>
+      <span class="pill">PNG</span>
+      <span class="pill">TIFF</span>
+      <span class="pill pill-success">Malware scan required</span>
+    </div>
+  </header>
+
+  <!-- ── Drop zone (UXR-505) ──────────────────────────────────────────────── -->
+  <section
+    class="drop-card"
+    [class.drag-active]="isDragOver()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+    role="region"
+    [attr.aria-label]="'File drop zone — drag files here or click Browse'"
+    aria-describedby="drop-zone-hint"
+  >
+    <div class="dropzone">
+      <mat-icon class="drop-icon" aria-hidden="true">cloud_upload</mat-icon>
+      <h2 class="drop-title">Drag files here</h2>
+      <p id="drop-zone-hint" class="drop-subtitle">
+        Or browse from your device. Progress, scan status, and OCR stages appear below.
+      </p>
+
+      <!-- Hidden native input (keyboard / button activation) -->
+      <input
+        #fileInput
+        type="file"
+        class="sr-only"
+        multiple
+        accept=".pdf,.jpg,.jpeg,.png,.tiff,.tif"
+        (change)="onFileInputChange($event)"
+        [attr.aria-label]="'Select files to upload'"
+        tabindex="-1"
+      />
+
+      <button
+        mat-raised-button
+        color="primary"
+        class="browse-btn"
+        (click)="openFilePicker()"
+        [attr.aria-label]="'Browse and select files to upload'"
+        type="button"
+      >
+        <mat-icon aria-hidden="true">folder_open</mat-icon>
+        Browse Files
+      </button>
+    </div>
+  </section>
+
+  <!-- ── Upload queue ──────────────────────────────────────────────────────── -->
+  @if (files().length > 0) {
+    <section class="queue-section" aria-label="Upload queue" aria-live="polite">
+      <h2 class="queue-heading">
+        Upload Queue
+        <span class="queue-count">{{ files().length }} {{ files().length === 1 ? 'file' : 'files' }}</span>
+      </h2>
+
+      <div class="file-list" role="list">
+        @for (file of files(); track file.fileName; let i = $index) {
+          <div
+            class="file-row"
+            role="listitem"
+            [attr.aria-label]="file.fileName + ' — ' + badgeConfig[file.scanResult].ariaLabel"
+          >
+            <!-- File icon -->
+            <mat-icon class="file-icon" aria-hidden="true">
+              {{ file.fileName.endsWith('.pdf') ? 'picture_as_pdf' : 'image' }}
+            </mat-icon>
+
+            <!-- File info -->
+            <div class="file-info">
+              <span class="file-name">{{ file.fileName }}</span>
+              <span class="file-meta">{{ formatFileSize(file.fileSize) }}</span>
+
+              <!-- Progress bar (visible while uploading, UXR-505) -->
+              @if (file.isUploading) {
+                <mat-progress-bar
+                  mode="determinate"
+                  [value]="file.uploadProgress"
+                  class="upload-progress"
+                  [attr.aria-label]="'Upload progress for ' + file.fileName + ': ' + file.uploadProgress + ' percent'"
+                  [attr.aria-valuenow]="file.uploadProgress"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                />
+              }
+
+              <!-- Upload error (retry hint, UXR-501) -->
+              @if (file.uploadError) {
+                <div
+                  class="file-error"
+                  role="alert"
+                  [id]="'error-' + i"
+                  [attr.aria-label]="'Upload error for ' + file.fileName"
+                >
+                  <mat-icon class="error-icon" aria-hidden="true">error_outline</mat-icon>
+                  <span>{{ file.uploadError }}</span>
+                  <button mat-button color="warn" (click)="retryUpload(i)"
+                          [attr.aria-label]="'Retry upload of ' + file.fileName"
+                          class="retry-btn">
+                    Retry
+                  </button>
+                </div>
+              }
+
+              <!-- Threat detected banner (AC-3) -->
+              @if (file.scanResult === 'ThreatDetected') {
+                <div class="banner banner-error" role="alert">
+                  <mat-icon aria-hidden="true">dangerous</mat-icon>
+                  <strong>File rejected: malware detected. The file has not been stored.</strong>
+                </div>
+              }
+
+              <!-- Pending scan info banner (Edge Case 1) -->
+              @if (file.scanResult === 'PendingScan') {
+                <div class="banner banner-warning" role="status">
+                  <mat-icon aria-hidden="true">schedule</mat-icon>
+                  <span>Scan queued &mdash; file will be available after the scan completes.</span>
+                </div>
+              }
+
+              <!-- ── OCR status area (US_041) ───────────────────────────────── -->
+              @if (file.extractionStatus) {
+                <!-- aria-live region announces status transitions to screen readers (UXR-203) -->
+                <div
+                  class="ocr-status-area"
+                  aria-live="polite"
+                  aria-atomic="true"
+                  [attr.aria-label]="'OCR status for ' + file.fileName"
+                >
+                  <!-- Extraction status badge -->
+                  <span
+                    class="status-badge ocr-badge"
+                    [ngClass]="extractionBadgeConfig[file.extractionStatus]?.cssClass ?? 'badge-neutral'"
+                    role="status"
+                    [attr.aria-label]="extractionBadgeConfig[file.extractionStatus]?.ariaLabel ?? 'OCR status unknown'"
+                  >
+                    @if (extractionBadgeConfig[file.extractionStatus]?.showSpinner) {
+                      <mat-progress-spinner
+                        diameter="12"
+                        mode="indeterminate"
+                        class="ocr-spinner"
+                        aria-hidden="true"
+                      />
+                    }
+                    @if (file.extractionStatus === 'Completed') {
+                      <mat-icon class="badge-icon" aria-hidden="true">check_circle</mat-icon>
+                    }
+                    @if (file.extractionStatus === 'Failed') {
+                      <mat-icon class="badge-icon" aria-hidden="true">cancel</mat-icon>
+                    }
+                    {{ extractionBadgeConfig[file.extractionStatus]?.label ?? file.extractionStatus }}
+                  </span>
+
+                  <!-- Manual review required badge (Edge Case 1 — low confidence OCR) -->
+                  @if (file.needsManualReview) {
+                    <span
+                      class="status-badge badge-warning"
+                      role="status"
+                      aria-label="Manual review required — low confidence OCR output"
+                    >
+                      <mat-icon class="badge-icon" aria-hidden="true">rate_review</mat-icon>
+                      Manual Review Required
+                    </span>
+                  }
+
+                  <!-- Retry OCR button (US_041 AC-4, UXR-501) -->
+                  @if (file.extractionStatus === 'Failed' && file.retryCount < maxOcrRetries) {
+                    <button
+                      mat-stroked-button
+                      color="warn"
+                      class="retry-ocr-btn"
+                      [disabled]="file.isRetrying"
+                      (click)="retryOcr(i)"
+                      [attr.aria-label]="'Retry OCR for ' + file.fileName + ' — attempt ' + (file.retryCount + 1) + ' of ' + maxOcrRetries"
+                      type="button"
+                    >
+                      @if (file.isRetrying) {
+                        <mat-progress-spinner
+                          diameter="14"
+                          mode="indeterminate"
+                          class="btn-spinner"
+                          aria-hidden="true"
+                        />
+                      } @else {
+                        <mat-icon aria-hidden="true">refresh</mat-icon>
+                      }
+                      {{ file.isRetrying ? 'Retrying…' : 'Retry OCR' }}
+                    </button>
+                  }
+
+                  <!-- Dead-letter message after max retries exhausted -->
+                  @if (file.extractionStatus === 'Failed' && file.retryCount >= maxOcrRetries) {
+                    <div class="banner banner-error dead-letter-msg" role="alert">
+                      <mat-icon aria-hidden="true">inbox</mat-icon>
+                      <span>Moved to Dead-Letter Queue after {{ maxOcrRetries }} failed attempts.</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Status badge (UXR-404) -->
+            @if (!file.isUploading || file.uploadProgress === 100) {
+              <span
+                class="status-badge"
+                [ngClass]="badgeConfig[file.scanResult].cssClass"
+                [attr.aria-label]="badgeConfig[file.scanResult].ariaLabel"
+                role="status"
+              >
+                @if (file.scanResult === 'Scanning' || file.scanResult === 'Processing') {
+                  <span class="spinner-dot" aria-hidden="true"></span>
+                }
+                @if (file.scanResult === 'Clean' || file.scanResult === 'Completed') {
+                  <mat-icon class="badge-icon" aria-hidden="true">check_circle</mat-icon>
+                }
+                @if (file.scanResult === 'ThreatDetected' || file.scanResult === 'Failed') {
+                  <mat-icon class="badge-icon" aria-hidden="true">cancel</mat-icon>
+                }
+                {{ badgeConfig[file.scanResult].label }}
+              </span>
+            }
+
+            <!-- Remove button (UXR-505 cancel capability) -->
+            <button
+              mat-icon-button
+              class="remove-btn"
+              (click)="removeFile(i)"
+              [disabled]="file.isUploading"
+              [attr.aria-label]="'Remove ' + file.fileName + ' from queue'"
+              matTooltip="Remove file"
+            >
+              <mat-icon aria-hidden="true">close</mat-icon>
+            </button>
+          </div>
+
+          <!-- ── Extracted text preview (US_041 AC-3) ─────────────────────── -->
+          @if (file.extractionStatus === 'Completed' && file.extractedTextPreview) {
+            <mat-expansion-panel
+              class="extracted-text-panel"
+              [attr.aria-label]="'Extracted text preview for ' + file.fileName"
+            >
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <mat-icon class="panel-icon" aria-hidden="true">article</mat-icon>
+                  Extracted Text Preview
+                </mat-panel-title>
+                <mat-panel-description>First 500 characters</mat-panel-description>
+              </mat-expansion-panel-header>
+              <p class="extracted-text">{{ file.extractedTextPreview }}</p>
+              @if (file.extractedTextPreview.length >= 500) {
+                <p class="extracted-text-hint">
+                  <mat-icon aria-hidden="true">info_outline</mat-icon>
+                  Preview truncated. View the full document for complete extracted text.
+                </p>
+              }
+            </mat-expansion-panel>
+          }
+        }
+      </div>
+    </section>
+  }
+
+</div>

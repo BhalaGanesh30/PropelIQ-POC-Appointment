@@ -1,0 +1,67 @@
+// =============================================================================
+// Conflict Alerts — SCR-016
+// =============================================================================
+
+.conflict-alerts-host {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+// ---------------------------------------------------------------------------
+// Error banner
+// ---------------------------------------------------------------------------
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #ffebee;
+  border: 1px solid #ef9a9a;
+  border-radius: 6px;
+  color: #c62828;
+  font-size: 14px;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
+
+  button { margin-left: auto; }
+}
+
+// ---------------------------------------------------------------------------
+// Alerts list
+// ---------------------------------------------------------------------------
+
+.alerts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+// ---------------------------------------------------------------------------
+// Resolved panel
+// ---------------------------------------------------------------------------
+
+.resolved-panel {
+  margin-top: 4px;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  border: 1px solid var(--color-neutral-200, #e0e0e0);
+
+  mat-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-neutral-700, #616161);
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #2e7d32;
+    }
+  }
+}

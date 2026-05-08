@@ -44,6 +44,19 @@ public sealed class CodingDecisionConfiguration : IEntityTypeConfiguration<Codin
             .HasForeignKey(c => c.DocumentId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // US_047 Edge Case 2: nullable FK to clinical fact (restrict — coding decision
+        // retains its record when the source fact is soft-deleted or reassigned).
+        builder.Property(c => c.FactId);
+
+        builder.HasOne<ClinicalFact>()
+            .WithMany()
+            .HasForeignKey(c => c.FactId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
+
+        builder.HasIndex(c => c.FactId)
+            .HasDatabaseName("ix_coding_decisions_fact_id");
+
         builder.Property(c => c.CreatedAt)
             .HasDefaultValueSql("now()");
     }

@@ -1,0 +1,543 @@
+<div class="insurance-host">
+
+  <!-- ── Empty state ──────────────────────────────────────────────────────── -->
+  @if (!showForm()) {
+    <div class="empty-state" role="status">
+      <mat-icon aria-hidden="true">shield</mat-icon>
+      <h3 class="empty-title">No insurance on file</h3>
+      <p class="empty-body">
+        Add your insurance details to streamline the billing process.
+        This step is optional.
+      </p>
+      <button mat-raised-button color="primary" (click)="startFresh()">
+        <mat-icon>add</mat-icon> Add Insurance
+      </button>
+    </div>
+  }
+
+  <!-- ── Insurance form ───────────────────────────────────────────────────── -->
+  @if (showForm()) {
+    <form (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="form-grid">
+
+        <!-- ── Primary Insurance card ─────────────────────────────────── -->
+        <section class="form-card" aria-labelledby="primary-heading">
+          <h2 id="primary-heading" class="card-heading">
+            <mat-icon aria-hidden="true">health_and_safety</mat-icon>
+            Primary Insurance
+          </h2>
+
+          <!-- Policy Number (AC-1 format validation) -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Policy Number</mat-label>
+            <input
+              matInput
+              id="primaryPolicyNumber"
+              [formControl]="primaryForm.controls.policyNumber"
+              maxlength="30"
+              autocomplete="off"
+              [attr.aria-describedby]="
+                primaryForm.controls.policyNumber.invalid &&
+                primaryForm.controls.policyNumber.touched
+                  ? 'primary-policy-error'
+                  : null
+              "
+            />
+            @if (
+              primaryForm.controls.policyNumber.touched &&
+              primaryForm.controls.policyNumber.hasError('required')
+            ) {
+              <mat-error id="primary-policy-error">Policy number is required.</mat-error>
+            } @else if (
+              primaryForm.controls.policyNumber.touched &&
+              primaryForm.controls.policyNumber.hasError('policyFormat')
+            ) {
+              <mat-error id="primary-policy-error">
+                Must be 5–30 alphanumeric characters (e.g. ACM-455-9981).
+              </mat-error>
+            }
+            <mat-hint>Alphanumeric, 5–30 characters</mat-hint>
+          </mat-form-field>
+
+          <!-- Provider Code -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Provider Code</mat-label>
+            <input
+              matInput
+              id="primaryProviderCode"
+              [formControl]="primaryForm.controls.providerCode"
+              maxlength="50"
+              autocomplete="off"
+              [attr.aria-describedby]="
+                primaryForm.controls.providerCode.invalid &&
+                primaryForm.controls.providerCode.touched
+                  ? 'primary-code-error'
+                  : null
+              "
+            />
+            @if (
+              primaryForm.controls.providerCode.touched &&
+              primaryForm.controls.providerCode.hasError('required')
+            ) {
+              <mat-error id="primary-code-error">Provider code is required.</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Provider Name -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Provider Name</mat-label>
+            <input
+              matInput
+              id="primaryProviderName"
+              [formControl]="primaryForm.controls.providerName"
+              maxlength="100"
+              autocomplete="organization"
+              [attr.aria-describedby]="
+                primaryForm.controls.providerName.invalid &&
+                primaryForm.controls.providerName.touched
+                  ? 'primary-name-error'
+                  : null
+              "
+            />
+            @if (
+              primaryForm.controls.providerName.touched &&
+              primaryForm.controls.providerName.hasError('required')
+            ) {
+              <mat-error id="primary-name-error">Provider name is required.</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Group Number (optional) -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Group Number (optional)</mat-label>
+            <input
+              matInput
+              [formControl]="primaryForm.controls.groupNumber"
+              maxlength="50"
+              autocomplete="off"
+            />
+          </mat-form-field>
+
+          <!-- Secondary insurance toggle -->
+          <div class="toggle-row">
+            <mat-slide-toggle
+              (change)="toggleSecondary($event.checked)"
+              [attr.aria-label]="'Add secondary insurance'"
+            >
+              Add Secondary Insurance
+            </mat-slide-toggle>
+          </div>
+        </section>
+
+        <!-- ── Card image upload ───────────────────────────────────────── -->
+        <section class="upload-card" aria-labelledby="upload-heading">
+          <h2 id="upload-heading" class="card-heading">
+            <mat-icon aria-hidden="true">credit_card</mat-icon>
+            Card Images
+          </h2>
+
+          @if (uploadError()) {
+            <div class="upload-error-banner" role="alert">
+              <mat-icon aria-hidden="true">error_outline</mat-icon>
+              {{ uploadError() }}
+            </div>
+          }
+
+          <!-- Front of card -->
+          <div class="upload-label">Front of Card</div>
+          @if (primaryFrontFile()) {
+            <div class="uploaded-chip">
+              <mat-icon>check_circle</mat-icon>
+              {{ primaryFrontFile()!.name }}
+              <button
+                type="button"
+                mat-icon-button
+                [attr.aria-label]="'Remove front card image'"
+                (click)="primaryFrontFile.set(null)"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          } @else {
+            <div
+              class="dropzone"
+              role="button"
+              tabindex="0"
+              [attr.aria-label]="'Upload front of primary insurance card. JPEG or PNG, max 5 MB.'"
+              (click)="primaryFrontInput.click()"
+              (keydown.enter)="primaryFrontInput.click()"
+              (keydown.space)="primaryFrontInput.click()"
+              (dragover)="onDragOver($event)"
+              (drop)="onFileDrop($event, 'primaryFront')"
+            >
+              <mat-icon class="dropzone-icon">upload_file</mat-icon>
+              <span class="dropzone-cta">Click or drag &amp; drop</span>
+              <small>JPEG / PNG · max 5 MB</small>
+            </div>
+            <input
+              #primaryFrontInput
+              type="file"
+              accept="image/jpeg,image/png"
+              class="sr-only"
+              [attr.aria-label]="'Front of primary card file input'"
+              (change)="onFrontFileChange($event, 'Primary')"
+            />
+          }
+
+          <!-- Back of card -->
+          <div class="upload-label" style="margin-top:16px">Back of Card</div>
+          @if (primaryBackFile()) {
+            <div class="uploaded-chip">
+              <mat-icon>check_circle</mat-icon>
+              {{ primaryBackFile()!.name }}
+              <button
+                type="button"
+                mat-icon-button
+                [attr.aria-label]="'Remove back card image'"
+                (click)="primaryBackFile.set(null)"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          } @else {
+            <div
+              class="dropzone"
+              role="button"
+              tabindex="0"
+              [attr.aria-label]="'Upload back of primary insurance card. JPEG or PNG, max 5 MB.'"
+              (click)="primaryBackInput.click()"
+              (keydown.enter)="primaryBackInput.click()"
+              (keydown.space)="primaryBackInput.click()"
+              (dragover)="onDragOver($event)"
+              (drop)="onFileDrop($event, 'primaryBack')"
+            >
+              <mat-icon class="dropzone-icon">upload_file</mat-icon>
+              <span class="dropzone-cta">Click or drag &amp; drop</span>
+              <small>JPEG / PNG · max 5 MB</small>
+            </div>
+            <input
+              #primaryBackInput
+              type="file"
+              accept="image/jpeg,image/png"
+              class="sr-only"
+              [attr.aria-label]="'Back of primary card file input'"
+              (change)="onBackFileChange($event, 'Primary')"
+            />
+          }
+
+          <div class="card-actions">
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              [disabled]="isSubmitting()"
+              [attr.aria-busy]="isSubmitting()"
+              [attr.aria-label]="isSubmitting() ? 'Validating and saving insurance' : 'Verify and save insurance'"
+            >
+              @if (isSubmitting()) {
+                <mat-spinner diameter="18" strokeWidth="2" />
+              } @else {
+                <mat-icon>verified</mat-icon>
+              }
+              {{ isSubmitting() ? 'Validating…' : 'Verify & Save Insurance' }}
+            </button>
+
+            <button
+              mat-stroked-button
+              type="button"
+              [attr.aria-label]="'Skip insurance and continue booking'"
+            >
+              Skip — Continue without insurance
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- ── Duplicate policy warning (Edge Case 2) ────────────────────────── -->
+      @if (duplicatePolicyWarning()) {
+        <div class="banner warning" role="alert" aria-live="polite">
+          <mat-icon aria-hidden="true">warning</mat-icon>
+          <div>
+            <strong>Potential duplicate policy number</strong><br>
+            Secondary policy number matches primary. Please verify.
+            Submission is not blocked.
+          </div>
+        </div>
+      }
+
+      <!-- ── Primary validation result ─────────────────────────────────────── -->
+      @if (primaryResult()) {
+        <div
+          class="result-panel"
+          role="status"
+          aria-live="polite"
+          [attr.aria-label]="'Primary insurance validation: ' + statusLabel(primaryResult())"
+        >
+          @switch (primaryResult()!.status) {
+            @case ('SoftValidated') {
+              <!-- AC-3: green verified badge -->
+              <div class="result-banner success">
+                <mat-icon aria-hidden="true">check_circle</mat-icon>
+                <div>
+                  <strong>Verified — Primary Insurance</strong><br>
+                  Policy number and provider code passed soft validation.
+                </div>
+                <span class="status-badge success">● Verified</span>
+              </div>
+            }
+            @case ('Warning') {
+              <!-- AC-2: amber warning — non-blocking -->
+              <div class="result-banner warning">
+                <mat-icon aria-hidden="true">warning</mat-icon>
+                <div>
+                  <strong>Insurance details may be incomplete</strong><br>
+                  @for (w of primaryResult()!.warnings; track w.field) {
+                    <span class="warning-item">{{ w.message }}</span>
+                  }
+                  Booking is <strong>not blocked</strong>.
+                </div>
+                <span class="status-badge warning">⚠ Incomplete</span>
+              </div>
+            }
+            @case ('ValidationFailed') {
+              <!-- AC-4: red failed badge + staff review flag -->
+              <div class="result-banner error">
+                <mat-icon aria-hidden="true">cancel</mat-icon>
+                <div>
+                  <strong>Validation failed — flagged for staff review</strong><br>
+                  The record has been saved with <code>ValidationFailed</code> status.
+                  You may still continue the booking.
+                </div>
+                <span class="status-badge error">✗ Failed</span>
+              </div>
+            }
+            @case ('ValidationPending') {
+              <!-- Edge Case 1: blue info — reference DB unavailable -->
+              <div class="result-banner info">
+                <mat-icon aria-hidden="true">info</mat-icon>
+                <div>
+                  <strong>Validation pending</strong><br>
+                  Reference database unavailable. Record saved as
+                  <code>ValidationPending</code>. A background retry will be queued.
+                  Booking continues uninterrupted.
+                </div>
+                <span class="status-badge info">⏳ Pending</span>
+              </div>
+            }
+          }
+        </div>
+      }
+
+      <!-- ── Secondary Insurance section ───────────────────────────────────── -->
+      @if (showSecondary()) {
+        <div class="secondary-section" aria-labelledby="secondary-heading">
+          <h2 id="secondary-heading" class="card-heading secondary-heading">
+            <mat-icon aria-hidden="true">health_and_safety</mat-icon>
+            Secondary Insurance
+          </h2>
+
+          <div class="form-grid">
+            <section class="form-card">
+              <!-- Secondary Policy Number -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Secondary Policy Number</mat-label>
+                <input
+                  matInput
+                  id="secondaryPolicyNumber"
+                  [formControl]="secondaryForm.controls.policyNumber"
+                  maxlength="30"
+                  autocomplete="off"
+                  [attr.aria-describedby]="
+                    secondaryForm.controls.policyNumber.invalid &&
+                    secondaryForm.controls.policyNumber.touched
+                      ? 'sec-policy-error'
+                      : null
+                  "
+                />
+                @if (
+                  secondaryForm.controls.policyNumber.touched &&
+                  secondaryForm.controls.policyNumber.hasError('required')
+                ) {
+                  <mat-error id="sec-policy-error">Policy number is required.</mat-error>
+                } @else if (
+                  secondaryForm.controls.policyNumber.touched &&
+                  secondaryForm.controls.policyNumber.hasError('policyFormat')
+                ) {
+                  <mat-error id="sec-policy-error">
+                    Must be 5–30 alphanumeric characters.
+                  </mat-error>
+                }
+              </mat-form-field>
+
+              <!-- Secondary Provider Code -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Secondary Provider Code</mat-label>
+                <input
+                  matInput
+                  [formControl]="secondaryForm.controls.providerCode"
+                  maxlength="50"
+                  autocomplete="off"
+                />
+              </mat-form-field>
+
+              <!-- Secondary Provider Name -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Secondary Provider Name</mat-label>
+                <input
+                  matInput
+                  [formControl]="secondaryForm.controls.providerName"
+                  maxlength="100"
+                  autocomplete="organization"
+                />
+              </mat-form-field>
+
+              <!-- Secondary Group Number -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Secondary Group Number (optional)</mat-label>
+                <input
+                  matInput
+                  [formControl]="secondaryForm.controls.groupNumber"
+                  maxlength="50"
+                />
+              </mat-form-field>
+            </section>
+
+            <!-- Secondary card images -->
+            <section class="upload-card" aria-labelledby="sec-upload-heading">
+              <h3 id="sec-upload-heading" class="card-heading">Secondary Card Images</h3>
+
+              <div class="upload-label">Front of Card</div>
+              @if (secondaryFrontFile()) {
+                <div class="uploaded-chip">
+                  <mat-icon>check_circle</mat-icon>
+                  {{ secondaryFrontFile()!.name }}
+                  <button
+                    type="button"
+                    mat-icon-button
+                    [attr.aria-label]="'Remove secondary front card image'"
+                    (click)="secondaryFrontFile.set(null)"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              } @else {
+                <div
+                  class="dropzone"
+                  role="button"
+                  tabindex="0"
+                  [attr.aria-label]="'Upload front of secondary insurance card'"
+                  (click)="secFrontInput.click()"
+                  (keydown.enter)="secFrontInput.click()"
+                  (keydown.space)="secFrontInput.click()"
+                  (dragover)="onDragOver($event)"
+                  (drop)="onFileDrop($event, 'secondaryFront')"
+                >
+                  <mat-icon class="dropzone-icon">upload_file</mat-icon>
+                  <span class="dropzone-cta">Click or drag &amp; drop</span>
+                  <small>JPEG / PNG · max 5 MB</small>
+                </div>
+                <input
+                  #secFrontInput
+                  type="file"
+                  accept="image/jpeg,image/png"
+                  class="sr-only"
+                  (change)="onFrontFileChange($event, 'Secondary')"
+                />
+              }
+
+              <div class="upload-label" style="margin-top:16px">Back of Card</div>
+              @if (secondaryBackFile()) {
+                <div class="uploaded-chip">
+                  <mat-icon>check_circle</mat-icon>
+                  {{ secondaryBackFile()!.name }}
+                  <button
+                    type="button"
+                    mat-icon-button
+                    [attr.aria-label]="'Remove secondary back card image'"
+                    (click)="secondaryBackFile.set(null)"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              } @else {
+                <div
+                  class="dropzone"
+                  role="button"
+                  tabindex="0"
+                  [attr.aria-label]="'Upload back of secondary insurance card'"
+                  (click)="secBackInput.click()"
+                  (keydown.enter)="secBackInput.click()"
+                  (keydown.space)="secBackInput.click()"
+                  (dragover)="onDragOver($event)"
+                  (drop)="onFileDrop($event, 'secondaryBack')"
+                >
+                  <mat-icon class="dropzone-icon">upload_file</mat-icon>
+                  <span class="dropzone-cta">Click or drag &amp; drop</span>
+                  <small>JPEG / PNG · max 5 MB</small>
+                </div>
+                <input
+                  #secBackInput
+                  type="file"
+                  accept="image/jpeg,image/png"
+                  class="sr-only"
+                  (change)="onBackFileChange($event, 'Secondary')"
+                />
+              }
+            </section>
+          </div>
+
+          <!-- Secondary validation result -->
+          @if (secondaryResult()) {
+            <div class="result-panel" role="status" aria-live="polite">
+              @switch (secondaryResult()!.status) {
+                @case ('SoftValidated') {
+                  <div class="result-banner success">
+                    <mat-icon aria-hidden="true">check_circle</mat-icon>
+                    <div><strong>Secondary Insurance — Verified</strong></div>
+                    <span class="status-badge success">● Verified</span>
+                  </div>
+                }
+                @case ('Warning') {
+                  <div class="result-banner warning">
+                    <mat-icon aria-hidden="true">warning</mat-icon>
+                    <div>
+                      <strong>Secondary insurance may be incomplete</strong><br>
+                      Booking is not blocked.
+                    </div>
+                    <span class="status-badge warning">⚠ Incomplete</span>
+                  </div>
+                }
+                @case ('ValidationFailed') {
+                  <div class="result-banner error">
+                    <mat-icon aria-hidden="true">cancel</mat-icon>
+                    <div>
+                      <strong>Secondary validation failed — flagged for review</strong>
+                    </div>
+                    <span class="status-badge error">✗ Failed</span>
+                  </div>
+                }
+                @case ('ValidationPending') {
+                  <div class="result-banner info">
+                    <mat-icon aria-hidden="true">info</mat-icon>
+                    <div><strong>Secondary validation pending</strong></div>
+                    <span class="status-badge info">⏳ Pending</span>
+                  </div>
+                }
+              }
+            </div>
+          }
+        </div>
+      }
+
+    </form>
+  }
+
+  <!-- EP-005/US_039: Link to staff-only verification report (hidden for Patients via roleGuard). -->
+  <a class="report-link" routerLink="/staff/insurance/report"
+     [attr.aria-label]="'View Insurance Verification Report'">
+    <mat-icon aria-hidden="true">assessment</mat-icon>
+    View Verification Report
+  </a>
+
+</div>

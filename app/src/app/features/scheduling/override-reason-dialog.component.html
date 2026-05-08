@@ -1,0 +1,121 @@
+<!-- Override Reason Dialog — EP-004 US_034 SCR-027                            -->
+<!-- UXR-111: Destructive/override actions require explicit confirmation.       -->
+<!-- UXR-205: aria-describedby links error ids to each input (WCAG 1.3.1).     -->
+<!-- UXR-501: Confirm button shows spinner + disables during in-flight POST.    -->
+<!-- UXR-202: Full keyboard navigation; focus trapped inside dialog by MatDialog.-->
+
+<h2 mat-dialog-title class="dialog-title">
+  <mat-icon color="warn" aria-hidden="true">warning</mat-icon>
+  Override Required
+</h2>
+
+<mat-dialog-content class="dialog-content">
+
+  <!-- ── Read-only constraint context (AC-1) ────────────────────────────── -->
+  <div
+    class="constraint-banner"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+    aria-label="Violated scheduling constraint">
+    <mat-icon class="constraint-icon" aria-hidden="true">block</mat-icon>
+    <div>
+      <span class="constraint-label">Violated Constraint</span>
+      <p class="constraint-description">{{ data.constraintDescription }}</p>
+    </div>
+  </div>
+
+  <!-- ── Override reason textarea ──────────────────────────────────────── -->
+  <form [formGroup]="form" id="override-form" novalidate
+        aria-label="Override reason form"
+        (ngSubmit)="onSubmit()">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Override Reason</mat-label>
+
+      <textarea
+        matInput
+        formControlName="reason"
+        id="override-reason"
+        rows="4"
+        [maxlength]="maxReasonLength"
+        [attr.aria-describedby]="
+          hasError('required')  ? 'err-required' :
+          hasError('maxlength') ? 'err-maxlength' :
+          'reason-hint'"
+        [attr.aria-invalid]="hasError('required') || hasError('maxlength')"
+        placeholder="Explain why this scheduling constraint must be overridden…"
+        required
+        cdkFocusInitial></textarea>
+
+      <!-- AC-3: required validation (empty + whitespace-only) -->
+      @if (hasError('required')) {
+        <mat-error id="err-required">Override reason is required.</mat-error>
+      }
+
+      <!-- Edge Case 1: maxlength exceeded -->
+      @if (hasError('maxlength')) {
+        <mat-error id="err-maxlength">
+          Override reason must be {{ maxReasonLength }} characters or fewer.
+        </mat-error>
+      }
+
+      <!-- Hint visible when no error -->
+      @if (!hasError('required') && !hasError('maxlength')) {
+        <mat-hint id="reason-hint">Required. Maximum {{ maxReasonLength }} characters.</mat-hint>
+      }
+    </mat-form-field>
+
+    <!-- ── Edge Case 1: Live character counter ──────────────────────────── -->
+    <div
+      class="char-counter-row"
+      [class.warning]="isWarningZone()"
+      [class.over]="isAtMax()"
+      aria-live="polite"
+      [attr.aria-label]="charCount() + ' of ' + maxReasonLength + ' characters used'">
+      <span>{{ charCount() }} / {{ maxReasonLength }}</span>
+      @if (isWarningZone()) {
+        <span class="char-warning-label">Approaching limit</span>
+      }
+      @if (isAtMax()) {
+        <span class="char-warning-label">Limit reached</span>
+      }
+    </div>
+
+  </form>
+
+</mat-dialog-content>
+
+<!-- ── Action buttons ─────────────────────────────────────────────────── -->
+<mat-dialog-actions align="end">
+
+  <button
+    mat-stroked-button
+    type="button"
+    mat-dialog-close
+    [disabled]="isSubmitting()"
+    aria-label="Cancel and close override dialog">
+    Cancel
+  </button>
+
+  <!-- UXR-501: Loading state + disabled when form invalid or submitting -->
+  <button
+    mat-raised-button
+    color="warn"
+    type="submit"
+    form="override-form"
+    [disabled]="isSubmitting() || form.invalid"
+    [attr.aria-busy]="isSubmitting()"
+    aria-label="Confirm override and submit to audit log">
+
+    @if (isSubmitting()) {
+      <mat-spinner diameter="18" class="btn-spinner" aria-hidden="true"></mat-spinner>
+      Submitting…
+    } @else {
+      <mat-icon aria-hidden="true">check</mat-icon>
+      Confirm Override
+    }
+
+  </button>
+
+</mat-dialog-actions>

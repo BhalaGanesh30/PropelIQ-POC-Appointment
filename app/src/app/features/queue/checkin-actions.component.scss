@@ -1,0 +1,32 @@
+// =============================================================================
+// CheckinActionsComponent Styles — EP-004 US_032
+// UXR-201: WCAG AA contrast maintained for all button colours.
+// UXR-501: Loading state reduces opacity to signal disabled interaction.
+// =============================================================================
+
+.actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;          // spacing.sm — 8 px gap between action buttons
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+// UXR-501: subtle opacity shift while request is in-flight
+.actions-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+// Inline spinner inside button — aligns with button text baseline
+.btn-spinner {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+// Dash placeholder for terminal states (Completed / NoShow)
+.no-actions {
+  color: #9e9e9e;
+  font-size: 14px;
+}

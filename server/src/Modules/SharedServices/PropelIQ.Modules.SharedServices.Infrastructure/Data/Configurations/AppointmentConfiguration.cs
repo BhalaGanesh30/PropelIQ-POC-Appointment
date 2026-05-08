@@ -128,6 +128,49 @@ public sealed class AppointmentConfiguration : IEntityTypeConfiguration<Appointm
         // Index on RiskScoredAt supports staleness queries and score expiry checks.
         builder.HasIndex(a => a.RiskScoredAt)
             .HasDatabaseName("ix_appointments_risk_scored_at");
+
+        // ── Queue timing columns (EP-004 US_031 task_004) ─────────────────────
+
+        builder.Property(a => a.ArrivedAt)
+            .HasColumnType("timestamp with time zone");
+
+        builder.Property(a => a.VisitStartedAt)
+            .HasColumnType("timestamp with time zone");
+
+        builder.Property(a => a.VisitEndedAt)
+            .HasColumnType("timestamp with time zone");
+
+        // Edge Case 2: composite index covering today's queue query predicate.
+        // Supports: WHERE scheduled_at >= $today AND scheduled_at < $tomorrow AND status != 'Cancelled'
+        //           optionally filtered by queue_state.
+        builder.HasIndex(a => new { a.ScheduledAt, a.QueueState })
+            .HasDatabaseName("ix_appointments_queue_date");
+
+        // ── Staff-assisted booking (EP-004 US_035) ─────────────────────────────
+
+        // CreatedByStaffId: nullable FK to auth.application_users (User.Id).
+        // Null for patient self-bookings; populated by StaffBookingService (AC-2).
+        builder.Property(a => a.CreatedByStaffId)
+            .HasColumnType("uuid");
+
+        // ON DELETE SET NULL: deleting a staff user account retains the appointment
+        // record with created_by_staff_id set to NULL rather than cascading the delete (DR-002).
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(a => a.CreatedByStaffId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Index supports audit queries filtering by the staff actor who created the booking.
+        builder.HasIndex(a => a.CreatedByStaffId)
+            .HasFilter("created_by_staff_id IS NOT NULL")
+            .HasDatabaseName("ix_appointments_created_by_staff_id");
+
+        // Edge Case 1: composite index on (patient_id, scheduled_at) accelerates
+        // conflict-check queries: WHERE patient_id = @id AND scheduled_at BETWEEN @start AND @end.
+        // Required for performant overlap detection before staff-assisted bookings (task_003 AC).
+        builder.HasIndex(a => new { a.PatientId, a.ScheduledAt })
+            .HasDatabaseName("ix_appointments_patient_datetime");
     }
 }
 

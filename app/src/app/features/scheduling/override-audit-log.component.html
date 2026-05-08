@@ -1,0 +1,129 @@
+<!-- Override Audit Log — EP-004 US_034 AC-4                                   -->
+<!-- AC-4: All override events surfaced with actor identity + full reason.       -->
+<!-- NFR-010: Immutable server-side records; client provides read-only view.     -->
+
+<section class="audit-log-panel" aria-labelledby="audit-log-heading">
+
+  <header class="audit-header">
+    <h2 id="audit-log-heading">Override Audit Log</h2>
+    <p class="audit-subtitle">
+      All scheduling constraint overrides. Records are immutable once written.
+    </p>
+  </header>
+
+  <!-- ── Date range filter ──────────────────────────────────────────────── -->
+  <form [formGroup]="filterForm" class="filter-row"
+        aria-label="Filter audit log by date range"
+        (ngSubmit)="applyFilter()">
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>From</mat-label>
+      <input matInput [matDatepicker]="pickerFrom" formControlName="from"
+             aria-label="Filter from date">
+      <mat-datepicker-toggle matIconSuffix [for]="pickerFrom"
+        aria-label="Open from date calendar"></mat-datepicker-toggle>
+      <mat-datepicker #pickerFrom></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>To</mat-label>
+      <input matInput [matDatepicker]="pickerTo" formControlName="to"
+             aria-label="Filter to date">
+      <mat-datepicker-toggle matIconSuffix [for]="pickerTo"
+        aria-label="Open to date calendar"></mat-datepicker-toggle>
+      <mat-datepicker #pickerTo></mat-datepicker>
+    </mat-form-field>
+
+    <button mat-flat-button color="primary" type="submit"
+            aria-label="Apply date filter">
+      <mat-icon aria-hidden="true">filter_list</mat-icon>
+      Apply Filter
+    </button>
+
+    <button mat-stroked-button type="button"
+            (click)="clearFilter()"
+            aria-label="Clear date filter">
+      Clear
+    </button>
+
+  </form>
+
+  <!-- ── Loading state ──────────────────────────────────────────────────── -->
+  @if (isLoading()) {
+    <div class="loading-row" role="status" aria-label="Loading override audit log">
+      <mat-spinner diameter="32" aria-hidden="true"></mat-spinner>
+      <span>Loading…</span>
+    </div>
+  }
+
+  <!-- ── Error state ────────────────────────────────────────────────────── -->
+  @if (!isLoading() && loadError()) {
+    <div class="error-row" role="alert">
+      <mat-icon color="warn" aria-hidden="true">error_outline</mat-icon>
+      <span>{{ loadError() }}</span>
+    </div>
+  }
+
+  <!-- ── Empty state ────────────────────────────────────────────────────── -->
+  @if (!isLoading() && !loadError() && entries().length === 0) {
+    <div class="empty-row" role="status">
+      <mat-icon aria-hidden="true">event_busy</mat-icon>
+      <span>No override records found for the selected period.</span>
+    </div>
+  }
+
+  <!-- ── Audit table (AC-4) ─────────────────────────────────────────────── -->
+  @if (!isLoading() && !loadError() && entries().length > 0) {
+    <div class="table-wrapper" role="region" aria-label="Override audit entries" tabindex="0">
+      <table mat-table [dataSource]="entries()" class="audit-table"
+             aria-describedby="audit-log-heading">
+
+        <!-- Timestamp column -->
+        <ng-container matColumnDef="timestamp">
+          <th mat-header-cell *matHeaderCellDef scope="col">Date / Time</th>
+          <td mat-cell *matCellDef="let entry">
+            {{ entry.timestamp | date: 'd MMM yyyy, HH:mm' }}
+          </td>
+        </ng-container>
+
+        <!-- Actor name column -->
+        <ng-container matColumnDef="actorName">
+          <th mat-header-cell *matHeaderCellDef scope="col">Staff Name</th>
+          <td mat-cell *matCellDef="let entry">{{ entry.actorName }}</td>
+        </ng-container>
+
+        <!-- Actor role column -->
+        <ng-container matColumnDef="actorRole">
+          <th mat-header-cell *matHeaderCellDef scope="col">Role</th>
+          <td mat-cell *matCellDef="let entry">
+            <span class="role-chip" [attr.aria-label]="'Role: ' + entry.actorRole">
+              {{ entry.actorRole }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Overridden constraint column -->
+        <ng-container matColumnDef="constraint">
+          <th mat-header-cell *matHeaderCellDef scope="col">Overridden Constraint</th>
+          <td mat-cell *matCellDef="let entry">{{ entry.constraint }}</td>
+        </ng-container>
+
+        <!-- Reason column (with tooltip for long text) -->
+        <ng-container matColumnDef="reason">
+          <th mat-header-cell *matHeaderCellDef scope="col">Reason</th>
+          <td mat-cell *matCellDef="let entry"
+              [matTooltip]="entry.reason"
+              matTooltipPosition="before"
+              class="reason-cell"
+              [attr.aria-label]="'Override reason: ' + entry.reason">
+            {{ entry.reason | slice:0:80 }}{{ entry.reason.length > 80 ? '…' : '' }}
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" tabindex="0"></tr>
+      </table>
+    </div>
+  }
+
+</section>

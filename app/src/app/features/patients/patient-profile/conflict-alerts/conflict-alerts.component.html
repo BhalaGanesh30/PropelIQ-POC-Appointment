@@ -1,0 +1,77 @@
+<div class="conflict-alerts-host">
+
+  <!-- ── Loading state ────────────────────────────────────────────────── -->
+  @if (facade.loading()) {
+    <app-conflict-alerts-skeleton />
+  }
+
+  @else if (facade.error()) {
+    <div class="error-banner" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span>{{ facade.error() }}</span>
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="retry()"
+        aria-label="Retry loading conflict alerts"
+      >
+        <mat-icon aria-hidden="true">refresh</mat-icon>
+        Retry
+      </button>
+    </div>
+  }
+
+  @else if (facade.loaded()) {
+
+    <!-- Rules-stale warning (Edge Case 1) -->
+    @if (facade.rulesStale()) {
+      <app-rules-stale-warning />
+    }
+
+    <!-- Empty state -->
+    @if (facade.sortedActiveAlerts().length === 0 && facade.acknowledgedAlerts().length === 0) {
+      <app-conflict-empty-state />
+    }
+
+    <!-- Active alerts list — aria-live region for screen reader announcements (UXR-203) -->
+    @if (facade.sortedActiveAlerts().length > 0) {
+      <div
+        class="alerts-section"
+        role="list"
+        aria-label="Active conflict alerts"
+        aria-live="polite"
+        aria-atomic="false"
+      >
+        @for (alert of facade.sortedActiveAlerts(); track alert.conflictId) {
+          <app-conflict-alert-card
+            [alert]="alert"
+            (acknowledged)="onAcknowledge($event)"
+          />
+        }
+      </div>
+    }
+
+    <!-- Resolved section (collapsible) -->
+    @if (facade.acknowledgedAlerts().length > 0) {
+      <mat-expansion-panel class="resolved-panel">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon aria-hidden="true">check_circle</mat-icon>
+            Resolved ({{ facade.acknowledgedAlerts().length }})
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="alerts-section" role="list" aria-label="Resolved conflict alerts">
+          @for (alert of facade.acknowledgedAlerts(); track alert.conflictId) {
+            <app-conflict-alert-card
+              [alert]="alert"
+              (acknowledged)="onAcknowledge($event)"
+            />
+          }
+        </div>
+      </mat-expansion-panel>
+    }
+
+  }
+
+</div>

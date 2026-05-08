@@ -1,0 +1,107 @@
+// =============================================================================
+// OverrideReasonDialogComponent Styles — EP-004 US_034 SCR-027
+// UXR-201: WCAG AA contrast on all text/background combinations.
+// UXR-202: Visible focus rings on all interactive elements.
+// =============================================================================
+
+// ── Dialog title ──────────────────────────────────────────────────────────────
+
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+// ── Dialog content ────────────────────────────────────────────────────────────
+
+.dialog-content {
+  padding-top: 8px !important;  // reduce gap after title
+  min-width: 400px;
+  max-width: 540px;
+}
+
+// ── Constraint context banner (read-only, AC-1) ───────────────────────────────
+
+.constraint-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  border-radius: 4px;
+  background: #fff3e0;           // Amber-50 — matches warning tone
+  border-left: 4px solid #f57c00; // Amber-700
+  color: #4e3400;                // 10.5:1 on #fff3e0 ✓ (UXR-201)
+}
+
+.constraint-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #f57c00;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.constraint-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9e6700;               // 4.6:1 on #fff3e0 ✓
+  margin-bottom: 3px;
+}
+
+.constraint-description {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #4e3400;
+}
+
+// ── Form field ────────────────────────────────────────────────────────────────
+
+.full-width {
+  width: 100%;
+}
+
+// ── Character counter (Edge Case 1) ──────────────────────────────────────────
+
+.char-counter-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.54);
+  margin-top: -12px;           // tighten gap below mat-form-field
+  margin-bottom: 4px;
+
+  // Amber warning zone (480–499 chars)
+  &.warning {
+    color: #e65100;            // Deep Orange-800 — 4.5:1 on white ✓
+    font-weight: 600;
+  }
+
+  // At limit (500 chars)
+  &.over {
+    color: #c62828;            // Red-800 — 7.8:1 on white ✓
+    font-weight: 600;
+  }
+}
+
+.char-warning-label {
+  font-size: 11px;
+  font-style: italic;
+}
+
+// ── Confirm button spinner (UXR-501) ─────────────────────────────────────────
+
+.btn-spinner {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+}

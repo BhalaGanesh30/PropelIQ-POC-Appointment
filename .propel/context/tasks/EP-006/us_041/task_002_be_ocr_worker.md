@@ -267,13 +267,13 @@ dotnet run --project src/Api/Api.csproj
 
 ## Implementation Checklist
 
-- [ ] Create `OcrConfiguration` options class bound to `appsettings.json` section `Ocr`
-- [ ] Create `OcrJob` record and `OcrProcessingResult` record in Models
-- [ ] Create `OcrJobChannel` singleton with bounded capacity and back-pressure (Edge Case 2)
-- [ ] Create `IOcrProcessingService` / `TesseractOcrService`: R2 download → Tesseract OCR → confidence scoring → manual review flag (Edge Case 1)
-- [ ] Create `OcrWorkerService` (`BackgroundService`): concurrent consumers, exponential backoff retry (1s, 4s, 16s), dead-letter after 3 failures (AC-4, TR-005)
-- [ ] Create `DeadLetterEntry` entity, repository, and `ocr_dead_letter_queue` table via EF migration
-- [ ] Modify `DocumentUploadService` to enqueue OCR job after clean malware scan (AC-1)
-- [ ] Add `POST {id}/retry-ocr` endpoint to `DocumentsController` with `[Authorize(Roles = "Clinician,Staff")]`
-- [ ] Register all services in DI: `OcrJobChannel` (Singleton), `TesseractOcrService` (Scoped), `OcrWorkerService` (Hosted), repositories
-- [ ] Emit OpenTelemetry metrics for OCR job processing
+- [X] Create `OcrConfiguration` options class bound to `appsettings.json` section `Ocr`
+- [X] Create `OcrJob` record and `OcrProcessingResult` record in Models
+- [X] Create `OcrJobChannel` singleton with bounded capacity and back-pressure (Edge Case 2)
+- [X] Create `IOcrProcessingService` / `TesseractOcrService`: R2 download → Tesseract OCR → confidence scoring → manual review flag (Edge Case 1)
+- [X] Create `OcrWorkerService` (`BackgroundService`): concurrent consumers, exponential backoff retry (1s, 4s, 16s), dead-letter after 3 failures (AC-4, TR-005)
+- [X] Create `DeadLetterEntry` entity, repository, and `ocr_dead_letter_queue` table via EF migration
+- [X] Modify `DocumentUploadService` to enqueue OCR job after clean malware scan (AC-1)
+- [X] Add `POST {id}/retry-ocr` endpoint to `DocumentsController` with `[Authorize(Roles = "Clinician,Staff")]`
+- [X] Register all services in DI: `OcrJobChannel` (Singleton), `TesseractOcrService` (Scoped), `OcrWorkerService` (Hosted), repositories
+- [X] Emit OpenTelemetry metrics for OCR job processing

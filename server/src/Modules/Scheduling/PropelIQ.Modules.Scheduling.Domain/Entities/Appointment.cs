@@ -36,6 +36,27 @@ public sealed class Appointment : BaseEntity
 
     public string QueueState { get; set; } = "NotQueued";
 
+    // ── Queue timing fields (EP-004 US_031 task_004) ──────────────────────────
+
+    /// <summary>
+    /// UTC timestamp when the patient checked in on the day of the visit.
+    /// Null until the check-in workflow (post-task_004) sets this field.
+    /// Required by <see cref="IWaitTimeEstimationService.IsOverdue"/> for AC-3.
+    /// </summary>
+    public DateTimeOffset? ArrivedAt { get; set; }
+
+    /// <summary>
+    /// UTC timestamp when the clinician started the visit (patient called in).
+    /// Null until the visit-start transition is implemented.
+    /// </summary>
+    public DateTimeOffset? VisitStartedAt { get; set; }
+
+    /// <summary>
+    /// UTC timestamp when the visit was marked complete.
+    /// Null until the visit-end transition is implemented.
+    /// </summary>
+    public DateTimeOffset? VisitEndedAt { get; set; }
+
     // ── Booking-specific fields ───────────────────────────────────────────────
 
     /// <summary>Slot that was atomically reserved for this appointment (AC-1).</summary>
@@ -109,5 +130,13 @@ public sealed class Appointment : BaseEntity
     /// Used to determine staleness (24-hour TTL) before recalculation.
     /// </summary>
     public DateTimeOffset? RiskScoredAt { get; set; }
+    // ── Staff-assisted booking (EP-004 US_035) ────────────────────────────────
+
+    /// <summary>
+    /// UUID of the staff member who created this booking on behalf of the patient (AC-2).
+    /// Null for patient self-bookings. Populated only when the booking originates from
+    /// POST /api/v1/staff-bookings.
+    /// </summary>
+    public Guid? CreatedByStaffId { get; set; }
 }
 

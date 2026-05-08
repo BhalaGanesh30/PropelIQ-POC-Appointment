@@ -29,6 +29,7 @@
     <ProjectReference Include="..\PropelIQ.SharedKernel\PropelIQ.SharedKernel.csproj" />
     <ProjectReference Include="..\Modules\Scheduling\PropelIQ.Modules.Scheduling.Api\PropelIQ.Modules.Scheduling.Api.csproj" />
     <ProjectReference Include="..\Modules\Scheduling\PropelIQ.Modules.Scheduling.Infrastructure\PropelIQ.Modules.Scheduling.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Insurance\PropelIQ.Modules.Insurance.Infrastructure\PropelIQ.Modules.Insurance.Infrastructure.csproj" />
     <ProjectReference Include="..\Modules\ClinicalIntelligence\PropelIQ.Modules.ClinicalIntelligence.Api\PropelIQ.Modules.ClinicalIntelligence.Api.csproj" />
     <ProjectReference Include="..\Modules\ClinicalIntelligence\PropelIQ.Modules.ClinicalIntelligence.Infrastructure\PropelIQ.Modules.ClinicalIntelligence.Infrastructure.csproj" />
     <ProjectReference Include="..\Modules\Administration\PropelIQ.Modules.Administration.Api\PropelIQ.Modules.Administration.Api.csproj" />

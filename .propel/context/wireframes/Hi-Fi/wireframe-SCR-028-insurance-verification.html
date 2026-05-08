@@ -5,18 +5,576 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SCR-028 Insurance Verification</title>
   <link rel="stylesheet" href="./wireframe-theme.css">
+  <style>
+    /* ── SCR-028 local overrides ─────────────────────────────────────── */
+    .span-7 { grid-column: span 7; }
+    .span-5 { grid-column: span 5; }
+    .span-12 { grid-column: span 12; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .input {
+      background: var(--neutral-100);
+      border: 1px solid var(--neutral-300);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-size: 14px;
+      color: var(--neutral-900);
+    }
+    .input.valid { border-color: var(--success); }
+    .input.error { border-color: var(--error); }
+    .input-hint {
+      font-size: 12px;
+      color: var(--neutral-600);
+      margin-top: 2px;
+    }
+    .input-hint.error { color: #b71c1c; }
+
+    .dropzone {
+      border: 2px dashed var(--neutral-300);
+      border-radius: var(--radius-md);
+      padding: var(--space-5);
+      text-align: center;
+      background: var(--neutral-50);
+      cursor: pointer;
+      transition: border-color var(--transition-fast), background var(--transition-fast);
+    }
+    .dropzone:hover {
+      border-color: var(--primary-500);
+      background: var(--primary-50);
+    }
+    .dropzone .icon {
+      font-size: 32px;
+      display: block;
+      margin-bottom: 8px;
+      color: var(--neutral-600);
+    }
+    .dropzone .cta { font-weight: 600; color: var(--primary-500); }
+    .dropzone small { color: var(--neutral-600); display: block; margin-top: 4px; }
+
+    .dropzone-uploaded {
+      border: 2px solid var(--success);
+      background: var(--success-soft);
+      border-radius: var(--radius-md);
+      padding: 12px var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #2e7d32;
+    }
+
+    .upload-progress {
+      width: 100%;
+      background: var(--neutral-200);
+      border-radius: 999px;
+      height: 6px;
+      overflow: hidden;
+    }
+    .upload-progress-bar {
+      height: 6px;
+      background: var(--primary-500);
+      border-radius: 999px;
+      width: 65%;
+      animation: progress-pulse 1.2s ease-in-out infinite alternate;
+    }
+    @keyframes progress-pulse {
+      from { opacity: 1; }
+      to { opacity: 0.6; }
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: var(--space-4) 0;
+    }
+    .toggle {
+      width: 40px; height: 22px;
+      background: var(--neutral-300);
+      border-radius: 999px;
+      position: relative;
+      cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+    .toggle.on { background: var(--primary-500); }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 16px; height: 16px;
+      background: white;
+      border-radius: 50%;
+      transition: transform var(--transition-fast);
+    }
+    .toggle.on::after { transform: translateX(18px); }
+    .toggle-label { font-size: 14px; font-weight: 600; color: var(--neutral-900); }
+    .toggle-hint { font-size: 12px; color: var(--neutral-600); }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--neutral-200);
+      margin: var(--space-4) 0;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: opacity var(--transition-fast);
+    }
+    .button.primary { background: var(--primary-500); color: white; }
+    .button.ghost {
+      background: transparent;
+      color: var(--primary-500);
+      border: 1px solid var(--primary-500);
+    }
+    .button.loading { opacity: 0.7; pointer-events: none; }
+
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .banner {
+      background: var(--info-soft);
+      border-left: 4px solid var(--info);
+      padding: 12px var(--space-4);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 14px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .banner.warning { background: var(--warning-soft); border-left-color: var(--warning); }
+    .banner.error   { background: var(--error-soft);   border-left-color: var(--error); }
+    .banner.success { background: var(--success-soft); border-left-color: var(--success); }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--neutral-200);
+      margin-bottom: var(--space-5);
+    }
+    .nav-tab {
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      color: var(--neutral-600);
+    }
+    .nav-tab.active {
+      border-bottom-color: var(--primary-500);
+      color: var(--primary-500);
+    }
+
+    @media (max-width: 768px) {
+      .panel { grid-template-columns: 1fr !important; }
+      .span-7, .span-5 { grid-column: span 1; }
+    }
+  </style>
 </head>
 <body>
   <div class="app-shell">
     <aside class="sidebar">
-      <div class="brand"><strong>Insurance</strong><small>Patient and staff use</small></div>
-      <div class="nav-group"><div class="nav-item active">Insurance Verification</div><div class="nav-item">Documents</div></div>
+      <div class="brand">
+        <strong>PropelIQ</strong>
+        <small>Insurance & Verification</small>
+      </div>
+      <div class="nav-group">
+        <div class="nav-item active">Insurance Verification</div>
+        <div class="nav-item">Booking Flow</div>
+        <div class="nav-item">Documents</div>
+      </div>
     </aside>
+
     <main class="content">
-      <header class="topbar"><div><div class="eyebrow">SCR-028</div><h2>Verify insurance details and card images</h2></div><div class="chip-row"><span class="pill">Soft validation</span><span class="pill success">Primary and secondary support</span></div></header>
-      <section class="panel"><div class="card span-7"><h3>Coverage details</h3><div class="stack"><label class="field"><strong>Provider</strong><div class="input">Acme Health Plan</div></label><label class="field"><strong>Policy number</strong><div class="input">ACM-455-9981</div></label><label class="field"><strong>Group</strong><div class="input">NorthCare-Gold</div></label></div></div><div class="card span-5"><h3>Card images</h3><div class="stack"><div class="dropzone"><p>Upload front and back card images</p></div><div class="chip-row"><span class="badge warning">Soft warning: member DOB mismatch</span></div><button class="button primary">Run verification</button></div></div></section>
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">SCR-028 · EP-005 US_037</div>
+          <h2>Insurance Soft Validation Engine</h2>
+        </div>
+        <div class="chip-row">
+          <span class="pill">FR-IP-001</span>
+          <span class="pill success">Non-blocking</span>
+          <span class="pill">AC-1 · AC-2 · AC-3 · AC-4</span>
+        </div>
+      </header>
+
+      <!-- ── State tabs ─────────────────────────────────────────────────── -->
+      <div class="card span-12" style="padding-bottom:0">
+        <div class="nav-tabs">
+          <div class="nav-tab active" onclick="showState('default')">Default</div>
+          <div class="nav-tab" onclick="showState('loading')">Loading</div>
+          <div class="nav-tab" onclick="showState('verified')">AC-3 Verified</div>
+          <div class="nav-tab" onclick="showState('warning')">AC-2 Warning</div>
+          <div class="nav-tab" onclick="showState('failed')">AC-4 Failed</div>
+          <div class="nav-tab" onclick="showState('pending')">Edge-1 Pending</div>
+          <div class="nav-tab" onclick="showState('duplicate')">Edge-2 Duplicate</div>
+          <div class="nav-tab" onclick="showState('empty')">Empty</div>
+        </div>
+      </div>
+
+      <!-- ══ STATE: default ══════════════════════════════════════════════ -->
+      <section id="state-default" class="panel">
+        <div class="card span-7">
+          <h3>Primary Insurance</h3>
+          <div class="stack" style="margin-top:16px">
+            <!-- Policy Number -->
+            <label class="field">
+              <strong>Policy Number <span style="color:#b71c1c">*</span></strong>
+              <div class="input valid">ACM-455-9981</div>
+              <span class="input-hint">Alphanumeric, 5–30 characters (e.g. ACM-455-9981)</span>
+            </label>
+            <!-- Provider Code -->
+            <label class="field">
+              <strong>Provider Code <span style="color:#b71c1c">*</span></strong>
+              <div class="input valid">ACME-HEALTH</div>
+              <span class="input-hint">Insurance provider identifier</span>
+            </label>
+            <!-- Provider Name -->
+            <label class="field">
+              <strong>Provider Name <span style="color:#b71c1c">*</span></strong>
+              <div class="input valid">Acme Health Plan</div>
+            </label>
+            <!-- Group Number -->
+            <label class="field">
+              <strong>Group Number <span style="color:var(--neutral-600)">optional</span></strong>
+              <div class="input">NorthCare-Gold</div>
+            </label>
+
+            <hr class="section-divider">
+
+            <!-- Secondary Insurance toggle -->
+            <div class="toggle-row">
+              <div class="toggle" id="secondaryToggle" onclick="toggleSecondary()"></div>
+              <div>
+                <div class="toggle-label">Add Secondary Insurance</div>
+                <div class="toggle-hint">Edge Case 2: duplicate policy number detection</div>
+              </div>
+            </div>
+
+            <!-- Secondary insurance (hidden by default) -->
+            <div id="secondarySection" style="display:none">
+              <div class="banner warning" style="margin-bottom:16px">
+                <span>⚠</span>
+                <div>
+                  <strong>Potential duplicate policy number</strong><br>
+                  Secondary policy number matches primary. Please verify. Booking is not blocked.
+                </div>
+              </div>
+              <div class="stack">
+                <label class="field">
+                  <strong>Secondary Policy Number</strong>
+                  <div class="input error">ACM-455-9981</div>
+                  <span class="input-hint error">Matches primary policy number</span>
+                </label>
+                <label class="field">
+                  <strong>Secondary Provider Code</strong>
+                  <div class="input">BCBS-TX</div>
+                </label>
+                <label class="field">
+                  <strong>Secondary Provider Name</strong>
+                  <div class="input">Blue Cross Blue Shield TX</div>
+                </label>
+                <label class="field">
+                  <strong>Secondary Group Number <span style="color:var(--neutral-600)">optional</span></strong>
+                  <div class="input">GRP-7890</div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card span-5">
+          <h3>Card Images</h3>
+          <div class="stack" style="margin-top:16px">
+            <!-- Front upload zone -->
+            <div>
+              <strong style="font-size:13px;display:block;margin-bottom:8px">Front of Card</strong>
+              <div class="dropzone">
+                <span class="icon">🪪</span>
+                <span class="cta">Click to upload or drag &amp; drop</span>
+                <small>JPEG / PNG · max 5 MB · UXR-505</small>
+              </div>
+            </div>
+            <!-- Back upload zone -->
+            <div>
+              <strong style="font-size:13px;display:block;margin-bottom:8px">Back of Card</strong>
+              <div class="dropzone">
+                <span class="icon">🪪</span>
+                <span class="cta">Click to upload or drag &amp; drop</span>
+                <small>JPEG / PNG · max 5 MB · UXR-505</small>
+              </div>
+            </div>
+
+            <hr class="section-divider">
+
+            <button class="button primary" style="width:100%;justify-content:center">
+              Verify &amp; Save Insurance
+            </button>
+            <button class="button ghost" style="width:100%;justify-content:center">
+              Skip — Continue without insurance
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ STATE: loading ══════════════════════════════════════════════ -->
+      <section id="state-loading" class="panel" style="display:none">
+        <div class="card span-7">
+          <h3>Primary Insurance</h3>
+          <div class="stack" style="margin-top:16px">
+            <label class="field"><strong>Policy Number</strong><div class="input">ACM-455-9981</div></label>
+            <label class="field"><strong>Provider Code</strong><div class="input">ACME-HEALTH</div></label>
+            <label class="field"><strong>Provider Name</strong><div class="input">Acme Health Plan</div></label>
+          </div>
+        </div>
+        <div class="card span-5">
+          <h3>Validation in Progress</h3>
+          <div class="stack" style="margin-top:16px">
+            <div class="dropzone-uploaded">✅ front-card.jpg uploaded</div>
+            <div>
+              <strong style="font-size:13px;display:block;margin-bottom:6px">Uploading back-card.jpg…</strong>
+              <div class="upload-progress"><div class="upload-progress-bar"></div></div>
+              <span class="input-hint">65% · UXR-505</span>
+            </div>
+            <hr class="section-divider">
+            <button class="button primary loading" style="width:100%;justify-content:center">
+              <span class="spinner"></span> Validating… (UXR-501)
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ STATE: AC-3 verified ════════════════════════════════════════ -->
+      <section id="state-verified" class="panel" style="display:none">
+        <div class="card span-7">
+          <h3>Primary Insurance</h3>
+          <div class="stack" style="margin-top:16px">
+            <label class="field"><strong>Policy Number</strong><div class="input valid">ACM-455-9981</div></label>
+            <label class="field"><strong>Provider Code</strong><div class="input valid">ACME-HEALTH</div></label>
+            <label class="field"><strong>Provider Name</strong><div class="input valid">Acme Health Plan</div></label>
+          </div>
+        </div>
+        <div class="card span-5">
+          <h3>Validation Result</h3>
+          <div class="stack" style="margin-top:16px">
+            <div class="banner success">
+              <span>✅</span>
+              <div>
+                <strong>Verified — AC-3 SoftValidated</strong><br>
+                Policy number format and provider code match the reference database.
+              </div>
+            </div>
+            <div class="status-row">
+              <span class="badge success">● Verified</span>
+              <span class="badge success">Provider matched</span>
+              <span class="badge success">Format valid</span>
+            </div>
+            <hr class="section-divider">
+            <button class="button primary" style="width:100%;justify-content:center">
+              Continue Booking →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ STATE: AC-2 warning (format mismatch) ══════════════════════ -->
+      <section id="state-warning" class="panel" style="display:none">
+        <div class="card span-7">
+          <h3>Primary Insurance</h3>
+          <div class="stack" style="margin-top:16px">
+            <label class="field">
+              <strong>Policy Number</strong>
+              <div class="input error">ACM</div>
+              <span class="input-hint error">Format mismatch — expected alphanumeric 5–30 chars</span>
+            </label>
+            <label class="field"><strong>Provider Code</strong><div class="input valid">ACME-HEALTH</div></label>
+            <label class="field"><strong>Provider Name</strong><div class="input valid">Acme Health Plan</div></label>
+          </div>
+        </div>
+        <div class="card span-5">
+          <h3>Validation Result</h3>
+          <div class="stack" style="margin-top:16px">
+            <div class="banner warning">
+              <span>⚠</span>
+              <div>
+                <strong>Insurance details may be incomplete — AC-2</strong><br>
+                Policy number format mismatch. The booking is NOT blocked — you may continue.
+              </div>
+            </div>
+            <div class="status-row">
+              <span class="badge warning">⚠ Format mismatch</span>
+              <span class="badge success">Provider matched</span>
+            </div>
+            <hr class="section-divider">
+            <button class="button primary" style="width:100%;justify-content:center">
+              Continue Anyway →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ STATE: AC-4 validation failed ══════════════════════════════ -->
+      <section id="state-failed" class="panel" style="display:none">
+        <div class="card span-7">
+          <h3>Primary Insurance</h3>
+          <div class="stack" style="margin-top:16px">
+            <label class="field">
+              <strong>Policy Number</strong>
+              <div class="input error">INVALID-999</div>
+              <span class="input-hint error">Policy number not found in reference database</span>
+            </label>
+            <label class="field">
+              <strong>Provider Code</strong>
+              <div class="input error">UNKNOWN</div>
+              <span class="input-hint error">Provider code not recognised</span>
+            </label>
+            <label class="field"><strong>Provider Name</strong><div class="input">—</div></label>
+          </div>
+        </div>
+        <div class="card span-5">
+          <h3>Validation Result</h3>
+          <div class="stack" style="margin-top:16px">
+            <div class="banner error">
+              <span>✗</span>
+              <div>
+                <strong>Validation failed — AC-4</strong><br>
+                Record flagged as <strong>ValidationFailed</strong> for staff review. Booking may still proceed.
+              </div>
+            </div>
+            <div class="status-row">
+              <span class="badge error">✗ ValidationFailed</span>
+              <span class="badge warning">Flagged for review</span>
+            </div>
+            <hr class="section-divider">
+            <button class="button primary" style="width:100%;justify-content:center">
+              Continue Anyway →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ STATE: Edge Case 1 — ValidationPending ══════════════════════ -->
+      <section id="state-pending" class="panel" style="display:none">
+        <div class="card span-7">
+          <h3>Primary Insurance</h3>
+          <div class="stack" style="margin-top:16px">
+            <label class="field"><strong>Policy Number</strong><div class="input">ACM-455-9981</div></label>
+            <label class="field"><strong>Provider Code</strong><div class="input">ACME-HEALTH</div></label>
+            <label class="field"><strong>Provider Name</strong><div class="input">Acme Health Plan</div></label>
+          </div>
+        </div>
+        <div class="card span-5">
+          <h3>Validation Result</h3>
+          <div class="stack" style="margin-top:16px">
+            <div class="banner" style="background:var(--info-soft);border-left-color:var(--info)">
+              <span>ℹ</span>
+              <div>
+                <strong>Validation pending — Edge Case 1</strong><br>
+                Reference database unavailable. Record saved as <strong>ValidationPending</strong>.
+                A background retry will be queued. Booking continues uninterrupted.
+              </div>
+            </div>
+            <div class="status-row">
+              <span class="badge" style="background:var(--info-soft);color:var(--info)">⏳ ValidationPending</span>
+              <span class="badge">Retry queued</span>
+            </div>
+            <hr class="section-divider">
+            <button class="button primary" style="width:100%;justify-content:center">
+              Continue Booking →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ STATE: Edge Case 2 — duplicate policy number ════════════════ -->
+      <section id="state-duplicate" class="panel" style="display:none">
+        <div class="card span-12">
+          <h3>Secondary Insurance — Duplicate Policy Number Detected</h3>
+          <div class="stack" style="margin-top:16px">
+            <div class="banner warning">
+              <span>⚠</span>
+              <div>
+                <strong>Potential duplicate policy number — Edge Case 2</strong><br>
+                Secondary policy number <code>ACM-455-9981</code> matches primary. Please verify. Submission is not blocked.
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="stack">
+                <strong>Primary</strong>
+                <label class="field"><strong>Policy Number</strong><div class="input valid">ACM-455-9981</div></label>
+                <label class="field"><strong>Provider</strong><div class="input valid">ACME-HEALTH — Acme Health Plan</div></label>
+              </div>
+              <div class="stack">
+                <strong>Secondary</strong>
+                <label class="field"><strong>Policy Number</strong><div class="input error">ACM-455-9981</div></label>
+                <label class="field"><strong>Provider</strong><div class="input">BCBS-TX — Blue Cross TX</div></label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ STATE: empty ════════════════════════════════════════════════ -->
+      <section id="state-empty" class="panel" style="display:none">
+        <div class="card span-12" style="text-align:center;padding:var(--space-7) var(--space-5)">
+          <div style="font-size:48px;margin-bottom:16px">🛡️</div>
+          <h3 style="margin-bottom:8px">No insurance on file</h3>
+          <p style="color:var(--neutral-600);margin-bottom:24px">
+            Add your insurance details to streamline the billing process. This step is optional.
+          </p>
+          <button class="button primary">+ Add Insurance</button>
+        </div>
+      </section>
+
     </main>
   </div>
-  <script defer src="./wireframe-interactions.js"></script>
+
+  <script>
+    function showState(name) {
+      // Hide all state sections
+      document.querySelectorAll('section[id^="state-"]').forEach(el => el.style.display = 'none');
+      // Deactivate all tabs
+      document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+      // Show target
+      const target = document.getElementById('state-' + name);
+      if (target) target.style.display = 'grid';
+      // Activate tab
+      const tabs = document.querySelectorAll('.nav-tab');
+      const tabMap = { default:0, loading:1, verified:2, warning:3, failed:4, pending:5, duplicate:6, empty:7 };
+      if (tabMap[name] !== undefined) tabs[tabMap[name]]?.classList.add('active');
+    }
+
+    function toggleSecondary() {
+      const toggle = document.getElementById('secondaryToggle');
+      const section = document.getElementById('secondarySection');
+      toggle.classList.toggle('on');
+      section.style.display = toggle.classList.contains('on') ? 'block' : 'none';
+    }
+  </script>
 </body>
 </html>

@@ -1,0 +1,308 @@
+<div class="library-host">
+
+  <!-- ── Page header ──────────────────────────────────────────────────────── -->
+  <header class="page-header">
+    <div class="page-header__text">
+      <div class="eyebrow" aria-hidden="true">SCR-012</div>
+      <h1 id="library-heading">
+        {{ showTrash() ? 'Document Trash' : 'Document Library' }}
+      </h1>
+      <p class="page-subtitle">Browse and manage patient documents</p>
+    </div>
+    <div class="page-header__actions">
+      <!-- Trash toggle — Admin role only (AC-4) -->
+      @if (isAdmin()) {
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="toggleTrash()"
+          [attr.aria-label]="showTrash() ? 'Switch to active documents' : 'View deleted documents in trash'"
+          [attr.aria-pressed]="showTrash()"
+        >
+          <mat-icon aria-hidden="true">{{ showTrash() ? 'folder_open' : 'delete' }}</mat-icon>
+          {{ showTrash() ? 'Active Documents' : 'View Trash' }}
+        </button>
+      }
+      @if (!showTrash()) {
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          routerLink="/documents/upload"
+          aria-label="Upload a new document"
+        >
+          <mat-icon aria-hidden="true">upload</mat-icon>
+          Upload New
+        </button>
+      }
+    </div>
+  </header>
+
+  <!-- ── Filter bar ───────────────────────────────────────────────────────── -->
+  @if (!showTrash()) {
+    <section class="filter-bar" aria-label="Document filters" [formGroup]="dateRangeGroup">
+
+      <!-- Category filter (AC-1) -->
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Category</mat-label>
+        <mat-select
+          [(ngModel)]="filterCategory"
+          [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="onFilterChange()"
+          aria-label="Filter by category"
+        >
+          <mat-option [value]="null">All Categories</mat-option>
+          @for (cat of categoryOptions; track cat.value) {
+            <mat-option [value]="cat.value">{{ cat.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Date range filter -->
+      <mat-form-field appearance="outline" class="filter-field filter-field--date">
+        <mat-label>Upload Date Range</mat-label>
+        <mat-date-range-input [rangePicker]="datePicker">
+          <input matStartDate formControlName="start" placeholder="Start date" aria-label="Start date" />
+          <input matEndDate formControlName="end" placeholder="End date" aria-label="End date" />
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="datePicker" aria-label="Open date picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #datePicker (closed)="onDateRangeClose()"></mat-date-range-picker>
+        @if (dateRangeGroup.controls.start.value || dateRangeGroup.controls.end.value) {
+          <button
+            matSuffix
+            mat-icon-button
+            type="button"
+            aria-label="Clear date range"
+            (click)="clearDateRange()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+
+      <!-- Status filter -->
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Status</mat-label>
+        <mat-select
+          [(ngModel)]="filterStatus"
+          [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="onFilterChange()"
+          aria-label="Filter by extraction status"
+        >
+          <mat-option [value]="null">All Statuses</mat-option>
+          <mat-option value="Queued">Queued</mat-option>
+          <mat-option value="Processing">Processing</mat-option>
+          <mat-option value="Completed">Completed</mat-option>
+          <mat-option value="Failed">Failed</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+    </section>
+  }
+
+  <!-- ── Loading state ────────────────────────────────────────────────────── -->
+  @if (isLoading()) {
+    <div class="state-container" role="status" aria-label="Loading documents" aria-live="polite">
+      <mat-progress-spinner mode="indeterminate" diameter="48" aria-hidden="true"></mat-progress-spinner>
+      <p class="state-text">Loading documents…</p>
+    </div>
+  }
+  @else if (loadError()) {
+    <div class="state-container" role="alert" aria-live="assertive">
+      <mat-icon class="state-icon state-icon--error" aria-hidden="true">error_outline</mat-icon>
+      <p class="state-text">{{ loadError() }}</p>
+      <button mat-raised-button color="primary" type="button" (click)="loadDocuments()">
+        <mat-icon aria-hidden="true">refresh</mat-icon>
+        Retry
+      </button>
+    </div>
+  }
+  @else if (documents().length === 0) {
+    <div class="state-container" role="status" aria-live="polite">
+      <mat-icon class="state-icon state-icon--empty" aria-hidden="true">
+        {{ showTrash() ? 'delete_outline' : 'folder_open' }}
+      </mat-icon>
+      <p class="state-text">
+        {{ showTrash() ? 'No documents in trash.' : 'No documents found.' }}
+      </p>
+      @if (!showTrash()) {
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          routerLink="/documents/upload"
+        >
+          <mat-icon aria-hidden="true">upload</mat-icon>
+          Upload Document
+        </button>
+      }
+    </div>
+  }
+  @else {
+    <div
+      class="table-wrapper"
+      role="region"
+      [attr.aria-label]="showTrash() ? 'Deleted documents' : 'Active documents'"
+    >
+      <table
+        mat-table
+        [dataSource]="documents()"
+        class="doc-table"
+        aria-labelledby="library-heading"
+      >
+
+        <!-- Name column ──────────────────────────────────────────────── -->
+        <ng-container matColumnDef="displayName">
+          <th mat-header-cell *matHeaderCellDef scope="col">Name</th>
+          <td mat-cell *matCellDef="let row" data-label="Name">
+            <a
+              [routerLink]="['/documents', row.documentId, 'view']"
+              class="doc-name-link"
+              [matTooltip]="row.originalFilename !== row.displayName ? 'Original: ' + row.originalFilename : ''"
+              [attr.aria-label]="'View document: ' + row.displayName"
+            >
+              {{ row.displayName }}
+            </a>
+            @if (row.originalFilename !== row.displayName) {
+              <span class="original-filename" [attr.aria-label]="'Original filename: ' + row.originalFilename">
+                {{ row.originalFilename }}
+              </span>
+            }
+          </td>
+        </ng-container>
+
+        <!-- Category column ──────────────────────────────────────────── -->
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef scope="col">Category</th>
+          <td mat-cell *matCellDef="let row" data-label="Category">
+            @if (editingCategoryId() === row.documentId) {
+              <!-- Inline category edit (AC-1 — enabled even during OCR, Edge Case 1) -->
+              <mat-select
+                [value]="row.category"
+                (selectionChange)="onCategorySelected(row, $event.value)"
+                (blur)="cancelCategoryEdit()"
+                class="category-inline-select"
+                [attr.aria-label]="'Assign category for ' + row.displayName"
+              >
+                @for (cat of categoryOptions; track cat.value) {
+                  <mat-option [value]="cat.value">{{ cat.label }}</mat-option>
+                }
+              </mat-select>
+            } @else {
+              <button
+                type="button"
+                class="badge-btn"
+                (click)="startCategoryEdit(row.documentId)"
+                [attr.aria-label]="getCategoryLabel(row.category) + '. Click to change category.'"
+              >
+                <span [class]="'badge badge--category badge--cat-' + (row.category ?? 'none')">
+                  {{ getCategoryLabel(row.category) }}
+                </span>
+              </button>
+            }
+          </td>
+        </ng-container>
+
+        <!-- Upload date column ───────────────────────────────────────── -->
+        <ng-container matColumnDef="uploadedAt">
+          <th mat-header-cell *matHeaderCellDef scope="col">Uploaded</th>
+          <td mat-cell *matCellDef="let row" data-label="Uploaded">
+            <time [attr.datetime]="row.uploadedAt">
+              {{ row.uploadedAt | date : 'mediumDate' }}
+            </time>
+          </td>
+        </ng-container>
+
+        <!-- Extraction status column ─────────────────────────────────── -->
+        <ng-container matColumnDef="extractionStatus">
+          <th mat-header-cell *matHeaderCellDef scope="col">Status</th>
+          <td mat-cell *matCellDef="let row" data-label="Status">
+            <span
+              [class]="'badge badge--status badge--status-' + row.extractionStatus.toLowerCase()"
+              [attr.aria-label]="'Extraction status: ' + row.extractionStatus"
+            >
+              {{ row.extractionStatus }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Deleted date column (trash view) ────────────────────────── -->
+        <ng-container matColumnDef="deletedAt">
+          <th mat-header-cell *matHeaderCellDef scope="col">Deleted</th>
+          <td mat-cell *matCellDef="let row" data-label="Deleted">
+            @if (row.deletedAt) {
+              <time [attr.datetime]="row.deletedAt">
+                {{ row.deletedAt | date : 'mediumDate' }}
+              </time>
+            } @else {
+              <span class="muted">—</span>
+            }
+          </td>
+        </ng-container>
+
+        <!-- Actions column ───────────────────────────────────────────── -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef scope="col">
+            <span class="sr-only">Actions</span>
+          </th>
+          <td mat-cell *matCellDef="let row" data-label="Actions" class="actions-cell">
+            @if (showTrash()) {
+              <!-- Trash view: Restore action (AC-4) -->
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="onRestore(row)"
+                [attr.aria-label]="'Restore ' + row.displayName"
+              >
+                <mat-icon aria-hidden="true">restore</mat-icon>
+                Restore
+              </button>
+            } @else {
+              <!-- Active view: Actions menu (rename / delete) -->
+              <button
+                mat-icon-button
+                type="button"
+                [matMenuTriggerFor]="rowActionsMenu"
+                [matMenuTriggerData]="{ row: row }"
+                [attr.aria-label]="'Actions for ' + row.displayName"
+                aria-haspopup="menu"
+              >
+                <mat-icon aria-hidden="true">more_vert</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns();" class="doc-row"></tr>
+      </table>
+    </div>
+
+    <!-- Shared actions mat-menu — receives row via matMenuTriggerData -->
+    <mat-menu #rowActionsMenu="matMenu">
+      <ng-template matMenuContent let-row="row">
+        <!-- Rename (AC-2) -->
+        <button mat-menu-item type="button" (click)="onRename(row)">
+          <mat-icon aria-hidden="true">edit</mat-icon>
+          <span>Rename</span>
+        </button>
+        <!-- Soft-delete (AC-3, UXR-111 — no hard-delete, Edge Case 2) -->
+        <button mat-menu-item type="button" class="menu-item--danger" (click)="onDelete(row)">
+          <mat-icon color="warn" aria-hidden="true">delete</mat-icon>
+          <span>Delete</span>
+        </button>
+      </ng-template>
+    </mat-menu>
+
+    <!-- Pagination (UXR-303) -->
+    <mat-paginator
+      [length]="totalCount()"
+      [pageSize]="pageSize()"
+      [pageIndex]="currentPage() - 1"
+      [pageSizeOptions]="[10, 25, 50]"
+      (page)="onPageChange($event)"
+      aria-label="Document list pagination"
+    ></mat-paginator>
+  }
+
+</div>

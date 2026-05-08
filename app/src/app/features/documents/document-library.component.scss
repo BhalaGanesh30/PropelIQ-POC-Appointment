@@ -1,0 +1,380 @@
+// =============================================================================
+// Document Library — SCR-012
+// Design tokens from designsystem.md; UXR-201/202/301/303/404
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// Layout shell
+// ---------------------------------------------------------------------------
+
+.library-host {
+  display: flex;
+  flex-direction: column;
+  gap: 24px; // spacing.lg
+  padding: 32px; // spacing.xl
+  max-width: 1440px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 16px; // spacing.md — tablet
+  }
+
+  @media (max-width: 375px) {
+    padding: 16px 12px; // mobile
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Page header
+// ---------------------------------------------------------------------------
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-header__text {
+  .eyebrow {
+    font-size: 12px; // caption
+    font-weight: 400;
+    color: var(--color-neutral-700);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+
+  h1 {
+    font-size: 24px; // heading1
+    font-weight: 600;
+    line-height: 32px;
+    color: var(--color-neutral-900);
+    margin: 0 0 4px;
+  }
+
+  .page-subtitle {
+    font-size: 14px; // body
+    color: var(--color-neutral-700);
+    margin: 0;
+  }
+}
+
+.page-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Filter bar
+// ---------------------------------------------------------------------------
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px; // spacing.md
+  align-items: flex-start;
+
+  .filter-field {
+    flex: 1 1 180px;
+    min-width: 160px;
+    max-width: 240px;
+  }
+
+  .filter-field--date {
+    flex: 1 1 260px;
+    max-width: 320px;
+  }
+
+  @media (max-width: 599px) {
+    // Full-width fields on mobile (UXR-301)
+    .filter-field,
+    .filter-field--date {
+      flex: 1 1 100%;
+      max-width: 100%;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// State containers (loading / empty / error)
+// ---------------------------------------------------------------------------
+
+.state-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 64px 24px;
+  text-align: center;
+  min-height: 240px;
+}
+
+.state-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  opacity: 0.5;
+
+  &--error {
+    color: var(--color-error); // #F44336 — UXR-404
+  }
+
+  &--empty {
+    color: var(--color-neutral-400);
+  }
+}
+
+.state-text {
+  font-size: 16px; // subtitle
+  font-weight: 500;
+  color: var(--color-neutral-700);
+  margin: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Document table (desktop — full-width)
+// ---------------------------------------------------------------------------
+
+.table-wrapper {
+  border-radius: 8px; // radius.md
+  border: 1px solid var(--color-neutral-200);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06); // elevation.level_1
+}
+
+.doc-table {
+  width: 100%;
+
+  // Column widths
+  .mat-column-displayName { flex: 2 1 200px; min-width: 160px; }
+  .mat-column-category     { flex: 1 1 130px; min-width: 110px; }
+  .mat-column-uploadedAt   { flex: 1 1 120px; min-width: 110px; }
+  .mat-column-extractionStatus { flex: 1 1 110px; min-width: 90px; }
+  .mat-column-deletedAt    { flex: 1 1 120px; min-width: 110px; }
+  .mat-column-actions      { flex: 0 0 60px; text-align: right; }
+
+  th {
+    font-size: 14px;
+    font-weight: 500; // subtitle scale
+    color: var(--color-neutral-700);
+    background: var(--color-neutral-50);
+  }
+
+  td {
+    font-size: 14px; // body
+    color: var(--color-neutral-900);
+    vertical-align: middle;
+  }
+}
+
+.doc-row {
+  transition: background-color 150ms ease-in-out; // transition.fast
+
+  &:hover {
+    background: var(--color-primary-50);
+  }
+
+  &--deleted {
+    opacity: 0.7;
+  }
+}
+
+.actions-cell {
+  text-align: right;
+  padding-right: 8px;
+}
+
+// ── Document name link ──────────────────────────────────────────────────────
+
+.doc-name-link {
+  color: var(--color-primary-500);
+  text-decoration: none;
+  font-weight: 500;
+  display: block;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  // WCAG 2.1 AA focus ring (UXR-202)
+  &:focus-visible {
+    outline: 3px solid var(--color-primary-500);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+.original-filename {
+  display: block;
+  font-size: 12px; // caption
+  color: var(--color-neutral-700);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+}
+
+.muted {
+  color: var(--color-neutral-400);
+}
+
+// ---------------------------------------------------------------------------
+// Badges — category and status (UXR-404 colour semantics)
+// ---------------------------------------------------------------------------
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px; // spacing.xs top, spacing.sm horizontal
+  border-radius: 4px; // radius.sm — pill badges
+  font-size: 12px; // caption
+  font-weight: 500;
+  line-height: 20px;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+// Category badges
+.badge--cat-lab_report    { background: #E8F5E9; color: #2E7D32; }  // success light/dark
+.badge--cat-referral      { background: #E3F2FD; color: #1565C0; }  // primary light/dark
+.badge--cat-prescription  { background: #F3E5F5; color: #6A1B9A; }  // purple tones
+.badge--cat-imaging       { background: #E0F2F1; color: #00695C; }  // secondary tones
+.badge--cat-insurance     { background: #FFF3E0; color: #E65100; }  // warning tones
+.badge--cat-other         { background: var(--color-neutral-200); color: var(--color-neutral-700); }
+.badge--cat-none          { background: var(--color-neutral-100); color: var(--color-neutral-700); }
+
+// Extraction status badges (UXR-404 — green=success, blue=info, grey=neutral, red=error)
+.badge--status-queued     { background: var(--color-neutral-200); color: var(--color-neutral-700); }
+.badge--status-processing { background: #E3F2FD; color: #1565C0; }
+.badge--status-completed  { background: #E8F5E9; color: #2E7D32; }
+.badge--status-failed     { background: #FFEBEE; color: #C62828; }
+
+// ---------------------------------------------------------------------------
+// Category inline select (AC-1)
+// ---------------------------------------------------------------------------
+
+.badge-btn {
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  cursor: pointer;
+  border-radius: 4px;
+
+  &:focus-visible {
+    outline: 3px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
+
+  &:hover .badge {
+    filter: brightness(0.95);
+  }
+}
+
+.category-inline-select {
+  width: 140px;
+  font-size: 13px;
+}
+
+// ---------------------------------------------------------------------------
+// Actions menu — destructive item styling
+// ---------------------------------------------------------------------------
+
+.menu-item--danger {
+  color: var(--color-error);
+
+  mat-icon {
+    color: var(--color-error);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Screen-reader only utility
+// ---------------------------------------------------------------------------
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Responsive — card layout on mobile (UXR-301, 375 px breakpoint)
+// ---------------------------------------------------------------------------
+
+@media (max-width: 599px) {
+  .table-wrapper {
+    border: none;
+    box-shadow: none;
+    overflow: visible;
+    border-radius: 0;
+  }
+
+  .doc-table {
+    // Hide the table header on mobile — labels are shown via data-label
+    thead {
+      display: none;
+    }
+
+    // Each row becomes a card
+    tr.mat-mdc-row {
+      display: block;
+      margin-bottom: 12px;
+      border: 1px solid var(--color-neutral-200);
+      border-radius: 8px; // radius.md
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+      padding: 12px 16px;
+      background: var(--color-bg-surface);
+    }
+
+    // Each cell becomes a labeled row inside the card
+    td.mat-mdc-cell {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 6px 0;
+      border: none;
+      font-size: 14px;
+      min-height: 0;
+
+      // Pseudo-element shows column label from data-label attribute
+      &::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--color-neutral-700);
+        min-width: 90px;
+        flex-shrink: 0;
+        font-size: 12px; // caption
+        padding-top: 2px;
+      }
+
+      &:last-child {
+        padding-top: 10px;
+        border-top: 1px solid var(--color-neutral-100);
+        margin-top: 4px;
+        justify-content: flex-end;
+
+        // Hide the data-label for Actions column on mobile
+        &::before {
+          display: none;
+        }
+      }
+    }
+  }
+
+  // Remove card-on-row hover on mobile
+  .doc-row:hover {
+    background: var(--color-bg-surface);
+  }
+}

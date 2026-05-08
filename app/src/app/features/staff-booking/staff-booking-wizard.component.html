@@ -1,0 +1,485 @@
+<section class="wizard-shell" aria-label="Staff-assisted booking wizard">
+
+  <!-- ── Step indicator ─────────────────────────────────────────────────── -->
+  <nav class="wizard-steps" aria-label="Booking wizard steps">
+    <div class="step-item"
+         [class.active]="currentStep() === 1"
+         [class.done]="currentStep() > 1"
+         aria-label="Step 1: Patient selection">
+      <div class="step-circle">
+        @if (currentStep() > 1) { <mat-icon>check</mat-icon> } @else { 1 }
+      </div>
+      <span class="step-label">Patient</span>
+    </div>
+    <div class="step-connector" [class.done]="currentStep() > 1"></div>
+
+    <div class="step-item"
+         [class.active]="currentStep() === 2"
+         [class.done]="currentStep() > 2"
+         aria-label="Step 2: Slot selection">
+      <div class="step-circle">
+        @if (currentStep() > 2) { <mat-icon>check</mat-icon> } @else { 2 }
+      </div>
+      <span class="step-label">Slot</span>
+    </div>
+    <div class="step-connector" [class.done]="currentStep() > 2"></div>
+
+    <div class="step-item"
+         [class.active]="currentStep() === 3"
+         [class.done]="currentStep() > 3"
+         aria-label="Step 3: Intake and override">
+      <div class="step-circle">
+        @if (currentStep() > 3) { <mat-icon>check</mat-icon> } @else { 3 }
+      </div>
+      <span class="step-label">Intake</span>
+    </div>
+    <div class="step-connector" [class.done]="currentStep() > 3"></div>
+
+    <div class="step-item"
+         [class.active]="currentStep() === 4"
+         aria-label="Step 4: Confirm booking">
+      <div class="step-circle">4</div>
+      <span class="step-label">Confirm</span>
+    </div>
+  </nav>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       STEP 1 — Patient selection
+  ═══════════════════════════════════════════════════════════════════════ -->
+  @if (currentStep() === 1) {
+    <div class="wizard-step" role="region" aria-labelledby="step1-heading">
+      <h2 id="step1-heading" class="step-title">Book on behalf of a patient</h2>
+      <p class="step-subtitle">Search by name or phone, or create a new patient profile.</p>
+
+      <!-- Self-booking note (Edge Case 2) -->
+      <p class="self-booking-note" role="note">
+        <mat-icon aria-hidden="true">info</mat-icon>
+        Your own profile is excluded — you cannot book for yourself.
+      </p>
+
+      <!-- Selected patient chip -->
+      @if (selectedPatient(); as patient) {
+        <div class="selected-chip" role="status" [attr.aria-label]="'Selected patient: ' + patient.name">
+          <mat-icon aria-hidden="true">person</mat-icon>
+          <div class="chip-text">
+            <span class="chip-name">{{ patient.name }}</span>
+            <span class="chip-meta">DOB: {{ patient.dateOfBirth }}</span>
+          </div>
+          <button mat-icon-button
+                  class="chip-clear"
+                  (click)="clearPatient()"
+                  aria-label="Remove selected patient">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      }
+
+      <!-- Search form (hidden when patient already selected) -->
+      @if (!selectedPatient() && !showNewPatientForm()) {
+        <form [formGroup]="searchForm" autocomplete="off">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Search by name or phone</mat-label>
+            <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+            <input matInput
+                   type="search"
+                   formControlName="query"
+                   cdkFocusInitial
+                   (input)="onSearchInput(searchForm.get('query')!.value ?? '')"
+                   aria-label="Search patients"
+                   aria-autocomplete="list"
+                   aria-controls="patient-results"
+                   aria-describedby="search-hint">
+            <mat-hint id="search-hint">Type at least 2 characters to search</mat-hint>
+          </mat-form-field>
+        </form>
+
+        @if (searchError()) {
+          <p class="inline-error" role="alert">{{ searchError() }}</p>
+        }
+
+        @if (searchResults().length > 0) {
+          <ul id="patient-results" class="result-list" role="listbox" aria-label="Patient search results">
+            @for (patient of searchResults(); track patient.id) {
+              <li class="result-item"
+                  role="option"
+                  tabindex="0"
+                  [attr.aria-label]="patient.name + ', DOB ' + patient.dateOfBirth"
+                  (click)="selectPatient(patient)"
+                  (keydown.enter)="selectPatient(patient)"
+                  (keydown.space)="selectPatient(patient)">
+                <div class="patient-avatar" aria-hidden="true">
+                  {{ patient.name.slice(0, 2).toUpperCase() }}
+                </div>
+                <div>
+                  <div class="patient-name">{{ patient.name }}</div>
+                  <div class="patient-meta">DOB: {{ patient.dateOfBirth }}
+                    @if (patient.phone) { · {{ patient.phone }} }
+                  </div>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+
+        <button class="create-patient-link"
+                type="button"
+                (click)="toggleNewPatientForm()"
+                [attr.aria-expanded]="showNewPatientForm()">
+          <mat-icon>add</mat-icon>
+          Patient not found? Create a new profile
+        </button>
+      }
+
+      <!-- New patient inline form (AC-3) -->
+      @if (showNewPatientForm()) {
+        <div class="inline-form" role="group" aria-labelledby="new-patient-heading">
+          <h3 id="new-patient-heading" class="inline-form-title">New Patient Profile</h3>
+          <form [formGroup]="newPatientForm" class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>First Name</mat-label>
+              <input matInput formControlName="firstName" aria-required="true" aria-describedby="fn-err">
+              @if (newPatientForm.get('firstName')?.invalid && newPatientForm.get('firstName')?.touched) {
+                <mat-error id="fn-err">First name is required.</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Last Name</mat-label>
+              <input matInput formControlName="lastName" aria-required="true" aria-describedby="ln-err">
+              @if (newPatientForm.get('lastName')?.invalid && newPatientForm.get('lastName')?.touched) {
+                <mat-error id="ln-err">Last name is required.</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Phone</mat-label>
+              <input matInput type="tel" formControlName="phone" aria-required="true" aria-describedby="ph-err">
+              @if (newPatientForm.get('phone')?.invalid && newPatientForm.get('phone')?.touched) {
+                <mat-error id="ph-err">Enter a valid phone number.</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Date of Birth</mat-label>
+              <input matInput type="date" formControlName="dateOfBirth" aria-required="true" aria-describedby="dob-err">
+              @if (newPatientForm.get('dateOfBirth')?.invalid && newPatientForm.get('dateOfBirth')?.touched) {
+                <mat-error id="dob-err">Date of birth is required.</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="span-2">
+              <mat-label>Email (optional)</mat-label>
+              <input matInput type="email" formControlName="email" aria-describedby="em-err">
+              @if (newPatientForm.get('email')?.invalid && newPatientForm.get('email')?.touched) {
+                <mat-error id="em-err">Enter a valid email address.</mat-error>
+              }
+            </mat-form-field>
+          </form>
+          <button type="button" class="create-patient-link" (click)="toggleNewPatientForm()">
+            <mat-icon>arrow_back</mat-icon>
+            Back to search
+          </button>
+        </div>
+      }
+
+      <div class="action-row">
+        <span></span>
+        <button mat-flat-button
+                color="primary"
+                [disabled]="!canProceedFromStep1()"
+                [attr.aria-disabled]="!canProceedFromStep1()"
+                (click)="proceedToSlots()">
+          Next: Pick a Slot
+          <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       STEP 2 — Slot selection
+  ═══════════════════════════════════════════════════════════════════════ -->
+  @if (currentStep() === 2) {
+    <div class="wizard-step" role="region" aria-labelledby="step2-heading">
+      <h2 id="step2-heading" class="step-title">Select an appointment slot</h2>
+      @if (selectedPatient(); as patient) {
+        <p class="step-subtitle">Booking for <strong>{{ patient.name }}</strong></p>
+      }
+
+      <!-- Conflict banner (Edge Case 1) -->
+      @if (conflict()?.hasConflict && !conflictAcknowledged()) {
+        <div class="conflict-banner" role="alert" aria-live="assertive">
+          <mat-icon aria-hidden="true" class="conflict-icon">warning</mat-icon>
+          <div>
+            <strong>Scheduling conflict detected</strong>
+            <p>
+              @if (selectedPatient(); as patient) { {{ patient.name }} }
+              already has a confirmed appointment
+              @if (conflict()?.existingDateTime) { at {{ conflict()!.existingDateTime }} }
+              @if (conflict()?.existingProvider) { with {{ conflict()!.existingProvider }} }.
+            </p>
+            <div class="conflict-actions">
+              <button mat-stroked-button (click)="selectedSlot.set(null)">
+                Choose a different slot
+              </button>
+              <button mat-flat-button color="warn" (click)="acknowledgeConflict()">
+                Proceed with override
+                <mat-icon iconPositionEnd>warning</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Override acknowledged notice -->
+      @if (conflictAcknowledged()) {
+        <div class="override-notice" role="status">
+          <mat-icon aria-hidden="true">warning</mat-icon>
+          Conflict override acknowledged — provide a reason in the next step.
+        </div>
+      }
+
+      <!-- Filters -->
+      <form [formGroup]="slotFilterForm" class="slot-filters" (ngSubmit)="loadSlots()">
+        <mat-form-field appearance="outline" style="width:160px">
+          <mat-label>Date</mat-label>
+          <input matInput type="date" formControlName="date" (change)="loadSlots()">
+        </mat-form-field>
+        <mat-form-field appearance="outline" style="width:140px">
+          <mat-label>Duration</mat-label>
+          <mat-select formControlName="duration" (selectionChange)="loadSlots()">
+            <mat-option [value]="15">15 min</mat-option>
+            <mat-option [value]="30">30 min</mat-option>
+            <mat-option [value]="60">60 min</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" style="width:180px">
+          <mat-label>Provider</mat-label>
+          <input matInput formControlName="providerName" placeholder="Any" (blur)="loadSlots()">
+        </mat-form-field>
+      </form>
+
+      @if (isLoadingSlots()) {
+        <div class="loading-slots" aria-live="polite" aria-label="Loading slots">
+          <mat-progress-spinner mode="indeterminate" diameter="36"></mat-progress-spinner>
+          <span>Loading available slots…</span>
+        </div>
+      }
+
+      @if (slotsError()) {
+        <p class="inline-error" role="alert">{{ slotsError() }}</p>
+      }
+
+      @if (!isLoadingSlots() && slots().length > 0) {
+        <div class="slot-grid" role="listbox" aria-label="Available appointment slots">
+          @for (slot of slots(); track slot.slotId) {
+            <div class="slot-chip"
+                 role="option"
+                 tabindex="{{ slot.available ? 0 : -1 }}"
+                 [class.selected]="selectedSlot()?.slotId === slot.slotId"
+                 [class.conflict-selected]="selectedSlot()?.slotId === slot.slotId && conflict()?.hasConflict"
+                 [class.unavailable]="!slot.available"
+                 [attr.aria-selected]="selectedSlot()?.slotId === slot.slotId"
+                 [attr.aria-disabled]="!slot.available"
+                 [attr.aria-label]="slot.dateTime + (slot.providerName ? ' with ' + slot.providerName : '') + (slot.available ? '' : ', unavailable')"
+                 (click)="selectSlot(slot)"
+                 (keydown.enter)="selectSlot(slot)"
+                 (keydown.space)="selectSlot(slot)">
+              <div class="slot-time">{{ slot.dateTime | date: 'h:mm a' }}</div>
+              @if (slot.providerName) {
+                <div class="slot-provider">{{ slot.providerName }}</div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      @if (isCheckingConflict()) {
+        <p class="checking-conflict" aria-live="polite">Checking for conflicts…</p>
+      }
+
+      <div class="action-row">
+        <button mat-stroked-button (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Back
+        </button>
+        <button mat-flat-button
+                color="primary"
+                [disabled]="!canProceedFromStep2()"
+                [attr.aria-disabled]="!canProceedFromStep2()"
+                (click)="proceedToIntake()">
+          Next: Intake
+          <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       STEP 3 — Intake & override reason
+  ═══════════════════════════════════════════════════════════════════════ -->
+  @if (currentStep() === 3) {
+    <div class="wizard-step" role="region" aria-labelledby="step3-heading">
+      <h2 id="step3-heading" class="step-title">Visit intake</h2>
+      @if (selectedSlot(); as slot) {
+        <p class="step-subtitle">{{ slot.dateTime | date: 'medium' }}
+          @if (slot.providerName) { with {{ slot.providerName }} }
+        </p>
+      }
+
+      <!-- Override required notice (shown when conflict was acknowledged) -->
+      @if (overrideRequired()) {
+        <div class="override-notice" role="status" aria-live="polite">
+          <mat-icon aria-hidden="true">warning</mat-icon>
+          <span>Override reason is <strong>required</strong> — stored immutably in the audit log (AC-4).</span>
+        </div>
+      }
+
+      <form [formGroup]="intakeForm">
+        <!-- Visit reason -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Visit Reason</mat-label>
+          <textarea matInput
+                    formControlName="visitReason"
+                    rows="3"
+                    maxlength="500"
+                    aria-required="true"
+                    aria-describedby="vr-hint vr-err"
+                    [class.warn-zone]="visitReasonWarning()"
+                    [class.at-max]="visitReasonAtMax()"></textarea>
+          <mat-hint id="vr-hint" align="end"
+                    [class.char-warn]="visitReasonWarning()"
+                    [class.char-max]="visitReasonAtMax()"
+                    [attr.aria-live]="visitReasonWarning() ? 'polite' : 'off'">
+            {{ visitReasonLen() }} / 500
+          </mat-hint>
+          @if (intakeForm.get('visitReason')?.invalid && intakeForm.get('visitReason')?.touched) {
+            <mat-error id="vr-err">Visit reason is required.</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Override reason (AC-4) — conditionally required -->
+        @if (overrideRequired()) {
+          <mat-form-field appearance="outline" class="full-width override-field">
+            <mat-label>Override Reason</mat-label>
+            <textarea matInput
+                      formControlName="overrideReason"
+                      rows="3"
+                      maxlength="300"
+                      aria-required="true"
+                      aria-describedby="or-hint or-err"
+                      [class.warn-zone]="overrideReasonWarning()"
+                      [class.at-max]="overrideReasonAtMax()"></textarea>
+            <mat-hint id="or-hint" align="end"
+                      [class.char-warn]="overrideReasonWarning()"
+                      [class.char-max]="overrideReasonAtMax()"
+                      [attr.aria-live]="overrideReasonWarning() ? 'polite' : 'off'">
+              {{ overrideReasonLen() }} / 300
+            </mat-hint>
+            @if (intakeForm.get('overrideReason')?.invalid && intakeForm.get('overrideReason')?.touched) {
+              <mat-error id="or-err">Override reason is required when a constraint was bypassed.</mat-error>
+            }
+          </mat-form-field>
+        }
+      </form>
+
+      <div class="action-row">
+        <button mat-stroked-button (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Back
+        </button>
+        <button mat-flat-button
+                color="primary"
+                [disabled]="intakeForm.invalid"
+                [attr.aria-disabled]="intakeForm.invalid"
+                (click)="proceedToConfirm()">
+          Next: Review &amp; Confirm
+          <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       STEP 4 — Confirm summary
+  ═══════════════════════════════════════════════════════════════════════ -->
+  @if (currentStep() === 4) {
+    <div class="wizard-step" role="region" aria-labelledby="step4-heading">
+      <h2 id="step4-heading" class="step-title">Review and confirm booking</h2>
+      <p class="step-subtitle">
+        Review the details before creating the booking on behalf of this patient.
+      </p>
+
+      <dl class="summary-grid">
+        <div class="summary-item">
+          <dt class="summary-label">Patient</dt>
+          @if (selectedPatient(); as patient) {
+            <dd class="summary-value">{{ patient.name }}
+              <span class="summary-meta">DOB: {{ patient.dateOfBirth }}</span>
+            </dd>
+          } @else {
+            <dd class="summary-value">
+              {{ newPatientForm.get('firstName')?.value }} {{ newPatientForm.get('lastName')?.value }}
+              <span class="summary-meta">New patient</span>
+            </dd>
+          }
+        </div>
+
+        <div class="summary-item">
+          <dt class="summary-label">Slot</dt>
+          @if (selectedSlot(); as slot) {
+            <dd class="summary-value">
+              {{ slot.dateTime | date: 'mediumDate' }} · {{ slot.dateTime | date: 'shortTime' }}
+              @if (slot.providerName) {
+                <span class="summary-meta">{{ slot.providerName }} · {{ slotFilterForm.get('duration')?.value }} min</span>
+              }
+            </dd>
+          }
+        </div>
+
+        <div class="summary-item">
+          <dt class="summary-label">Visit Reason</dt>
+          <dd class="summary-value summary-prose">{{ intakeForm.get('visitReason')?.value }}</dd>
+        </div>
+
+        @if (overrideRequired() && intakeForm.get('overrideReason')?.value) {
+          <div class="summary-item override-summary">
+            <dt class="summary-label">Override Reason</dt>
+            <dd class="summary-value summary-prose override-text">
+              {{ intakeForm.get('overrideReason')?.value }}
+            </dd>
+          </div>
+        }
+      </dl>
+
+      <p class="confirm-footnote">
+        <mat-icon aria-hidden="true">email</mat-icon>
+        A confirmation email and calendar invite will be sent to the patient.
+        This booking will be attributed to your staff account in the audit log (AC-2, AC-4).
+      </p>
+
+      <div class="action-row">
+        <button mat-stroked-button [disabled]="isSubmitting()" (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Back
+        </button>
+        <button mat-flat-button
+                color="primary"
+                class="confirm-btn"
+                [disabled]="isSubmitting()"
+                [attr.aria-disabled]="isSubmitting()"
+                [attr.aria-busy]="isSubmitting()"
+                (click)="confirmBooking()"
+                aria-label="Confirm and create booking">
+          @if (isSubmitting()) {
+            <mat-progress-spinner diameter="18" mode="indeterminate" aria-hidden="true"></mat-progress-spinner>
+            Submitting…
+          } @else {
+            <mat-icon>check</mat-icon>
+            Confirm Booking
+          }
+        </button>
+      </div>
+    </div>
+  }
+</section>

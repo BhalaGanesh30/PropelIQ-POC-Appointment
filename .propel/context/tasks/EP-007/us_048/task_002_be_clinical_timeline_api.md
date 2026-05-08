@@ -247,10 +247,10 @@ dotnet run --project src/Api/Api.csproj
 
 ## Implementation Checklist
 
-- [ ] Create `TimelineQuery`, `TimelineEventDto`, `TimelineResponseDto` DTOs
-- [ ] Extend `IClinicalFactRepository` / `ClinicalFactRepository` with `GetTimelineFactsAsync` projecting facts to `TimelineEventDto` with category mapping and date filter
-- [ ] Extend `IDocumentRepository` / `DocumentRepository` with `GetTimelineDocumentsAsync` projecting documents to `TimelineEventDto`
-- [ ] Create `ITimelineService` / `TimelineService`: parallel source queries, category-based routing, merge + sort, return response (Edge Case 2)
-- [ ] Create `ITimelineCacheService` / `TimelineCacheService` with 60s Redis TTL keyed by patientId + filter hash (TR-004)
-- [ ] Create `TimelineController`: GET with category + date params, date range validation, always HTTP 200 (Edge Case 1), Clinician+Staff authorization
-- [ ] Add OpenTelemetry span + `timeline.query.duration_ms` metric; register services in DI
+- [x] Create `TimelineQuery`, `TimelineEventDto`, `TimelineResponseDto` DTOs
+- [x] Extend `IClinicalFactRepository` / `ClinicalFactRepository` with `GetTimelineFactsAsync` projecting facts to `TimelineEventDto` with category mapping and date filter
+- [x] Extend `IDocumentRepository` / `DocumentRepository` with `GetTimelineDocumentsAsync` projecting documents to `TimelineEventDto`
+- [x] Create `ITimelineService` / `TimelineService`: parallel source queries, category-based routing, merge + sort, return response (Edge Case 2)
+- [x] Create `ITimelineCacheService` / `TimelineCacheService` with 60s Redis TTL keyed by patientId + filter hash (TR-004)
+- [x] Create `TimelineController`: GET with category + date params, date range validation, always HTTP 200 (Edge Case 1), Clinician+Staff authorization
+- [x] Add OpenTelemetry span + `timeline.query.duration_ms` metric; register services in DI

@@ -1,0 +1,235 @@
+<!-- Walk-In Registration — EP-004 US_033 SCR-029                            -->
+<!-- UXR-205: aria-describedby links each input to its error message          -->
+<!-- UXR-501: Submit button disabled + spinner during in-flight POST          -->
+<!-- UXR-202: Full keyboard navigation; visible focus indicators              -->
+
+<div class="walkin-page" role="main" aria-label="Walk-In Registration">
+
+  <div class="walkin-shell">
+
+    <!-- ── Page header ──────────────────────────────────────────────────── -->
+    <header class="walkin-header">
+      <h1 class="walkin-title">Walk-In Registration</h1>
+      <p class="walkin-subtitle">Add a walk-in patient to today's queue.</p>
+    </header>
+
+    <!-- ── Edge Case 2: Capacity warning banner ─────────────────────────── -->
+    @if (atCapacity()) {
+      <div
+        class="capacity-banner"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true">
+        <mat-icon class="capacity-icon" aria-hidden="true">warning</mat-icon>
+        <span>
+          Clinic at capacity. Walk-in creation is still permitted.
+        </span>
+      </div>
+    }
+
+    <!-- ── Main form card ────────────────────────────────────────────────── -->
+    <mat-card class="walkin-card">
+      <mat-card-content>
+
+        <form
+          [formGroup]="form"
+          (ngSubmit)="onSubmit()"
+          novalidate
+          aria-label="Walk-in patient registration form">
+
+          <!-- ── Patient name + debounced search ──────────────────────────── -->
+          <div class="form-field-wrapper">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Patient Name</mat-label>
+              <input
+                matInput
+                formControlName="patientName"
+                id="patientName"
+                autocomplete="off"
+                [attr.aria-describedby]="hasError('patientName', 'required') ? 'name-err-required' : hasError('patientName', 'maxlength') ? 'name-err-max' : null"
+                (input)="onNameInput($any($event.target).value)"
+                placeholder="Full name"
+                required />
+              <mat-icon matSuffix aria-hidden="true">person</mat-icon>
+              @if (isSearching()) {
+                <mat-spinner matSuffix diameter="18" aria-label="Searching patients…"></mat-spinner>
+              }
+              @if (hasError('patientName', 'required')) {
+                <mat-error id="name-err-required">Patient name is required.</mat-error>
+              }
+              @if (hasError('patientName', 'maxlength')) {
+                <mat-error id="name-err-max">Name must be 200 characters or fewer.</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Selected patient chip (AC-4) -->
+            @if (selectedPatient()) {
+              <div class="selected-patient-chip" role="status" aria-live="polite">
+                <mat-icon aria-hidden="true">link</mat-icon>
+                <span>Linked to existing patient: <strong>{{ selectedPatient()!.name }}</strong></span>
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="clearSelectedPatient()"
+                  [attr.aria-label]="'Remove link to ' + selectedPatient()!.name">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            }
+
+            <!-- Edge Case 1: Disambiguation list ───────────────────────────── -->
+            @if (showDisambiguation() && searchResults().length > 0) {
+              <div
+                class="disambiguation-list"
+                role="listbox"
+                aria-label="Matching patients — select to link"
+                aria-live="polite">
+                <p class="disambiguation-hint">Select an existing patient or continue with a new record.</p>
+                @for (patient of searchResults(); track patient.id) {
+                  <button
+                    type="button"
+                    class="disambiguation-row"
+                    role="option"
+                    [attr.aria-selected]="selectedPatient()?.id === patient.id"
+                    (click)="selectPatient(patient)">
+                    <span class="dis-name">{{ patient.name }}</span>
+                    <span class="dis-meta">
+                      DOB: {{ patient.dateOfBirth | date: 'mediumDate' }}
+                      @if (patient.phone) { · {{ patient.phone }} }
+                    </span>
+                  </button>
+                }
+                <button
+                  type="button"
+                  class="disambiguation-row disambiguation-row--new"
+                  role="option"
+                  aria-selected="false"
+                  (click)="clearSelectedPatient()">
+                  <mat-icon aria-hidden="true">person_add</mat-icon>
+                  <span>Continue as new patient</span>
+                </button>
+              </div>
+            }
+          </div>
+
+          <!-- ── Phone number ──────────────────────────────────────────────── -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Phone Number (optional)</mat-label>
+            <input
+              matInput
+              formControlName="phone"
+              id="phone"
+              type="tel"
+              autocomplete="tel"
+              [attr.aria-describedby]="hasError('phone', 'pattern') ? 'phone-err-pattern' : null"
+              placeholder="+1 (555) 000-0000" />
+            <mat-icon matSuffix aria-hidden="true">phone</mat-icon>
+            @if (hasError('phone', 'pattern')) {
+              <mat-error id="phone-err-pattern">
+                Enter a valid phone number (7–20 digits, spaces, dashes, or parentheses).
+              </mat-error>
+            }
+          </mat-form-field>
+
+          <!-- ── Visit reason ──────────────────────────────────────────────── -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Visit Reason</mat-label>
+            <textarea
+              matInput
+              formControlName="visitReason"
+              id="visitReason"
+              rows="3"
+              [attr.aria-describedby]="hasError('visitReason', 'required') ? 'reason-err-required' : hasError('visitReason', 'maxlength') ? 'reason-err-max' : null"
+              placeholder="Briefly describe the reason for today's visit"
+              required></textarea>
+            @if (hasError('visitReason', 'required')) {
+              <mat-error id="reason-err-required">Visit reason is required.</mat-error>
+            }
+            @if (hasError('visitReason', 'maxlength')) {
+              <mat-error id="reason-err-max">Visit reason must be 500 characters or fewer.</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- ── AC-2: Convert to Patient toggle ──────────────────────────── -->
+          <div class="convert-toggle-row">
+            <mat-checkbox
+              formControlName="convertToPatient"
+              color="primary"
+              aria-describedby="convert-hint">
+              Register as a new patient account
+            </mat-checkbox>
+            <p id="convert-hint" class="field-hint">
+              Creates a full patient record and links it to this walk-in entry.
+            </p>
+          </div>
+
+          <!-- ── AC-2: Inline registration fields (shown when convertToPatient) -->
+          @if (convertEnabled) {
+            <div class="convert-fields" aria-live="polite">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Date of Birth</mat-label>
+                <input
+                  matInput
+                  formControlName="dateOfBirth"
+                  id="dateOfBirth"
+                  type="date"
+                  [attr.aria-describedby]="hasError('dateOfBirth', 'required') ? 'dob-err-required' : null"
+                  required />
+                @if (hasError('dateOfBirth', 'required')) {
+                  <mat-error id="dob-err-required">Date of birth is required when converting to patient.</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Email Address</mat-label>
+                <input
+                  matInput
+                  formControlName="email"
+                  id="email"
+                  type="email"
+                  autocomplete="email"
+                  [attr.aria-describedby]="hasError('email', 'required') ? 'email-err-required' : hasError('email', 'email') ? 'email-err-format' : null"
+                  placeholder="patient@example.com"
+                  required />
+                <mat-icon matSuffix aria-hidden="true">email</mat-icon>
+                @if (hasError('email', 'required')) {
+                  <mat-error id="email-err-required">Email is required when converting to patient.</mat-error>
+                }
+                @if (hasError('email', 'email')) {
+                  <mat-error id="email-err-format">Enter a valid email address.</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          }
+
+          <!-- ── Actions ──────────────────────────────────────────────────── -->
+          <div class="form-actions">
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="router.navigate(['/staff/queue'])"
+              [disabled]="isSubmitting()">
+              Cancel
+            </button>
+
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              [disabled]="isSubmitting()"
+              aria-label="Add walk-in to queue">
+              @if (isSubmitting()) {
+                <mat-spinner diameter="18" class="btn-spinner" aria-hidden="true"></mat-spinner>
+              }
+              Add to Queue
+            </button>
+          </div>
+
+        </form>
+
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+</div>

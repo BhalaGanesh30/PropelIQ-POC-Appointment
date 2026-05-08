@@ -1,0 +1,86 @@
+<!-- CheckinActionsComponent — EP-004 US_032                                 -->
+<!-- UXR-501: Buttons disabled + spinner shown during in-flight PATCH         -->
+<!-- UXR-111: No-Show opens confirm dialog (handled in .ts)                  -->
+<!-- UXR-202: Check In / Start Visit = primary; No-Show = warn (destructive)  -->
+
+<div class="actions-row" [class.actions-loading]="loading()">
+
+  @switch (entry.status) {
+
+    <!-- AC-1: Scheduled → Check In → Arrived -->
+    @case ('Scheduled') {
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="loading()"
+        (click)="checkIn()"
+        [attr.aria-label]="'Check in ' + entry.patientName">
+        @if (loading()) {
+          <mat-spinner diameter="16" class="btn-spinner" aria-hidden="true"></mat-spinner>
+        }
+        Check In
+      </button>
+    }
+
+    <!-- AC-2 (legacy): pre-US_032 "Waiting" rows behave like Arrived -->
+    @case ('Waiting') {
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="loading()"
+        (click)="startVisit()"
+        [attr.aria-label]="'Start visit for ' + entry.patientName">
+        @if (loading()) {
+          <mat-spinner diameter="16" class="btn-spinner" aria-hidden="true"></mat-spinner>
+        }
+        Start Visit
+      </button>
+    }
+
+    <!-- AC-2: Arrived → Start Visit → InProgress -->
+    @case ('Arrived') {
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="loading()"
+        (click)="startVisit()"
+        [attr.aria-label]="'Start visit for ' + entry.patientName">
+        @if (loading()) {
+          <mat-spinner diameter="16" class="btn-spinner" aria-hidden="true"></mat-spinner>
+        }
+        Start Visit
+      </button>
+    }
+
+    <!-- AC-3 + AC-4: InProgress → Complete Visit or No-Show -->
+    @case ('InProgress') {
+      <button
+        mat-stroked-button
+        color="primary"
+        [disabled]="loading()"
+        (click)="completeVisit()"
+        [attr.aria-label]="'Complete visit for ' + entry.patientName">
+        @if (loading()) {
+          <mat-spinner diameter="16" class="btn-spinner" aria-hidden="true"></mat-spinner>
+        }
+        Complete Visit
+      </button>
+
+      <button
+        mat-stroked-button
+        color="warn"
+        [disabled]="loading()"
+        (click)="requestNoShow()"
+        [attr.aria-label]="'Mark ' + entry.patientName + ' as no-show'">
+        No-Show
+      </button>
+    }
+
+    <!-- Completed / NoShow / unknown: no further actions available -->
+    @default {
+      <span class="no-actions" aria-label="No actions available">—</span>
+    }
+
+  }
+
+</div>

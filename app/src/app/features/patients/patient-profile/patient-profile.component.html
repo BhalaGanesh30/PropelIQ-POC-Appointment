@@ -1,0 +1,124 @@
+<div class="profile-host">
+
+  <!-- ── Page header ─────────────────────────────────────────────────────── -->
+  <header class="page-header">
+    <div class="page-header__text">
+      <div class="eyebrow" aria-hidden="true">SCR-014</div>
+      <h1 id="profile-heading">Patient Profile</h1>
+      <p class="page-subtitle">360° clinical overview</p>
+    </div>
+  </header>
+
+  <!-- ── Patient header card ─────────────────────────────────────────────── -->
+  <section class="patient-card" aria-labelledby="patient-card-heading">
+    @if (facade.headerLoading()) {
+      <div class="patient-card__loading" aria-label="Loading patient information" aria-busy="true">
+        <mat-spinner diameter="28" />
+      </div>
+    } @else if (facade.headerError()) {
+      <p class="patient-card__error" role="alert">
+        <mat-icon aria-hidden="true">error_outline</mat-icon>
+        {{ facade.headerError() }}
+      </p>
+    } @else if (facade.patientHeader()) {
+      <div class="patient-card__avatar" aria-hidden="true">
+        <mat-icon>person</mat-icon>
+      </div>
+      <div class="patient-card__info">
+        <h2 id="patient-card-heading" class="patient-card__name">
+          {{ facade.patientHeader()!.firstName }} {{ facade.patientHeader()!.lastName }}
+        </h2>
+        <dl class="patient-card__meta">
+          <dt>MRN</dt>
+          <dd>{{ facade.patientHeader()!.mrn }}</dd>
+          <dt>Date of Birth</dt>
+          <dd>{{ facade.patientHeader()!.dateOfBirth | date:'mediumDate' }}</dd>
+        </dl>
+      </div>
+    }
+  </section>
+
+  <!-- ── Tab panel ───────────────────────────────────────────────────────── -->
+  <mat-tab-group
+    class="profile-tabs"
+    aria-label="Patient profile sections"
+    animationDuration="150ms"
+    [selectedIndex]="selectedTabIndex()"
+    (selectedTabChange)="onTabChange($event)"
+  >
+
+    <!-- Summary tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon" aria-hidden="true">summarize</mat-icon>
+        Clinical Summary
+      </ng-template>
+      <div class="tab-content">
+        <app-profile-summary-tab />
+      </div>
+    </mat-tab>
+
+    <!-- Timeline tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon" aria-hidden="true">timeline</mat-icon>
+        Timeline
+      </ng-template>
+      <div class="tab-content">
+        @if (facade.patientHeader()) {
+          <app-profile-timeline-tab [patientId]="facade.patientHeader()!.id" />
+        }
+      </div>
+    </mat-tab>
+
+    <!-- Documents tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon" aria-hidden="true">folder_open</mat-icon>
+        Documents
+      </ng-template>
+      <div class="tab-content">
+        @if (facade.patientHeader()) {
+          <app-profile-documents-tab [patientId]="facade.patientHeader()!.id" />
+        }
+      </div>
+    </mat-tab>
+
+    <!-- Insurance tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon" aria-hidden="true">health_and_safety</mat-icon>
+        Insurance
+      </ng-template>
+      <div class="tab-content">
+        <app-profile-insurance-tab />
+      </div>
+    </mat-tab>
+
+    <!-- Coding tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon" aria-hidden="true">code</mat-icon>
+        Coding
+      </ng-template>
+      <div class="tab-content">
+        <app-profile-coding-tab />
+      </div>
+    </mat-tab>
+
+    <!-- Conflicts tab (SCR-016) -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon" aria-hidden="true">warning</mat-icon>
+        Conflicts
+      </ng-template>
+      <div class="tab-content">
+        @if (facade.patientHeader()) {
+          <app-profile-conflicts-tab [patientId]="facade.patientHeader()!.id" />
+        }
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+
+</div>

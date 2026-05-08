@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-027 Override Dialog — PropelIQ Hi-Fi Wireframe</title>
+  <link rel="stylesheet" href="./wireframe-theme.css">
+  <style>
+    /* ── Overlay backdrop ────────────────────────────────────────────────── */
+    .overlay-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.48);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    /* ── Dialog shell ────────────────────────────────────────────────────── */
+    .dialog {
+      background: var(--neutral-0);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.24);
+      width: 100%;
+      max-width: 520px;
+      margin: var(--space-4);
+      overflow: hidden;
+      animation: dialog-enter 200ms ease-out;
+    }
+
+    @keyframes dialog-enter {
+      from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .dialog-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-5) var(--space-5) var(--space-4);
+      border-bottom: 1px solid var(--neutral-200);
+    }
+
+    .dialog-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--warning-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+    }
+
+    .dialog-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--neutral-900);
+      margin: 0;
+    }
+
+    .dialog-subtitle {
+      font-size: 13px;
+      color: var(--neutral-600);
+      margin: 2px 0 0;
+    }
+
+    /* ── Dialog body ─────────────────────────────────────────────────────── */
+    .dialog-body {
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    /* Constraint context banner */
+    .constraint-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background: var(--warning-soft);
+      border-left: 4px solid var(--warning);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      color: #7c4e00;
+    }
+
+    .constraint-label {
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--neutral-600);
+      margin-bottom: 4px;
+    }
+
+    /* Textarea field */
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .field-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--neutral-700);
+    }
+
+    .field-label .required-mark {
+      color: var(--error);
+      margin-left: 2px;
+    }
+
+    .textarea-wrapper {
+      position: relative;
+    }
+
+    .mock-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: var(--space-3) var(--space-3);
+      border: 2px solid var(--primary-500);    /* focused state */
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      color: var(--neutral-900);
+      background: var(--neutral-0);
+      resize: vertical;
+      font-family: var(--font-sans);
+      line-height: 1.5;
+    }
+
+    .mock-textarea.error {
+      border-color: var(--error);
+    }
+
+    .mock-textarea.empty {
+      border-color: var(--neutral-300);
+      color: var(--neutral-600);
+    }
+
+    /* Character counter */
+    .char-counter-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .char-counter {
+      color: var(--neutral-600);
+    }
+
+    .char-counter.warning {
+      color: var(--warning);
+      font-weight: 600;
+    }
+
+    .char-counter.over {
+      color: var(--error);
+      font-weight: 600;
+    }
+
+    /* Validation error */
+    .field-error {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      font-size: 12px;
+      color: var(--error);
+      font-weight: 500;
+    }
+
+    .field-hint {
+      font-size: 12px;
+      color: var(--neutral-600);
+    }
+
+    /* Role badge (Edge Case 2) */
+    .role-gate-note {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      background: #e8f5e9;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      color: #1b5e20;
+    }
+
+    /* ── Dialog footer ───────────────────────────────────────────────────── */
+    .dialog-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--neutral-200);
+      background: var(--neutral-50);
+    }
+
+    .btn {
+      padding: 8px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-cancel {
+      background: transparent;
+      border: 1px solid var(--neutral-300);
+      color: var(--neutral-700);
+    }
+
+    .btn-confirm {
+      background: var(--primary-500);
+      color: var(--neutral-0);
+      min-width: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+    }
+
+    .btn-confirm.disabled {
+      background: var(--neutral-300);
+      color: var(--neutral-600);
+      cursor: not-allowed;
+    }
+
+    .btn-confirm.loading {
+      background: var(--primary-500);
+      opacity: 0.8;
+    }
+
+    /* Spinner SVG */
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── State tabs ──────────────────────────────────────────────────────── */
+    .state-nav {
+      position: fixed;
+      top: var(--space-4);
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: var(--space-2);
+      background: var(--neutral-0);
+      padding: var(--space-2) var(--space-3);
+      border-radius: 999px;
+      box-shadow: var(--shadow-2);
+      z-index: 200;
+      font-size: 13px;
+    }
+
+    .state-tab {
+      padding: 4px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      color: var(--neutral-700);
+      border: 1px solid var(--neutral-300);
+      background: var(--neutral-0);
+      font-size: 12px;
+      font-weight: 500;
+      transition: all var(--transition-fast);
+    }
+
+    .state-tab.active {
+      background: var(--primary-500);
+      color: var(--neutral-0);
+      border-color: var(--primary-500);
+    }
+
+    /* ── Blurred background content ──────────────────────────────────────── */
+    .bg-content {
+      filter: blur(2px);
+      pointer-events: none;
+    }
+
+    /* ── Audit log panel ─────────────────────────────────────────────────── */
+    .audit-section {
+      padding: var(--space-5);
+    }
+
+    .audit-section h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0 0 var(--space-4);
+    }
+
+    .filter-row {
+      display: flex;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+    }
+
+    .filter-chip {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: var(--primary-50);
+      color: var(--primary-700);
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid #90caf9;
+    }
+
+    .audit-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .audit-table th {
+      text-align: left;
+      padding: var(--space-2) var(--space-3);
+      background: var(--neutral-100);
+      color: var(--neutral-700);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid var(--neutral-200);
+    }
+
+    .audit-table td {
+      padding: var(--space-2) var(--space-3);
+      border-bottom: 1px solid var(--neutral-200);
+      vertical-align: top;
+      color: var(--neutral-900);
+    }
+
+    .audit-table tr:hover td {
+      background: var(--neutral-50);
+    }
+
+    .pill-override {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--warning-soft);
+      color: #7c4e00;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .reason-text {
+      max-width: 260px;
+      color: var(--neutral-700);
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── State navigation ───────────────────────────────────────────────── -->
+  <nav class="state-nav" role="navigation" aria-label="Dialog state preview">
+    <button class="state-tab active" onclick="showState('default')" id="tab-default">Default</button>
+    <button class="state-tab" onclick="showState('empty')" id="tab-empty">AC-3: Empty submit</button>
+    <button class="state-tab" onclick="showState('counter')" id="tab-counter">Edge 1: 480+ chars</button>
+    <button class="state-tab" onclick="showState('loading')" id="tab-loading">UXR-501: Loading</button>
+    <button class="state-tab" onclick="showState('audit')" id="tab-audit">AC-4: Audit log</button>
+  </nav>
+
+  <!-- ── Blurred background app shell ──────────────────────────────────── -->
+  <div class="app-shell bg-content" aria-hidden="true">
+    <aside class="sidebar">
+      <div class="brand"><strong>Staff Portal</strong><small>Staff-Assisted Booking</small></div>
+      <div class="nav-group">
+        <div class="nav-item">Daily Schedule</div>
+        <div class="nav-item active">Book for Patient</div>
+        <div class="nav-item">Walk-In Registration</div>
+      </div>
+    </aside>
+    <main class="content">
+      <section class="hero">
+        <div class="stack">
+          <span class="eyebrow">SCR-027</span>
+          <h1>Staff-Assisted Booking</h1>
+          <p>Booking Rahul Menon — Today at 3:15 PM with Dr. Patel.</p>
+        </div>
+        <div class="banner warning">
+          <strong>Scheduling constraint violated.</strong>
+          <p>Appointment falls outside allowed same-day booking window. Override required.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────────
+       STATE 1: Default (filled, valid, confirm enabled)
+  ──────────────────────────────────────────────────────────────────────── -->
+  <div class="overlay-bg" id="state-default" role="dialog" aria-modal="true"
+       aria-labelledby="dlg-title-default" aria-describedby="dlg-desc-default">
+    <div class="dialog">
+      <div class="dialog-header">
+        <div class="dialog-icon">⚠️</div>
+        <div>
+          <h2 class="dialog-title" id="dlg-title-default">Override Required</h2>
+          <p class="dialog-subtitle" id="dlg-desc-default">Provide a mandatory reason to proceed with this scheduling action.</p>
+        </div>
+      </div>
+
+      <div class="dialog-body">
+        <!-- Constraint context (read-only) -->
+        <div class="constraint-banner" role="status" aria-live="polite">
+          <div>
+            <div class="constraint-label">Violated Constraint</div>
+            Same-day booking outside permitted window (within 2 hours of slot start).
+          </div>
+        </div>
+
+        <!-- Role gate note (Edge Case 2 — Staff/Admin only) -->
+        <div class="role-gate-note" aria-label="Override available to Staff and Admin roles only">
+          🔒 Override available to <strong>Staff</strong> and <strong>Admin</strong> roles only.
+        </div>
+
+        <!-- Reason field -->
+        <div class="field-group">
+          <label class="field-label" for="reason-default">
+            Override Reason<span class="required-mark" aria-hidden="true">*</span>
+          </label>
+          <div class="textarea-wrapper">
+            <textarea class="mock-textarea" id="reason-default" rows="4"
+              aria-required="true"
+              aria-describedby="reason-hint-default"
+              placeholder="Explain why this scheduling constraint must be overridden…"
+              >Urgent same-day review required due to escalating pain score reported at triage. Clinical lead approved.</textarea>
+          </div>
+          <div class="char-counter-row">
+            <span class="field-hint" id="reason-hint-default">Required. Maximum 500 characters.</span>
+            <span class="char-counter" aria-label="87 of 500 characters used">87 / 500</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <button class="btn btn-cancel" aria-label="Cancel and close override dialog">Cancel</button>
+        <button class="btn btn-confirm" aria-label="Confirm override and proceed with scheduling">
+          Confirm Override
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────────
+       STATE 2: AC-3 Empty submit (validation error)
+  ──────────────────────────────────────────────────────────────────────── -->
+  <div class="overlay-bg" id="state-empty" style="display:none" role="dialog" aria-modal="true"
+       aria-labelledby="dlg-title-empty" aria-describedby="dlg-desc-empty">
+    <div class="dialog">
+      <div class="dialog-header">
+        <div class="dialog-icon">⚠️</div>
+        <div>
+          <h2 class="dialog-title" id="dlg-title-empty">Override Required</h2>
+          <p class="dialog-subtitle" id="dlg-desc-empty">Provide a mandatory reason to proceed.</p>
+        </div>
+      </div>
+
+      <div class="dialog-body">
+        <div class="constraint-banner">
+          <div>
+            <div class="constraint-label">Violated Constraint</div>
+            Same-day booking outside permitted window (within 2 hours of slot start).
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="reason-empty">
+            Override Reason<span class="required-mark" aria-hidden="true">*</span>
+          </label>
+          <div class="textarea-wrapper">
+            <textarea class="mock-textarea error" id="reason-empty" rows="4"
+              aria-required="true"
+              aria-invalid="true"
+              aria-describedby="reason-error-empty"
+              placeholder="Explain why this scheduling constraint must be overridden…"
+              ></textarea>
+          </div>
+          <div class="char-counter-row">
+            <!-- AC-3: error message linked via aria-describedby -->
+            <span class="field-error" id="reason-error-empty" role="alert">
+              ✗ Override reason is required.
+            </span>
+            <span class="char-counter" aria-label="0 of 500 characters used">0 / 500</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <button class="btn btn-cancel">Cancel</button>
+        <!-- Confirm button disabled until form is valid (UXR-501) -->
+        <button class="btn btn-confirm disabled" disabled aria-disabled="true"
+                aria-label="Confirm Override — disabled until reason is provided">
+          Confirm Override
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────────
+       STATE 3: Edge Case 1 — 480+ character warning zone
+  ──────────────────────────────────────────────────────────────────────── -->
+  <div class="overlay-bg" id="state-counter" style="display:none" role="dialog" aria-modal="true"
+       aria-labelledby="dlg-title-counter">
+    <div class="dialog">
+      <div class="dialog-header">
+        <div class="dialog-icon">⚠️</div>
+        <div>
+          <h2 class="dialog-title" id="dlg-title-counter">Override Required</h2>
+          <p class="dialog-subtitle">Provide a mandatory reason to proceed.</p>
+        </div>
+      </div>
+
+      <div class="dialog-body">
+        <div class="constraint-banner">
+          <div>
+            <div class="constraint-label">Violated Constraint</div>
+            Same-day booking outside permitted window.
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="reason-counter">
+            Override Reason<span class="required-mark" aria-hidden="true">*</span>
+          </label>
+          <div class="textarea-wrapper">
+            <textarea class="mock-textarea" id="reason-counter" rows="4"
+              aria-required="true"
+              aria-describedby="reason-counter-hint"
+              >Patient Rahul Menon presented with acute chest discomfort rated 8/10. The attending physician Dr. Patel authorized urgent same-day review bypassing normal scheduling constraints. Escalation documented in clinical notes ref CN-20260506-4471. Additional context: patient previously missed a routine cardiology follow-up and the presenting symptoms warrant immediate evaluation per hospital policy HOS-CARD-009 section 3.2 which allows clinical override when risk score exceeds threshold. This override has been reviewed and approved.</textarea>
+          </div>
+          <div class="char-counter-row">
+            <span class="field-hint" id="reason-counter-hint">Maximum 500 characters.</span>
+            <!-- Warning zone: 480–499 chars → amber -->
+            <span class="char-counter warning" aria-label="490 of 500 characters used. Approaching limit.">490 / 500</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <button class="btn btn-cancel">Cancel</button>
+        <button class="btn btn-confirm">Confirm Override</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────────
+       STATE 4: UXR-501 Loading state
+  ──────────────────────────────────────────────────────────────────────── -->
+  <div class="overlay-bg" id="state-loading" style="display:none" role="dialog" aria-modal="true"
+       aria-labelledby="dlg-title-loading" aria-busy="true">
+    <div class="dialog">
+      <div class="dialog-header">
+        <div class="dialog-icon">⚠️</div>
+        <div>
+          <h2 class="dialog-title" id="dlg-title-loading">Override Required</h2>
+          <p class="dialog-subtitle">Submitting override…</p>
+        </div>
+      </div>
+
+      <div class="dialog-body">
+        <div class="constraint-banner">
+          <div>
+            <div class="constraint-label">Violated Constraint</div>
+            Same-day booking outside permitted window.
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="reason-loading">Override Reason<span class="required-mark" aria-hidden="true">*</span></label>
+          <div class="textarea-wrapper">
+            <textarea class="mock-textarea" id="reason-loading" rows="4" disabled
+              >Urgent same-day review required. Clinical lead approved.</textarea>
+          </div>
+          <div class="char-counter-row">
+            <span class="field-hint">Submitting…</span>
+            <span class="char-counter">55 / 500</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <button class="btn btn-cancel" disabled aria-disabled="true">Cancel</button>
+        <!-- Loading state: spinner + disabled -->
+        <button class="btn btn-confirm loading" disabled aria-disabled="true" aria-label="Submitting override…">
+          <div class="spinner" aria-hidden="true"></div>
+          Submitting…
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────────
+       STATE 5: AC-4 Audit Log view
+  ──────────────────────────────────────────────────────────────────────── -->
+  <div id="state-audit" style="display:none; position:fixed; inset:0; background:var(--neutral-50); overflow:auto; z-index:100;">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand"><strong>Admin Portal</strong><small>Audit log</small></div>
+        <div class="nav-group">
+          <div class="nav-item">Users</div>
+          <div class="nav-item active">Audit Logs</div>
+          <div class="nav-item">Reports</div>
+        </div>
+      </aside>
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <div class="eyebrow">SCR-027 / AC-4</div>
+            <h2>Override Audit Log</h2>
+          </div>
+        </header>
+
+        <div class="audit-section">
+          <div class="filter-row">
+            <span class="filter-chip">Action: Override ✕</span>
+            <span class="filter-chip">Date: Today ✕</span>
+          </div>
+
+          <table class="audit-table" aria-label="Override audit log entries">
+            <thead>
+              <tr>
+                <th scope="col">Date / Time</th>
+                <th scope="col">Staff Name</th>
+                <th scope="col">Role</th>
+                <th scope="col">Overridden Constraint</th>
+                <th scope="col">Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>6 May 2026, 14:32</td>
+                <td>Dr. Sonia Patel</td>
+                <td><span class="pill-override">Staff</span></td>
+                <td>Same-day booking window</td>
+                <td class="reason-text">"Urgent same-day review required…"</td>
+              </tr>
+              <tr>
+                <td>6 May 2026, 11:07</td>
+                <td>Anika Rao</td>
+                <td><span class="pill-override">Admin</span></td>
+                <td>Late cancellation (within 24 h)</td>
+                <td class="reason-text">"Patient admitted to emergency ward…"</td>
+              </tr>
+              <tr>
+                <td>5 May 2026, 09:15</td>
+                <td>Marcus Lee</td>
+                <td><span class="pill-override">Staff</span></td>
+                <td>Double-booking conflict</td>
+                <td class="reason-text">"Specialist availability confirmed…"</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    function showState(name) {
+      const states = ['default','empty','counter','loading','audit'];
+      states.forEach(s => {
+        const el = document.getElementById('state-' + s);
+        if (el) el.style.display = (s === name) ? 'flex' : 'none';
+        const tab = document.getElementById('tab-' + s);
+        if (tab) tab.classList.toggle('active', s === name);
+      });
+      // Audit uses block not flex
+      if (name === 'audit') {
+        document.getElementById('state-audit').style.display = 'block';
+      }
+    }
+    // default tab active
+    document.getElementById('state-default').style.display = 'flex';
+  </script>
+
+  <script defer src="./wireframe-interactions.js"></script>
+</body>
+</html>

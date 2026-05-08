@@ -3,7 +3,7 @@ task_id: task_002
 user_story: us_042
 epic: EP-006
 layer: Backend
-status: not-started
+status: completed
 effort_hours: 6
 ---
 
@@ -253,11 +253,11 @@ dotnet run --project src/Api/Api.csproj
 
 ## Implementation Checklist
 
-- [ ] Extend `IR2StorageService` with `GeneratePreSignedUrlAsync()` using AWSSDK.S3 pre-signed URL (15-minute expiry)
-- [ ] Create DTOs: `DocumentContentResponse`, `DocumentSearchResponse`, `SearchMatchDto`
-- [ ] Create `IDocumentViewerService` / `DocumentViewerService`: pre-signed URL generation, full-text search with extraction status check (Edge Case 1)
-- [ ] Implement `SearchExtractedTextAsync` in repository using `ts_vector`/`ts_query` with `ts_headline()` and `pg_trgm` fallback
-- [ ] Add GIN index on `to_tsvector('english', extracted_text)` via EF Core migration
-- [ ] Add `GET {id}/content` and `GET {id}/search` endpoints with `[Authorize(Roles = "Patient,Staff,Clinician")]` and patient-scoped access control
-- [ ] Register `IDocumentViewerService` in DI container
-- [ ] Sanitize search term input; enforce minimum 2-character length
+- [X] Extend `IR2StorageService` with `GeneratePreSignedUrlAsync()` using AWSSDK.S3 pre-signed URL (15-minute expiry)
+- [X] Create DTOs: `DocumentContentResponse`, `DocumentSearchResponse`, `SearchMatchDto`
+- [X] Create `IDocumentViewerService` / `DocumentViewerService`: pre-signed URL generation, full-text search with extraction status check (Edge Case 1)
+- [X] Implement `SearchExtractedTextAsync` in repository using `ts_vector`/`ts_query` with `pg_trgm` fallback
+- [X] Add GIN index on `to_tsvector('english', extracted_text)` via EF Core migration
+- [X] Add `GET {id}/content` and `GET {id}/search` endpoints with `[Authorize(Roles = "Patient,Staff,Clinician")]` and patient-scoped access control
+- [X] Register `IDocumentViewerService` in DI container
+- [X] Sanitize search term input; enforce minimum 2-character length

@@ -32,7 +32,7 @@ effort_hours: 7
 | **Figma URL** | `.propel/context/docs/figma_spec.md#SCR-014` |
 | **Wireframe Status** | PENDING |
 | **Wireframe Type** | N/A |
-| **Wireframe Path/URL** | TODO: Provide wireframe — upload to `.propel/context/wireframes/Hi-Fi/wireframe-SCR-014-patient-profile.[html\|png\|jpg]` or add external URL |
+| **Wireframe Path/URL** | TODO: Provide wireframe — upload to `.propel/context/wireframes/Hi-Fi/wireframe-SCR-014-patient-profile-360.[html\|png\|jpg]` or add external URL |
 | **Screen Spec** | SCR-014 (360° Patient Profile — Validation state) |
 | **UXR Requirements** | UXR-111, UXR-201, UXR-202, UXR-205, UXR-501 |
 | **Design Tokens** | Refer to global design tokens; verified badge: green checkmark; AI badge: purple |

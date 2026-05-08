@@ -79,6 +79,32 @@
       }
     </mat-nav-list>
 
+    <!-- Staff section (Staff / Admin / Clinician roles) -->
+    @if (isStaff()) {
+      <mat-divider />
+      @if (!sidenavCollapsed()) {
+        <p class="nav-section-label">Staff</p>
+      }
+      <mat-nav-list class="nav-list">
+        @for (item of staffNavItems; track item.route) {
+          <a
+            mat-list-item
+            [routerLink]="item.route"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: false }"
+            [attr.aria-label]="item.label"
+            [matTooltip]="sidenavCollapsed() ? item.label : ''"
+            matTooltipPosition="after"
+          >
+            <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+            @if (!sidenavCollapsed()) {
+              <span matListItemTitle>{{ item.label }}</span>
+            }
+          </a>
+        }
+      </mat-nav-list>
+    }
+
     <!-- Admin section (role-gated) -->
     @if (isAdmin()) {
       <mat-divider />

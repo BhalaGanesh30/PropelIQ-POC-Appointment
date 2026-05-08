@@ -1,0 +1,269 @@
+<div class="report-host">
+
+  <!-- ── Page header ──────────────────────────────────────────────────── -->
+  <header class="page-header">
+    <div class="page-header__titles">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a routerLink="/insurance" [attr.aria-label]="'Insurance Verification form'">
+          Insurance Verification
+        </a>
+        <span class="breadcrumb-sep" aria-hidden="true">›</span>
+        <span aria-current="page">Verification Report</span>
+      </nav>
+      <h1 id="report-heading">Insurance Verification Report</h1>
+      <p class="page-subtitle">
+        All patient insurance records with soft-validation outcomes.
+        Staff and Admin access only.
+      </p>
+    </div>
+
+    <!-- Export actions (AC-3, AC-4) -->
+    <div class="header-actions" role="group" [attr.aria-label]="'Export report'">
+      <button
+        mat-stroked-button
+        color="primary"
+        (click)="exportPdf()"
+        [disabled]="isExportingPdf() || isLoading()"
+        [attr.aria-busy]="isExportingPdf()"
+        [attr.aria-label]="isExportingPdf() ? 'Generating PDF export…' : 'Export filtered records as PDF'"
+        matTooltip="Export all filtered records as PDF"
+      >
+        @if (isExportingPdf()) {
+          <mat-spinner diameter="16" aria-hidden="true" />
+        } @else {
+          <mat-icon aria-hidden="true">picture_as_pdf</mat-icon>
+        }
+        {{ isExportingPdf() ? 'Generating…' : 'Export PDF' }}
+      </button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="exportCsv()"
+        [disabled]="isExportingCsv() || isLoading()"
+        [attr.aria-busy]="isExportingCsv()"
+        [attr.aria-label]="isExportingCsv() ? 'Generating CSV export…' : 'Export filtered records as CSV'"
+        matTooltip="Export all filtered records as CSV for billing import"
+      >
+        @if (isExportingCsv()) {
+          <mat-spinner diameter="16" aria-hidden="true" />
+        } @else {
+          <mat-icon aria-hidden="true">download</mat-icon>
+        }
+        {{ isExportingCsv() ? 'Generating…' : 'Export CSV' }}
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Error banner ──────────────────────────────────────────────────── -->
+  @if (loadError()) {
+    <div class="banner banner-error" role="alert" aria-live="assertive">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <div>
+        <strong>Failed to load records.</strong>
+        The verification report could not be retrieved. Please check your connection.
+      </div>
+      <button mat-stroked-button color="warn" (click)="goToPage(currentPage())"
+              [attr.aria-label]="'Retry loading the report'">
+        Retry
+      </button>
+    </div>
+  }
+
+  <!-- ── Filter bar (AC-2) ──────────────────────────────────────────────── -->
+  <div class="filter-bar" role="search" [attr.aria-label]="'Filter insurance records'">
+    <mat-form-field appearance="outline" class="status-select">
+      <mat-label>Filter by status</mat-label>
+      <mat-select
+        [value]="selectedStatus()"
+        (selectionChange)="onStatusChange($event.value)"
+        [attr.aria-label]="'Filter by validation status'"
+      >
+        @for (option of statusOptions; track option.value) {
+          <mat-option [value]="option.value">{{ option.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- ── Active filter chip (removable) ──────────────────────────────── -->
+  @if (activeFilterLabel) {
+    <div class="chip-row" [attr.aria-label]="'Active filter: ' + activeFilterLabel" aria-live="polite">
+      <span class="chip-label">Active filter:</span>
+      <mat-chip-set>
+        <mat-chip
+          removable
+          (removed)="clearFilter()"
+          [attr.aria-label]="'Remove filter: ' + activeFilterLabel"
+        >
+          {{ activeFilterLabel }}
+          <mat-icon matChipRemove aria-hidden="true">cancel</mat-icon>
+        </mat-chip>
+      </mat-chip-set>
+    </div>
+  }
+
+  <!-- ── Data table ────────────────────────────────────────────────────── -->
+  <div class="table-card">
+    <div class="table-toolbar">
+      <span class="table-title">
+        Records
+        @if (!isLoading()) {
+          <span class="record-count" aria-live="polite">
+            {{ totalCount() | number }} {{ totalCount() === 1 ? 'result' : 'results' }}
+          </span>
+        }
+      </span>
+
+      <label class="page-size-label" [for]="'page-size-select'">
+        Rows per page:
+        <select
+          id="page-size-select"
+          class="page-size-select"
+          (change)="onPageSizeChange(+($any($event.target).value))"
+          [attr.aria-label]="'Rows per page'"
+        >
+          <option value="25" selected>25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </label>
+    </div>
+
+    <!-- Loading skeleton (5 rows) -->
+    @if (isLoading()) {
+      <div class="skeleton-table" aria-busy="true" [attr.aria-label]="'Loading insurance records'">
+        @for (_ of [1,2,3,4,5]; track $index) {
+          <div class="skeleton-row">
+            <span class="skeleton" style="width:140px;"></span>
+            <span class="skeleton" style="width:160px;"></span>
+            <span class="skeleton" style="width:110px;"></span>
+            <span class="skeleton" style="width:96px;height:20px;border-radius:10px;"></span>
+            <span class="skeleton" style="width:90px;"></span>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Actual table (hidden while loading to avoid layout flicker) -->
+    @if (!isLoading()) {
+      @if (records().length === 0 && !loadError()) {
+        <!-- Empty state -->
+        <div class="empty-state" role="status" aria-live="polite">
+          <mat-icon class="empty-icon" aria-hidden="true">search_off</mat-icon>
+          <p class="empty-title">No insurance records match the selected filter</p>
+          <p class="empty-body">Try clearing the filter or selecting a different status.</p>
+          @if (selectedStatus()) {
+            <button mat-stroked-button (click)="clearFilter()"
+                    [attr.aria-label]="'Clear active filter'">
+              <mat-icon>filter_alt_off</mat-icon>
+              Clear Filter
+            </button>
+          }
+        </div>
+      } @else {
+        <div class="table-scroll-container" role="region" [attr.aria-label]="'Insurance verification records table'" tabindex="0">
+          <table
+            mat-table
+            [dataSource]="records()"
+            matSort
+            (matSortChange)="onSortChange($event)"
+            class="report-table"
+            [attr.aria-rowcount]="totalCount()"
+            [attr.aria-label]="'Insurance verification records'"
+          >
+
+            <!-- Patient Name -->
+            <ng-container matColumnDef="patientName">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">Patient Name</th>
+              <td mat-cell *matCellDef="let row" [attr.data-label]="'Patient Name'">
+                {{ row.patientName }}
+              </td>
+            </ng-container>
+
+            <!-- Insurance Provider -->
+            <ng-container matColumnDef="providerName">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">Insurance Provider</th>
+              <td mat-cell *matCellDef="let row" [attr.data-label]="'Insurance Provider'">
+                {{ row.providerName }}
+              </td>
+            </ng-container>
+
+            <!-- Policy Number -->
+            <ng-container matColumnDef="policyNumber">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">Policy Number</th>
+              <td mat-cell *matCellDef="let row" [attr.data-label]="'Policy Number'">
+                <code class="policy-code">{{ row.policyNumber }}</code>
+              </td>
+            </ng-container>
+
+            <!-- Validation Status badge (UXR-404) -->
+            <ng-container matColumnDef="validationStatus">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">Validation Status</th>
+              <td mat-cell *matCellDef="let row" [attr.data-label]="'Validation Status'">
+                <span
+                  class="status-badge"
+                  [ngClass]="badgeFor(row.validationStatus).cssClass"
+                  [attr.aria-label]="'Validation status: ' + badgeFor(row.validationStatus).label"
+                >
+                  {{ badgeFor(row.validationStatus).label }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Validated Date -->
+            <ng-container matColumnDef="validatedAt">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">Validated Date</th>
+              <td mat-cell *matCellDef="let row" [attr.data-label]="'Validated Date'">
+                {{ row.validatedAt | date:'dd MMM yyyy' }}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="data-row"></tr>
+          </table>
+        </div>
+      }
+    }
+
+    <!-- Pagination bar (Edge Case 1 — server-side) -->
+    @if (!isLoading() && records().length > 0) {
+      <nav class="pagination-bar" [attr.aria-label]="'Pagination'">
+        <span class="pagination-info">
+          Showing {{ ((currentPage() - 1) * pageSize()) + 1 }}–{{ pageEndIndex() }} of {{ totalCount() | number }} records
+        </span>
+
+        <div class="pagination-controls">
+          <button
+            class="page-btn"
+            (click)="goToPage(currentPage() - 1)"
+            [disabled]="currentPage() === 1"
+            [attr.aria-label]="'Previous page'"
+          >‹</button>
+
+          @for (p of visiblePages; track p) {
+            @if (p === -1) {
+              <span class="page-ellipsis" aria-hidden="true">…</span>
+            } @else {
+              <button
+                class="page-btn"
+                [class.active]="p === currentPage()"
+                (click)="goToPage(p)"
+                [attr.aria-label]="'Page ' + p"
+                [attr.aria-current]="p === currentPage() ? 'page' : null"
+              >{{ p }}</button>
+            }
+          }
+
+          <button
+            class="page-btn"
+            (click)="goToPage(currentPage() + 1)"
+            [disabled]="currentPage() === totalPages"
+            [attr.aria-label]="'Next page'"
+          >›</button>
+        </div>
+      </nav>
+    }
+  </div>
+
+</div>

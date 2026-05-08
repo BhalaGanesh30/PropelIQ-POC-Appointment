@@ -1,0 +1,185 @@
+<div class="schedule-host">
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header class="schedule-header">
+    <div class="header-title">
+      <span class="eyebrow">SCR-026</span>
+      <h2 class="page-title">Daily Schedule</h2>
+    </div>
+
+    <div class="header-actions">
+      <!-- AC-4: date picker loads schedule on selection -->
+      <mat-form-field appearance="outline" class="date-picker-field">
+        <mat-label>Select date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="picker"
+          [formControl]="dateControl"
+          [attr.aria-label]="'Select schedule date'"
+        />
+        <mat-datepicker-toggle matIconSuffix [for]="picker" />
+        <mat-datepicker #picker />
+      </mat-form-field>
+
+      <!-- AC-3: print button -->
+      <button
+        mat-stroked-button
+        class="print-btn"
+        [attr.aria-label]="'Print schedule'"
+        (click)="printSchedule()"
+      >
+        <mat-icon>print</mat-icon>
+        Print schedule
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Error banner (UXR-304) ──────────────────────────────────────────── -->
+  @if (loadError()) {
+    <div class="error-banner" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span>{{ loadError() }}</span>
+      <button mat-button (click)="retryLoad()">Retry</button>
+    </div>
+  }
+
+  <!-- ── Conflict banner (Edge Case 1) ────────────────────────────────────── -->
+  @if (conflictMessage()) {
+    <div class="conflict-banner" role="alert" aria-live="assertive">
+      <mat-icon aria-hidden="true">warning</mat-icon>
+      <span>{{ conflictMessage() }}</span>
+      <button
+        mat-icon-button
+        [attr.aria-label]="'Dismiss conflict warning'"
+        (click)="dismissConflict()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
+
+  <!-- ── Skeleton loader (UXR-301) ─────────────────────────────────────────── -->
+  @if (isLoading()) {
+    <div class="skeleton-grid" aria-busy="true" aria-label="Loading schedule">
+      @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
+        <div class="skeleton-row">
+          <div class="skeleton-label shimmer"></div>
+          <div
+            class="skeleton-block shimmer"
+            [style.width]="(35 + i * 6) + '%'"
+          ></div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ── Time grid ─────────────────────────────────────────────────────────── -->
+  @if (!isLoading() && !loadError()) {
+    <div class="grid-outer" role="region" aria-label="Daily appointment schedule">
+
+      <!-- Time labels column (aria-hidden — labels are decorative) -->
+      <div class="time-labels" aria-hidden="true">
+        @for (slot of timeSlots; track slot.minutes) {
+          <div
+            class="time-label-cell"
+            [class.hour-label]="slot.isHour"
+          >
+            @if (slot.isHour) {
+              {{ slot.label }}
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Grid body: absolutely-positioned appointment blocks -->
+      <div
+        class="grid-body"
+        [style.height.px]="gridHeight"
+      >
+        <!-- Horizontal divider lines at each 15-min interval -->
+        @for (slot of timeSlots; track slot.minutes) {
+          <div
+            class="grid-line"
+            [class.grid-line--hour]="slot.isHour"
+            [style.top.px]="(slot.minutes - 420) * 4"
+            aria-hidden="true"
+          ></div>
+        }
+
+        <!-- Edge Case 2: empty state overlay -->
+        @if (isEmpty()) {
+          <div class="empty-state" role="status">
+            <mat-icon>event_busy</mat-icon>
+            <p>No appointments scheduled for this date.</p>
+          </div>
+        }
+
+        <!-- Appointment blocks -->
+        @for (appt of appointments(); track appt.appointmentId) {
+          <div
+            class="appt-block"
+            [class]="typeClass(appt)"
+            [style.top.px]="topPx(appt)"
+            [style.height.px]="heightPx(appt)"
+            cdkDrag
+            cdkDragLockAxis="y"
+            cdkDragBoundary=".grid-body"
+            (cdkDragEnded)="onDragEnded($event, appt)"
+            role="button"
+            tabindex="0"
+            [attr.aria-label]="appt.patientName + ', ' + startLabel(appt) + ', ' + appt.duration + ' minutes'"
+          >
+            <!-- Drag handle (UXR-110) -->
+            <span
+              class="drag-handle"
+              cdkDragHandle
+              aria-hidden="true"
+              title="Drag to reschedule"
+            >
+              <mat-icon>drag_indicator</mat-icon>
+            </span>
+
+            <!-- Block content -->
+            <div class="appt-content">
+              <strong class="appt-patient">{{ appt.patientName }}</strong>
+              <span class="appt-meta">
+                {{ startLabel(appt) }} · {{ appt.duration }} min
+              </span>
+              <span class="appt-type-label">{{ appt.appointmentType }}</span>
+              @if (appt.providerName) {
+                <span class="appt-provider">{{ appt.providerName }}</span>
+              }
+              @if (appt.location) {
+                <span class="appt-location">
+                  <mat-icon>place</mat-icon>{{ appt.location }}
+                </span>
+              }
+            </div>
+
+            <!-- Ghost preview visible during drag (UXR-110) -->
+            <ng-template cdkDragPreview>
+              <div class="appt-block appt-ghost" [class]="typeClass(appt)">
+                <strong>{{ appt.patientName }}</strong>
+                <span>{{ appt.duration }} min</span>
+              </div>
+            </ng-template>
+
+            <!-- Drag placeholder (keeps original slot visible while dragging) -->
+            <ng-template cdkDragPlaceholder>
+              <div class="appt-placeholder" [style.height.px]="heightPx(appt)"></div>
+            </ng-template>
+          </div>
+        }
+
+        <!-- Reschedule in-progress overlay -->
+        @if (isRescheduling()) {
+          <div class="reschedule-overlay" aria-live="polite" aria-label="Rescheduling appointment">
+            <mat-progress-spinner mode="indeterminate" diameter="32" />
+            <span>Rescheduling…</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+</div>

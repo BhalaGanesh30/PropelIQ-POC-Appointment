@@ -245,11 +245,11 @@ ng test
 
 ## Implementation Checklist
 
-- [ ] Create `DocumentCategory` enum and `DocumentListItem`, `DocumentListFilter` models
-- [ ] Create `DocumentLibraryService` wrapping list, categorize, rename, soft-delete, restore endpoints
-- [ ] Implement filter bar with category dropdown, date range picker, and status filter
-- [ ] Implement `app-data-table` with name, category badge, date, status, and actions columns; card-on-mobile (UXR-301)
-- [ ] Implement inline category assignment via `mat-select` dropdown (AC-1, Edge Case 1)
-- [ ] Implement rename via `mat-dialog` with optimistic UI update (AC-2); focus return to trigger (UXR-206)
-- [ ] Implement soft-delete via `app-confirm-dialog[variant="Destructive"]` (AC-3, UXR-111); undo toast with 3-second timer
-- [ ] **[UI Task - MANDATORY]** Reference wireframe from Design References table during implementation
+- [X] Create `DocumentCategory` enum and `DocumentListItem`, `DocumentListFilter` models
+- [X] Create `DocumentLibraryService` wrapping list, categorize, rename, soft-delete, restore endpoints
+- [X] Implement filter bar with category dropdown, date range picker, and status filter
+- [X] Implement `app-data-table` with name, category badge, date, status, and actions columns; card-on-mobile (UXR-301)
+- [X] Implement inline category assignment via `mat-select` dropdown (AC-1, Edge Case 1)
+- [X] Implement rename via `mat-dialog` with optimistic UI update (AC-2); focus return to trigger (UXR-206)
+- [X] Implement soft-delete via `app-confirm-dialog[variant="Destructive"]` (AC-3, UXR-111); undo toast with 3-second timer
+- [X] **[UI Task - MANDATORY]** Reference wireframe from Design References table during implementation

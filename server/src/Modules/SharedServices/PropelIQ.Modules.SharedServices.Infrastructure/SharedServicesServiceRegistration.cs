@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Npgsql;
+using PropelIQ.Modules.SharedServices.Application.Audit;
+using PropelIQ.Modules.SharedServices.Infrastructure.Audit;
 using PropelIQ.Modules.SharedServices.Infrastructure.Caching;
 using PropelIQ.Modules.SharedServices.Infrastructure.Data;
 using PropelIQ.Modules.SharedServices.Infrastructure.Data.Seed;
@@ -127,6 +129,10 @@ public static class SharedServicesServiceRegistration
         {
             services.AddScoped<INotificationSender, StubNotificationSender>();
         }
+
+        // ── Audit service (EP-004 US_034 AC-2, AC-4) ─────────────────────────
+        // Scoped: reads/writes AppDbContext within the same unit-of-work.
+        services.AddScoped<IAuditService, AuditService>();
 
         return services;
     }

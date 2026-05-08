@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PropelIQ.Modules.Administration.Domain.Entities;
 using PropelIQ.Modules.ClinicalIntelligence.Domain.Entities;
+using PropelIQ.Modules.ClinicalIntelligence.Domain.Enums;
 using PropelIQ.Modules.Scheduling.Domain.Entities;
 using PropelIQ.Modules.SharedServices.Domain.Entities;
 
@@ -31,8 +32,13 @@ public class AppDbContext : DbContext
     public DbSet<Patient> Patients => Set<Patient>();
     public DbSet<InsuranceProfile> InsuranceProfiles => Set<InsuranceProfile>();
 
+    // EP-005 US_037: Insurance validation engine reference data and audit records.
+    public DbSet<InsuranceProvider> InsuranceProviders => Set<InsuranceProvider>();
+    public DbSet<InsuranceValidationResult> InsuranceValidationResults => Set<InsuranceValidationResult>();
+
     // Scheduling module entities
     public DbSet<Appointment> Appointments => Set<Appointment>();
+    public DbSet<WalkIn> WalkIns => Set<WalkIn>();
     public DbSet<WaitlistEntry> WaitlistEntries => Set<WaitlistEntry>();
     public DbSet<ReminderEvent> ReminderEvents => Set<ReminderEvent>();
     public DbSet<DeadLetterEvent> DeadLetterEvents => Set<DeadLetterEvent>();
@@ -45,6 +51,11 @@ public class AppDbContext : DbContext
     public DbSet<ClinicalDocument> ClinicalDocuments => Set<ClinicalDocument>();
     public DbSet<ClinicalFact> ClinicalFacts => Set<ClinicalFact>();
     public DbSet<CodingDecision> CodingDecisions => Set<CodingDecision>();
+    public DbSet<DeadLetterEntry> OcrDeadLetterQueue => Set<DeadLetterEntry>();
+
+    // EP-007 US_046: Conflict detection entities (conflict_alerts, conflict_rules).
+    public DbSet<ConflictAlert> ConflictAlerts => Set<ConflictAlert>();
+    public DbSet<ConflictRule> ConflictRules => Set<ConflictRule>();
 
     // SharedServices module entities
     public DbSet<AuditRecord> AuditRecords => Set<AuditRecord>();
@@ -60,8 +71,14 @@ public class AppDbContext : DbContext
         // CREATE EXTENSION IF NOT EXISTS statements in the migration SQL.
         // AC-2: vector extension must be active (also ensured by 01-create-extensions.sql).
         modelBuilder.HasPostgresExtension("uuid-ossp");
-        //modelBuilder.HasPostgresExtension("vector");
+        modelBuilder.HasPostgresExtension("vector");
         modelBuilder.HasPostgresExtension("pg_trgm");
+
+        // US_043: Register the document_category_type PostgreSQL enum so Npgsql
+        // maps DocumentCategoryType <-> document_category_type in SQL.
+        modelBuilder.HasPostgresEnum<DocumentCategoryType>(
+            schema: "app",
+            name:   "document_category_type");
 
         // Set default schema to 'app' — all entity tables land in the app schema
         // unless explicitly overridden by an IEntityTypeConfiguration.
