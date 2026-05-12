@@ -90,68 +90,65 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                 DROP INDEX IF EXISTS app.ix_audit_records_event_type_occurred_at;
                 """);
 
-            // 1c. Rename the current regular table to preserve data during conversion.
+            // 1c–1h: Idempotent table-swap to partitioned parent.
+            //        Only executes if audit_records is not yet a partitioned table.
             migrationBuilder.Sql("""
-                ALTER TABLE app.audit_records RENAME TO audit_records_legacy;
-                """);
+                DO $$
+                BEGIN
+                    -- Skip if already partitioned (relkind='p' means partitioned table)
+                    IF (SELECT relkind FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+                        WHERE n.nspname = 'app' AND c.relname = 'audit_records') <> 'p' THEN
 
-            // 1d. Create the new range-partitioned parent table.
-            //     PK must include the partition key (occurred_at) per PostgreSQL rules.
-            //     All columns from the original table plus the composite PK.
-            migrationBuilder.Sql("""
-                CREATE TABLE app.audit_records (
-                    id                       UUID         NOT NULL DEFAULT gen_random_uuid(),
-                    event_type               VARCHAR(50)  NOT NULL,
-                    actor_user_id            UUID         NOT NULL,
-                    target_entity_id         UUID,
-                    target_entity_type       VARCHAR(100) NOT NULL,
-                    occurred_at              TIMESTAMPTZ  NOT NULL DEFAULT now(),
-                    details                  JSONB        NOT NULL DEFAULT '{}',
-                    override_constraint_type VARCHAR(50),
-                    override_reason          VARCHAR(500),
-                    override_action          VARCHAR(20),
-                    CONSTRAINT pk_audit_records PRIMARY KEY (id, occurred_at)
-                ) PARTITION BY RANGE (occurred_at);
-                """);
+                        -- Rename the old PK constraint so it doesn't conflict with the new table's PK.
+                        ALTER TABLE app.audit_records RENAME CONSTRAINT pk_audit_records TO pk_audit_records_legacy;
 
-            // 1e. Create yearly child partitions for the expected data window (2026–2028).
-            migrationBuilder.Sql("""
-                CREATE TABLE app.audit_records_y2026
-                    PARTITION OF app.audit_records
-                    FOR VALUES FROM ('2026-01-01') TO ('2027-01-01');
+                        -- 1c. Rename the current regular table to preserve data during conversion.
+                        ALTER TABLE app.audit_records RENAME TO audit_records_legacy;
 
-                CREATE TABLE app.audit_records_y2027
-                    PARTITION OF app.audit_records
-                    FOR VALUES FROM ('2027-01-01') TO ('2028-01-01');
+                        -- 1d. Create the new range-partitioned parent table.
+                        CREATE TABLE app.audit_records (
+                            id                       UUID         NOT NULL DEFAULT gen_random_uuid(),
+                            event_type               VARCHAR(50)  NOT NULL,
+                            actor_user_id            UUID         NOT NULL,
+                            target_entity_id         UUID,
+                            target_entity_type       VARCHAR(100) NOT NULL,
+                            occurred_at              TIMESTAMPTZ  NOT NULL DEFAULT now(),
+                            details                  JSONB        NOT NULL DEFAULT '{}',
+                            override_constraint_type VARCHAR(50),
+                            override_reason          VARCHAR(500),
+                            override_action          VARCHAR(20),
+                            CONSTRAINT pk_audit_records PRIMARY KEY (id, occurred_at)
+                        ) PARTITION BY RANGE (occurred_at);
 
-                CREATE TABLE app.audit_records_y2028
-                    PARTITION OF app.audit_records
-                    FOR VALUES FROM ('2028-01-01') TO ('2029-01-01');
-                """);
+                        -- 1e. Create yearly child partitions (2026-2028).
+                        CREATE TABLE app.audit_records_y2026
+                            PARTITION OF app.audit_records
+                            FOR VALUES FROM ('2026-01-01') TO ('2027-01-01');
+                        CREATE TABLE app.audit_records_y2027
+                            PARTITION OF app.audit_records
+                            FOR VALUES FROM ('2027-01-01') TO ('2028-01-01');
+                        CREATE TABLE app.audit_records_y2028
+                            PARTITION OF app.audit_records
+                            FOR VALUES FROM ('2028-01-01') TO ('2029-01-01');
 
-            // 1f. Default partition catches records outside defined ranges.
-            //     Required for safe INSERT routing until the next yearly partition is created.
-            migrationBuilder.Sql("""
-                CREATE TABLE app.audit_records_default
-                    PARTITION OF app.audit_records DEFAULT;
-                """);
+                        -- 1f. Default partition catches records outside defined ranges.
+                        CREATE TABLE app.audit_records_default
+                            PARTITION OF app.audit_records DEFAULT;
 
-            // 1g. Copy all data from the legacy table into the new partitioned table.
-            //     PostgreSQL routes each row to the correct child partition automatically.
-            migrationBuilder.Sql("""
-                INSERT INTO app.audit_records (
-                    id, event_type, actor_user_id, target_entity_id, target_entity_type,
-                    occurred_at, details, override_constraint_type, override_reason, override_action
-                )
-                SELECT
-                    id, event_type, actor_user_id, target_entity_id, target_entity_type,
-                    occurred_at, details, override_constraint_type, override_reason, override_action
-                FROM app.audit_records_legacy;
-                """);
+                        -- 1g. Copy data from the legacy table into the new partitioned table.
+                        INSERT INTO app.audit_records (
+                            id, event_type, actor_user_id, target_entity_id, target_entity_type,
+                            occurred_at, details, override_constraint_type, override_reason, override_action
+                        )
+                        SELECT
+                            id, event_type, actor_user_id, target_entity_id, target_entity_type,
+                            occurred_at, details, override_constraint_type, override_reason, override_action
+                        FROM app.audit_records_legacy;
 
-            // 1h. Drop the legacy table now that data is safely copied.
-            migrationBuilder.Sql("""
-                DROP TABLE app.audit_records_legacy;
+                        -- 1h. Drop the legacy table now that data is safely copied.
+                        DROP TABLE app.audit_records_legacy;
+                    END IF;
+                END $$;
                 """);
 
             // ─────────────────────────────────────────────────────────────────────

@@ -16,17 +16,35 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Data.Migrations
                 .Annotation("Npgsql:Enum:app.document_category_type", "lab_report,referral,prescription,imaging,insurance,other")
                 .Annotation("Npgsql:PostgresExtension:pg_trgm", ",,")
                 .Annotation("Npgsql:PostgresExtension:uuid-ossp", ",,")
-                .Annotation("Npgsql:PostgresExtension:vector", ",,")
                 .OldAnnotation("Npgsql:Enum:app.document_category_type", "lab_report,referral,prescription,imaging,insurance,other")
                 .OldAnnotation("Npgsql:PostgresExtension:pg_trgm", ",,")
                 .OldAnnotation("Npgsql:PostgresExtension:uuid-ossp", ",,");
 
-            migrationBuilder.AddColumn<Vector>(
-                name: "embedding",
-                schema: "app",
-                table: "clinical_facts",
-                type: "vector(1536)",
-                nullable: true);
+            // pgvector: skip gracefully when extension is not installed (local dev without Docker).
+            migrationBuilder.Sql(
+                """
+                DO $$
+                BEGIN
+                    IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'vector') THEN
+                        CREATE EXTENSION IF NOT EXISTS vector;
+                    ELSE
+                        RAISE NOTICE 'pgvector not available — skipping extension creation';
+                    END IF;
+                END $$;
+                """);
+
+            // Only add the embedding column if the vector type is available.
+            migrationBuilder.Sql(
+                """
+                DO $$
+                BEGIN
+                    IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'vector') THEN
+                        ALTER TABLE app.clinical_facts ADD COLUMN IF NOT EXISTS embedding vector(1536);
+                    ELSE
+                        RAISE NOTICE 'pgvector not installed — skipping embedding column';
+                    END IF;
+                END $$;
+                """);
 
             migrationBuilder.AddColumn<DateTimeOffset>(
                 name: "fact_date",
@@ -58,21 +76,20 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Data.Migrations
                 type: "uuid",
                 nullable: true);
 
-            migrationBuilder.CreateIndex(
-                name: "ix_clinical_facts_embedding",
-                schema: "app",
-                table: "clinical_facts",
-                column: "embedding")
-                .Annotation("Npgsql:IndexMethod", "hnsw")
-                .Annotation("Npgsql:IndexOperators", new[] { "vector_cosine_ops" });
-            // Re-create with HNSW parameters (m=16, ef_construction=64) via raw SQL
-            // so similarity search is tuned for the 1536-dim workload (AIR-010).
+            // HNSW index requires pgvector — skip gracefully on local dev without Docker.
             migrationBuilder.Sql("""
-                DROP INDEX IF EXISTS app.ix_clinical_facts_embedding;
-                CREATE INDEX ix_clinical_facts_embedding
-                    ON app.clinical_facts
-                    USING hnsw (embedding vector_cosine_ops)
-                    WITH (m = 16, ef_construction = 64);
+                DO $$
+                BEGIN
+                    IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'vector') THEN
+                        DROP INDEX IF EXISTS app.ix_clinical_facts_embedding;
+                        EXECUTE 'CREATE INDEX ix_clinical_facts_embedding
+                            ON app.clinical_facts
+                            USING hnsw (embedding vector_cosine_ops)
+                            WITH (m = 16, ef_construction = 64)';
+                    ELSE
+                        RAISE NOTICE 'pgvector not installed — skipping hnsw index';
+                    END IF;
+                END $$;
                 """);
 
             migrationBuilder.CreateIndex(

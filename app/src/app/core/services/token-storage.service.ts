@@ -80,16 +80,26 @@ export class TokenStorageService {
     }
   }
 
-  /** Returns the first role claim from the decoded JWT, or null if absent. */
+  /** Returns the first role claim from the decoded JWT, or null if absent.
+   *  JwtSecurityTokenHandler maps ClaimTypes.Role → "role" in the JWT payload
+   *  via DefaultOutboundClaimTypeMap, so we check the short form first and
+   *  fall back to the full URI for tokens generated with mapping disabled.
+   */
   getUserRole(): string | null {
     const decoded = this.getDecodedToken();
     if (!decoded) return null;
-    // ASP.NET Core Identity serialises roles under this claim type.
-    const role =
-      decoded[
-        'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
-      ];
-    return Array.isArray(role) ? (role[0] as string) : ((role as string) ?? null);
+    // Primary: short claim name emitted by JwtSecurityTokenHandler mapping.
+    const shortRole = decoded['role'];
+    if (shortRole != null) {
+      return Array.isArray(shortRole) ? (shortRole[0] as string) : (shortRole as string);
+    }
+    // Fallback: full URI used when DefaultOutboundClaimTypeMap is cleared.
+    const longRole =
+      decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+    if (longRole != null) {
+      return Array.isArray(longRole) ? (longRole[0] as string) : (longRole as string);
+    }
+    return null;
   }
 
   isTokenExpired(): boolean {

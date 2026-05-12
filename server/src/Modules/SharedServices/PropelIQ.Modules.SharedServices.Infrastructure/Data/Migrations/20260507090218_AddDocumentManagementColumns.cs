@@ -33,16 +33,15 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Data.Migrations
                 WHERE category NOT IN ('lab_report','referral','prescription','imaging','insurance','other');
                 """);
 
-            migrationBuilder.AlterColumn<string>(
-                name: "category",
-                schema: "app",
-                table: "clinical_documents",
-                type: "document_category_type",
-                maxLength: 50,
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "character varying(50)",
-                oldMaxLength: 50);
+            // Raw SQL with USING clause — PostgreSQL cannot automatically cast
+            // varchar → enum without an explicit cast expression.
+            migrationBuilder.Sql(
+                """
+                ALTER TABLE app.clinical_documents
+                    ALTER COLUMN category DROP NOT NULL,
+                    ALTER COLUMN category TYPE document_category_type
+                        USING category::document_category_type;
+                """);
 
             migrationBuilder.AddColumn<DateTimeOffset>(
                 name: "deleted_at",
