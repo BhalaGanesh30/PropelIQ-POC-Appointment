@@ -57,6 +57,11 @@ public sealed class AuditRecordConfiguration : IEntityTypeConfiguration<AuditRec
             .IsRequired(false)
             .HasMaxLength(20);
 
+        // ── Patient data access column (US_057, AC-1, AC-4) ──────────────────────
+        builder.Property(a => a.PatientId)
+            .HasColumnType("uuid")
+            .IsRequired(false);
+
         // B-tree index on event_type for AC-4 filtered override queries.
         builder.HasIndex(a => a.EventType)
             .HasDatabaseName("ix_audit_records_event_type");

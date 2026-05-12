@@ -3,7 +3,7 @@ task_id: task_002
 user_story: us_055
 epic: EP-009
 layer: Database
-status: not-started
+status: done
 effort_hours: 3
 ---
 
@@ -294,10 +294,10 @@ psql -c "\d+ coding_decisions"
 
 ## Implementation Checklist
 
-- [ ] Create `ai_audit_logs` parent table with composite PK `(ai_request_id, request_timestamp)` and `PARTITION BY RANGE (request_timestamp)`; all AIR-011 columns; table comment noting 7-year retention (AC-1, AC-3, DR-005)
-- [ ] Create year partitions `ai_audit_logs_2026` through `ai_audit_logs_2032` as `PARTITION OF ai_audit_logs FOR VALUES FROM (...) TO (...)` (Edge Case 2)
-- [ ] `REVOKE UPDATE, DELETE ON ai_audit_logs` and all year partitions `FROM app_user`; verify `app_admin` retains full privileges (AC-3, DR-005)
-- [ ] Create `ai_audit_log_outcomes` table (INSERT-only; REVOKE UPDATE/DELETE); no FK to partitioned parent (AC-2, AC-3)
-- [ ] Create `ai_audit_outbox` table with `retry_count`, `last_attempt_at`, `payload JSONB` (Edge Case 1)
-- [ ] Add `coding_decisions.ai_request_id UUID NULL` column (additive; DR-007)
-- [ ] Create all four indexes: `ix_ai_audit_logs_clinician_timestamp`, `ix_ai_audit_logs_timestamp`, `ix_ai_audit_log_outcomes_request_id`, `ix_ai_audit_outbox_retry_due` (AC-4, Edge Case 1)
+- [x] Create `ai_audit_logs` parent table with composite PK `(ai_request_id, request_timestamp)` and `PARTITION BY RANGE (request_timestamp)`; all AIR-011 columns; table comment noting 7-year retention (AC-1, AC-3, DR-005)
+- [x] Create year partitions `ai_audit_logs_2026` through `ai_audit_logs_2032` as `PARTITION OF ai_audit_logs FOR VALUES FROM (...) TO (...)` (Edge Case 2)
+- [x] `REVOKE UPDATE, DELETE ON ai_audit_logs` and all year partitions `FROM app_user`; verify `app_admin` retains full privileges (AC-3, DR-005)
+- [x] Create `ai_audit_log_outcomes` table (INSERT-only; REVOKE UPDATE/DELETE); no FK to partitioned parent (AC-2, AC-3)
+- [x] Create `ai_audit_outbox` table with `retry_count`, `last_attempt_at`, `payload JSONB` (Edge Case 1)
+- [x] Add `coding_decisions.ai_request_id UUID NULL` column (additive; DR-007)
+- [x] Create all four indexes: `ix_ai_audit_logs_clinician_timestamp`, `ix_ai_audit_logs_timestamp`, `ix_ai_audit_log_outcomes_request_id`, `ix_ai_audit_outbox_retry_due` (AC-4, Edge Case 1)

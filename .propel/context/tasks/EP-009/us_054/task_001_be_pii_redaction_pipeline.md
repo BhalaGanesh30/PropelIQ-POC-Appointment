@@ -3,7 +3,7 @@ task_id: task_001
 user_story: us_054
 epic: EP-009
 layer: Backend
-status: not-started
+status: completed
 effort_hours: 8
 ---
 
@@ -238,11 +238,11 @@ dotnet run --project src/Api/Api.csproj
 
 ## Implementation Checklist
 
-- [ ] Create `PiiRedactionOptions`, `RedactionContext` records; bind options from `IConfiguration["AI:Redaction"]`
-- [ ] Create `NlpPiiDetector` with regex patterns (name, DOB, SSN, address, phone); confidence scoring; configurable threshold (Edge Case 2)
-- [ ] Create `IRedactionMapStore` / `RedactionMapStore`: AES-256-GCM encrypted Redis store; 5-min TTL; store/get/delete operations (AC-3)
-- [ ] Create `IPatientContextAclFilter` / `PatientContextAclFilter`: per-chunk `patient_id` validation; `ACLViolationException` on violation (AC-4, AIR-010)
-- [ ] Create `PiiRedactionFailureException`, `ACLViolationException` custom exceptions
-- [ ] Implement full `IPiiRedactionService.RedactAsync`: structured field + NLP substitution; token map storage; `pii_redacted` audit entry; `PiiRedactionFailureException` on any failure (AC-1, AC-2, Edge Case 1)
-- [ ] Implement `IPiiRedactionService.DeAnonymizeAsync`: token restoration from Redis; Redis cleanup; `pii_deanonymized` audit entry (AC-3)
-- [ ] Modify `AiGatewayClient` (US_053): call `RedactAsync` before `SendAsync`; call `ACLFilter` on context; call `DeAnonymizeAsync` after response; handle failure exceptions → fallback result (Edge Case 1)
+- [x] Create `PiiRedactionOptions`, `RedactionContext` records; bind options from `IConfiguration["AI:Redaction"]` — created in `SharedServices.Infrastructure/AI/` and `SharedServices.Application/AI/` respectively
+- [x] Create `NlpPiiDetector` with regex patterns (name, DOB, SSN, address, phone); confidence scoring; configurable threshold (Edge Case 2) — created in `SharedServices.Infrastructure/AI/NlpPiiDetector.cs` using `[GeneratedRegex]` source generators
+- [x] Create `IRedactionMapStore` / `RedactionMapStore`: AES-256-GCM encrypted Redis store; 5-min TTL; store/get/delete operations (AC-3) — created; nonce(12)+tag(16)+ciphertext Base64 wire format; dev-only fallback key with warning log
+- [x] Create `IPatientContextAclFilter` / `PatientContextAclFilter`: per-chunk `patient_id` validation; `ACLViolationException` on violation (AC-4, AIR-010) — created; uses `ContextChunk` record with `PatientId` field populated by caller
+- [x] Create `PiiRedactionFailureException`, `ACLViolationException` custom exceptions — created in `SharedServices.Application/AI/`
+- [x] Implement full `IPiiRedactionService.RedactAsync`: structured field + NLP substitution; token map storage; `pii_redacted` audit entry; `PiiRedactionFailureException` on any failure (AC-1, AC-2, Edge Case 1) — implemented in `SharedServices.Infrastructure/AI/PiiRedactionService.cs`
+- [x] Implement `IPiiRedactionService.DeAnonymizeAsync`: token restoration from Redis; Redis cleanup; `pii_deanonymized` audit entry (AC-3) — implemented; graceful miss when map not found
+- [x] Modify `AiGatewayClient` (US_053): call `RedactAsync` before `SendAsync`; call `ACLFilter` on context; call `DeAnonymizeAsync` after response; handle failure exceptions → fallback result (Edge Case 1) — integration applied to `CodingAiGatewayClient`; interface extended with `patientId`/`clinicianId`; `ICodingSuggestionOrchestrator` and controller updated to thread `clinicianId`; namespace alias `SharedAI` used to disambiguate from legacy `ClinicalIntelligence` `IPiiRedactionService`

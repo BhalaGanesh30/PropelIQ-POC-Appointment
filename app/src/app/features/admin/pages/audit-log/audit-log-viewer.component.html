@@ -1,0 +1,172 @@
+<div class="audit-viewer-page">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Audit Log Viewer</h1>
+      <p class="page-subtitle">Review user and system activity across PropelIQ.</p>
+    </div>
+
+    <!-- Export button (edge case 2: async export) -->
+    <button mat-raised-button
+            color="accent"
+            (click)="exportCsv()"
+            [disabled]="exporting() || loading()"
+            aria-label="Export audit log as CSV">
+      <mat-icon>download</mat-icon>
+      @if (exporting()) { Exporting… } @else { Export CSV }
+    </button>
+  </div>
+
+  <!-- Filter bar (SCR-021 Validation state handled inside child component) -->
+  <app-audit-log-filter (filtersChanged)="onFiltersChanged($event)" />
+
+  <!-- State 2: Loading -->
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading audit logs"></mat-progress-bar>
+  }
+
+  <!-- State 4: Error -->
+  @if (errorMessage()) {
+    <div class="error-banner" role="alert">
+      <mat-icon class="error-icon" aria-hidden="true">error_outline</mat-icon>
+      <span>{{ errorMessage() }}</span>
+      <button mat-button (click)="retryLoad()" aria-label="Retry loading audit logs">
+        Retry
+      </button>
+    </div>
+  }
+
+  <!-- State 1: Default + State 3: Empty -->
+  @if (!loading() && !errorMessage()) {
+
+    @if (entries().length === 0) {
+      <!-- State 3: Empty -->
+      <div class="empty-state" role="status" aria-live="polite">
+        <mat-icon class="empty-icon" aria-hidden="true">manage_search</mat-icon>
+        <p class="empty-heading">No audit events match your filters.</p>
+        <p class="empty-sub">Adjust the filter criteria or clear all filters to view the full log.</p>
+      </div>
+    } @else {
+      <!-- State 1: Default — desktop table (hidden on mobile via SCSS) -->
+      <div class="table-container" role="region" aria-label="Audit log results">
+        <table mat-table [dataSource]="entries()" class="audit-table" aria-label="Audit log entries">
+
+          <!-- Occurred At -->
+          <ng-container matColumnDef="occurredAt">
+            <th mat-header-cell *matHeaderCellDef>Date / Time (UTC)</th>
+            <td mat-cell *matCellDef="let row">
+              {{ row.occurredAt | date:'yyyy-MM-dd HH:mm:ss' : 'UTC' }}
+            </td>
+          </ng-container>
+
+          <!-- Actor -->
+          <ng-container matColumnDef="actorName">
+            <th mat-header-cell *matHeaderCellDef>Actor</th>
+            <td mat-cell *matCellDef="let row">
+              {{ row.actorName ?? row.actorUserId }}
+              @if (row.actorRole) {
+                <span class="actor-role">{{ row.actorRole }}</span>
+              }
+            </td>
+          </ng-container>
+
+          <!-- Event type -->
+          <ng-container matColumnDef="eventType">
+            <th mat-header-cell *matHeaderCellDef>Event Type</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="event-chip event-chip--{{ row.eventType | lowercase }}">
+                {{ row.eventType }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Target entity type -->
+          <ng-container matColumnDef="targetEntityType">
+            <th mat-header-cell *matHeaderCellDef>Resource Type</th>
+            <td mat-cell *matCellDef="let row">{{ row.targetEntityType }}</td>
+          </ng-container>
+
+          <!-- Target entity ID -->
+          <ng-container matColumnDef="targetEntityId">
+            <th mat-header-cell *matHeaderCellDef>Resource ID</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="mono-id">{{ row.targetEntityId ?? '—' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Expanded detail row -->
+          <ng-container matColumnDef="expandedDetail">
+            <td mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns.length">
+              @if (expandedRow() === row.auditId) {
+                <app-audit-log-detail [details]="getDetailPayload(row)" />
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+
+          <!-- Main rows — keyboard expandable (UXR-202) -->
+          <tr mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              class="audit-row"
+              [class.audit-row--expanded]="expandedRow() === row.auditId"
+              tabindex="0"
+              (click)="toggleRow(row.auditId)"
+              (keyup.enter)="toggleRow(row.auditId)"
+              [attr.aria-expanded]="expandedRow() === row.auditId"
+              [attr.aria-label]="'Audit event ' + row.eventType + ' by ' + (row.actorName ?? row.actorUserId)">
+          </tr>
+
+          <!-- Detail expansion rows -->
+          <tr mat-row *matRowDef="let row; columns: ['expandedDetail']"
+              class="detail-row"
+              [class.detail-row--visible]="expandedRow() === row.auditId">
+          </tr>
+        </table>
+      </div>
+
+      <!-- UXR-303: Mobile card layout (only visible < 768px) -->
+      <div class="mobile-cards" aria-label="Audit log entries">
+        @for (entry of entries(); track entry.auditId) {
+          <div class="audit-card"
+               tabindex="0"
+               (click)="toggleRow(entry.auditId)"
+               (keyup.enter)="toggleRow(entry.auditId)"
+               [attr.aria-expanded]="expandedRow() === entry.auditId">
+            <div class="audit-card__row">
+              <span class="audit-card__label">Date (UTC)</span>
+              <span>{{ entry.occurredAt | date:'yyyy-MM-dd HH:mm:ss' : 'UTC' }}</span>
+            </div>
+            <div class="audit-card__row">
+              <span class="audit-card__label">Actor</span>
+              <span>{{ entry.actorName ?? entry.actorUserId }}</span>
+            </div>
+            <div class="audit-card__row">
+              <span class="audit-card__label">Event</span>
+              <span class="event-chip event-chip--{{ entry.eventType | lowercase }}">{{ entry.eventType }}</span>
+            </div>
+            <div class="audit-card__row">
+              <span class="audit-card__label">Resource</span>
+              <span>{{ entry.targetEntityType }} / <span class="mono-id">{{ entry.targetEntityId ?? '—' }}</span></span>
+            </div>
+
+            @if (expandedRow() === entry.auditId) {
+              <app-audit-log-detail [details]="getDetailPayload(entry)" />
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator
+        [length]="totalCount()"
+        [pageSize]="25"
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        showFirstLastButtons
+        aria-label="Audit log pagination"
+        (page)="onPageChange($event)">
+      </mat-paginator>
+    }
+  }
+</div>

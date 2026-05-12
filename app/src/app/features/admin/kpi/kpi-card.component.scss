@@ -1,0 +1,107 @@
+// KPI card styles — chart dimensions and state containers.
+// Semantic status colors follow UXR-404; WCAG AA contrast maintained on white (UXR-201).
+
+:host {
+  display: block;
+}
+
+.kpi-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  mat-card-header {
+    position: relative;
+  }
+
+  .export-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .metric-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .headline-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #212121; // WCAG AA on white
+
+    .unit {
+      font-size: 14px;
+      font-weight: 400;
+      margin-left: 2px;
+      color: #616161;
+    }
+  }
+
+  .trend-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 600;
+    margin-left: 8px;
+    padding: 2px 6px;
+    border-radius: 4px;
+
+    &.trend-up {
+      color: #2E7D32; // WCAG AA on white (UXR-404 semantic green)
+      background: #E8F5E9;
+    }
+
+    &.trend-down {
+      color: #C62828; // WCAG AA on white (UXR-404 semantic red)
+      background: #FFEBEE;
+    }
+  }
+}
+
+mat-card-content.chart-area {
+  flex: 1;
+  min-height: 200px;
+  padding: 8px 16px 16px;
+
+  .kpi-line-chart {
+    display: block;
+    height: 200px;
+  }
+
+  .skeleton-chart {
+    height: 200px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  .chart-error,
+  .chart-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    gap: 8px;
+    color: #757575;
+
+    mat-icon {
+      font-size: 36px;
+      width: 36px;
+      height: 36px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
+  }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

@@ -1,0 +1,85 @@
+// Shared styles for both disclosure request components (list + form).
+
+.request-list {
+  display: block;
+}
+
+.list-heading {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 0 16px;
+  color: #212121;
+}
+
+.error-banner {
+  background: #FFEBEE;
+  border: 1px solid #EF9A9A;
+  border-radius: 6px;
+  padding: 10px 14px;
+  color: #B71C1C;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.empty-state {
+  color: #757575;
+  font-size: 14px;
+  padding: 24px 0;
+}
+
+// ── Desktop table ─────────────────────────────────────────────────────────────
+
+.desktop-table {
+  overflow-x: auto;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+
+  table {
+    width: 100%;
+  }
+}
+
+// ── Mobile cards (UXR-303) ────────────────────────────────────────────────────
+
+.mobile-cards {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .desktop-table {
+    display: none;
+  }
+
+  .mobile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .disclosure-card {
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    padding: 14px 16px;
+    background: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .card-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .card-date {
+    font-size: 13px;
+    color: #757575;
+  }
+
+  .card-range {
+    font-size: 14px;
+    color: #424242;
+  }
+}

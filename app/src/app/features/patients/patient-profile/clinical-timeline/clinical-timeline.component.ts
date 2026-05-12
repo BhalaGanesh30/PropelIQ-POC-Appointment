@@ -14,6 +14,8 @@ import { MatExpansionPanel } from '@angular/material/expansion';
 
 import { ClinicalTimelineFacade } from '../../clinical-timeline.facade';
 import type { TimelineQueryParams } from '../../../../shared/models/timeline-event.model';
+import { AiGatewayStatusFacade } from '../../../../shared/facades/ai-gateway-status.facade';
+import { AiFallbackBannerComponent } from '../../../../shared/components/ai-fallback-banner/ai-fallback-banner.component';
 import { TimelineFilterBarComponent } from './timeline-filter-bar.component';
 import { TimelineYearGroupComponent } from './timeline-year-group.component';
 import { TimelineEmptyStateComponent } from './timeline-empty-state.component';
@@ -37,6 +39,7 @@ import { TimelineSkeletonComponent } from './timeline-skeleton.component';
   imports: [
     MatButtonModule,
     MatIconModule,
+    AiFallbackBannerComponent,
     TimelineFilterBarComponent,
     TimelineYearGroupComponent,
     TimelineEmptyStateComponent,
@@ -44,6 +47,11 @@ import { TimelineSkeletonComponent } from './timeline-skeleton.component';
   ],
   template: `
     <div class="timeline-host">
+
+      <!-- ── AI fallback banner (US_053, AC-2, Edge Case 2) ─────────── -->
+      @if (aiStatusFacade.fallbackActive()) {
+        <app-ai-fallback-banner />
+      }
 
       <!-- ── Toolbar row ────────────────────────────────────────── -->
       <div class="timeline-toolbar">
@@ -189,6 +197,7 @@ export class ClinicalTimelineComponent implements OnInit, AfterViewInit {
   readonly patientId = input.required<string>();
 
   protected readonly facade = inject(ClinicalTimelineFacade);
+  protected readonly aiStatusFacade = inject(AiGatewayStatusFacade);
 
   /** Used to expand all panels before printing (AC-4). */
   @ViewChildren(MatExpansionPanel)

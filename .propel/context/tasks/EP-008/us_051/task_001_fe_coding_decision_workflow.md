@@ -3,7 +3,7 @@ task_id: task_001
 user_story: us_051
 epic: EP-008
 layer: Frontend
-status: not-started
+status: completed
 effort_hours: 7
 ---
 
@@ -221,24 +221,24 @@ ng serve
 
 ## Implementation Validation Strategy
 
-- [ ] Accept click → card renders green border, "Accepted" chip, "Edit Decision" button (AC-1, Edge Case 1)
-- [ ] Modify click → `InlineCodeEditComponent` renders with current code pre-populated; Save → card transitions to "Modified from AI" chip state (AC-2)
-- [ ] Reject click → `RejectConfirmationDialogComponent` opens with `cdkTrapFocus`; focus returns to reject button on cancel (UXR-206); on confirm → card turns gray with strikethrough, "Search Code" link visible (AC-3)
-- [ ] `RejectConfirmationDialogComponent` uses destructive "Reject" button (`color="warn"`) and requires explicit confirm (UXR-111)
-- [ ] `CodingDecisionSummaryBarComponent` pending count decrements after each decision; `PendingSubmissionBlockBannerComponent` disappears when `allDecided()` is true (AC-4)
-- [ ] `PendingSubmissionBlockBannerComponent` lists pending item codes by name with `role="alert"` (AC-4)
-- [ ] "Edit Decision" re-opens `InlineCodeEditComponent` with accepted code pre-populated before encounter submission (Edge Case 1)
-- [ ] `CodingDecisionFacade` updates Signal state independently per `decisionId`; ICD-10 and CPT decisions tracked in the same map
+- [X] Accept click → card renders green border, "Accepted" chip, "Edit Decision" button (AC-1, Edge Case 1)
+- [X] Modify click → `InlineCodeEditComponent` renders with current code pre-populated; Save → card transitions to "Modified from AI" chip state (AC-2)
+- [X] Reject click → `RejectConfirmationDialogComponent` opens with `cdkTrapFocus`; focus returns to reject button on cancel (UXR-206); on confirm → card turns gray with strikethrough, "Search Code" link visible (AC-3)
+- [X] `RejectConfirmationDialogComponent` uses destructive "Reject" button (`color="warn"`) and requires explicit confirm (UXR-111)
+- [X] `CodingDecisionSummaryBarComponent` pending count decrements after each decision; `PendingSubmissionBlockBannerComponent` disappears when `allDecided()` is true (AC-4)
+- [X] `PendingSubmissionBlockBannerComponent` lists pending item codes by name with `role="alert"` (AC-4)
+- [X] "Edit Decision" re-opens `InlineCodeEditComponent` with accepted code pre-populated before encounter submission (Edge Case 1)
+- [X] `CodingDecisionFacade` updates Signal state independently per `decisionId`; ICD-10 and CPT decisions tracked in the same map
 
 ---
 
 ## Implementation Checklist
 
-- [ ] Define `DecisionStateDto`, `AcceptRequestDto`, `ModifyRequestDto`, `RejectRequestDto` DTOs
-- [ ] Create `CodingDecisionService`: `accept()`, `modify()`, `reject()` HTTP calls
-- [ ] Create `CodingDecisionFacade`: Signal `decisions` map, `pendingCount` and `allDecided` computed signals
-- [ ] Create `InlineCodeEditComponent`: Reactive form; amber outline; Save/Cancel; emits `saved` and `cancelled` (AC-2)
-- [ ] Create `RejectConfirmationDialogComponent`: `disableClose: true`; `cdkTrapFocus`; destructive Reject button (UXR-111, UXR-206); focus returns to trigger on close
-- [ ] Modify `SuggestionCardComponent`: `@switch` on DecisionState; Accept/Modify/Reject buttons; "Edit Decision" for accepted (Edge Case 1); Validation state visual classes
-- [ ] Modify `CptSuggestionCardComponent`: same Accept/Modify/Reject interaction pattern
-- [ ] Create `CodingDecisionSummaryBarComponent` + `PendingSubmissionBlockBannerComponent`; register `CodingDecisionFacade` + `CodingDecisionService` in module (AC-4)
+- [X] Define `DecisionStateDto`, `AcceptRequestDto`, `ModifyRequestDto`, `RejectRequestDto` DTOs
+- [X] Create `CodingDecisionService`: `accept()`, `modify()`, `reject()` HTTP calls
+- [X] Create `CodingDecisionFacade`: Signal `decisions` map, `pendingCount` and `allDecided` computed signals
+- [X] Create `InlineCodeEditComponent`: Reactive form; amber outline; Save/Cancel; emits `saved` and `cancelled` (AC-2)
+- [X] Create `RejectConfirmationDialogComponent`: `disableClose: true`; `cdkTrapFocus`; destructive Reject button (UXR-111, UXR-206); focus returns to trigger on close
+- [X] Modify `SuggestionCardComponent`: `@switch` on DecisionState; Accept/Modify/Reject buttons; "Edit Decision" for accepted (Edge Case 1); Validation state visual classes
+- [X] Modify `CptSuggestionCardComponent`: same Accept/Modify/Reject interaction pattern
+- [X] Create `CodingDecisionSummaryBarComponent` + `PendingSubmissionBlockBannerComponent`; register `CodingDecisionFacade` + `CodingDecisionService` in module (AC-4)

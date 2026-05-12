@@ -1,0 +1,71 @@
+<section class="report-config" aria-label="Generate compliance report">
+  <h2 class="section-title">Generate On-Demand Report</h2>
+
+  <div class="config-row">
+    <!-- Report type selector -->
+    <mat-form-field appearance="outline" class="type-field">
+      <mat-label>Report Type</mat-label>
+      <mat-select [ngModel]="reportType()"
+                  (ngModelChange)="reportType.set($event)"
+                  aria-label="Select report type">
+        <mat-option value="HIPAA">HIPAA Compliance</mat-option>
+        <mat-option value="AccessSummary">Access Summary</mat-option>
+        <mat-option value="AuditEventSummary">Audit Event Summary</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Date range picker (provideNativeDateAdapter registered in app.config.ts) -->
+    <mat-form-field appearance="outline" class="range-field">
+      <mat-label>Reporting Period</mat-label>
+      <mat-date-range-input [rangePicker]="rangePicker" [disabled]="generating()">
+        <input matStartDate
+               placeholder="Start date"
+               [ngModel]="startDate()"
+               (ngModelChange)="startDate.set($event)"
+               aria-label="Period start date" />
+        <input matEndDate
+               placeholder="End date"
+               [ngModel]="endDate()"
+               (ngModelChange)="endDate.set($event)"
+               aria-label="Period end date" />
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="rangePicker"></mat-datepicker-toggle>
+      <mat-date-range-picker #rangePicker></mat-date-range-picker>
+    </mat-form-field>
+
+    <!-- Generate button -->
+    <button mat-raised-button
+            color="primary"
+            (click)="generate()"
+            [disabled]="generating() || !startDate() || !endDate()"
+            aria-label="Generate compliance report">
+      @if (generating()) {
+        Generating…
+      } @else {
+        Generate Report
+      }
+    </button>
+  </div>
+
+  <!-- Progress bar — indeterminate (sync) or indeterminate (async: no % from API) -->
+  @if (generating()) {
+    <mat-progress-bar mode="indeterminate"
+                      aria-label="Report generation in progress">
+    </mat-progress-bar>
+
+    @if (isAsync()) {
+      <p class="async-notice" role="status">
+        This report covers a large date range and is being processed in the background.
+        You will be notified by email when it is ready.
+      </p>
+    }
+  }
+
+  <!-- Error state -->
+  @if (errorMessage()) {
+    <div class="error-banner" role="alert">
+      <span>{{ errorMessage() }}</span>
+      <button mat-button color="primary" (click)="errorMessage.set(null)">Dismiss</button>
+    </div>
+  }
+</section>

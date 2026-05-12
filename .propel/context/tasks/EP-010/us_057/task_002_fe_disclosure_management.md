@@ -985,23 +985,23 @@ ng serve
 
 ## Implementation Validation Strategy
 
-- [ ] Patient can submit disclosure request with date range picker (AC-2)
-- [ ] Patient sees request history with status tracking and download link when delivered
-- [ ] Staff can view list of pending disclosure requests with pagination
-- [ ] Staff can preview compiled report and approve/reject with notes (AC-3)
-- [ ] Access log viewer filters by patient ID and date range with chronological ordering (AC-4)
-- [ ] Data tables switch to card layout below 768px (UXR-303)
-- [ ] Text meets WCAG AA 4.5:1 contrast ratio (UXR-201)
-- [ ] All interactive elements keyboard navigable (UXR-202)
-- [ ] Responsive layout at 375px, 768px, 1440px breakpoints (UXR-301)
+- [x] Patient can submit disclosure request with date range picker (AC-2)
+- [x] Patient sees request history with status tracking and download link when delivered
+- [x] Staff can view list of pending disclosure requests with pagination
+- [x] Staff can preview compiled report and approve/reject with notes (AC-3)
+- [x] Access log viewer filters by patient ID and date range with chronological ordering (AC-4)
+- [x] Data tables switch to card layout below 768px (UXR-303)
+- [x] Text meets WCAG AA 4.5:1 contrast ratio (UXR-201)
+- [x] All interactive elements keyboard navigable (UXR-202)
+- [x] Responsive layout at 375px, 768px, 1440px breakpoints (UXR-301)
 
 ## Implementation Checklist
 
-- [ ] Create TypeScript interfaces for disclosure requests, access log entries, and review actions
-- [ ] Implement patient-facing disclosure API service and request form with date pickers
-- [ ] Build disclosure request list component with status chips and download links
-- [ ] Implement staff-facing disclosure review component with report preview and approve/reject
-- [ ] Build access log viewer with patient ID filter, date range, and chronological ordering
-- [ ] Implement responsive card layout for all data tables below 768px (UXR-303)
-- [ ] Create admin and patient API services for disclosure and access log endpoints
-- [ ] Add lazy-loaded routes with patient and staff/admin guards
+- [x] Create TypeScript interfaces for disclosure requests, access log entries, and review actions
+- [x] Implement patient-facing disclosure API service and request form with date pickers
+- [x] Build disclosure request list component with status chips and download links
+- [x] Implement staff-facing disclosure review component with report preview and approve/reject
+- [x] Build access log viewer with patient ID filter, date range, and chronological ordering
+- [x] Implement responsive card layout for all data tables below 768px (UXR-303)
+- [x] Create admin and patient API services for disclosure and access log endpoints
+- [x] Add lazy-loaded routes with patient and staff/admin guards

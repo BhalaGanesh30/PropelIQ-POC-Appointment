@@ -290,9 +290,9 @@ psql -d propeliq -c "\d kpi_distribution_log"
 
 ## Implementation Checklist
 
-- [ ] Create KpiDailyMetric entity with date, counts, rates, and computed_at_utc timestamp
-- [ ] Create KpiDistributionLog entity with status enum, recipients array, and retry tracking
-- [ ] Register DbSets in AppDbContext for both entities
-- [ ] Configure Fluent API mappings with table names, indexes, precision, and partial index filter
-- [ ] Generate and apply EF Core migration
-- [ ] Verify unique constraint on kpi_daily_metrics.date prevents duplicate rows
+- [x] Create KpiDailyMetric entity with date, counts, rates, and computed_at_utc timestamp
+- [x] Create KpiDistributionLog entity with status enum, recipients array, and retry tracking
+- [x] Register DbSets in AppDbContext for both entities
+- [x] Configure Fluent API mappings with table names, indexes, precision, and partial index filter
+- [x] Generate and apply EF Core migration
+- [x] Verify unique constraint on kpi_daily_metrics.date prevents duplicate rows

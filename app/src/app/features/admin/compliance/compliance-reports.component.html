@@ -1,0 +1,37 @@
+<div class="compliance-page">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <h1 class="page-title">Compliance Reports</h1>
+    <p class="page-subtitle">
+      Generate, schedule, and distribute HIPAA compliance reports.
+    </p>
+  </div>
+
+  <!-- Tab group: Generate & Reports / Schedule / Distribution -->
+  <mat-tab-group animationDuration="200ms" dynamicHeight>
+
+    <mat-tab label="Generate & Reports">
+      <div class="tab-content">
+        <app-compliance-report-config
+          (reportGenerated)="onReportGenerated()">
+        </app-compliance-report-config>
+
+        <app-compliance-report-list></app-compliance-report-list>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Schedule">
+      <div class="tab-content">
+        <app-schedule-config></app-schedule-config>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Distribution">
+      <div class="tab-content">
+        <app-distribution-list></app-distribution-list>
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>

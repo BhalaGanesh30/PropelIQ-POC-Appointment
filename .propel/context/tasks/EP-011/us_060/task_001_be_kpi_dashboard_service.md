@@ -733,11 +733,11 @@ dotnet run --project src/PropelIQ.Api
 
 ## Implementation Checklist
 
-- [ ] Define IKpiMetricsService contract with GetSummaryAsync, GetTimeSeriesAsync, ExportAsync
-- [ ] Create KPI DTOs (KpiMetricType enum, DateRange, KpiCardValue, KpiSummaryResponse, KpiTimeSeriesResponse, KpiExportRequest)
-- [ ] Implement KpiMetricsService with aggregation queries against appointments and kpi_daily_metrics tables
-- [ ] Implement KpiSnapshotCacheService with ConcurrentDictionary and 1-hour staleness threshold
-- [ ] Implement KpiReportPdfRenderer with QuestPDF for PDF and PNG export
-- [ ] Implement KpiDistributionWorker with PeriodicTimer, IConfigurationService integration, and Polly retry
-- [ ] Implement KpiDashboardController with Admin-authorized endpoints (summary, timeseries, export)
-- [ ] Add FluentValidation for DateRange (From <= To, max span 365 days, To not in future)
+- [x] Define IKpiMetricsService contract with GetSummaryAsync, GetTimeSeriesAsync, ExportAsync
+- [x] Create KPI DTOs (KpiMetricType enum, DateRange, KpiCardValue, KpiSummaryResponse, KpiTimeSeriesResponse, KpiExportRequest)
+- [x] Implement KpiMetricsService with aggregation queries against appointments and kpi_daily_metrics tables
+- [x] Implement KpiSnapshotCacheService with ConcurrentDictionary and 1-hour staleness threshold
+- [x] Implement KpiReportPdfRenderer with QuestPDF for PDF and PNG export
+- [x] Implement KpiDistributionWorker with PeriodicTimer, IConfigurationService integration, and Polly retry
+- [x] Implement KpiDashboardController with Admin-authorized endpoints (summary, timeseries, export)
+- [x] Add FluentValidation for DateRange (From <= To, max span 365 days, To not in future)

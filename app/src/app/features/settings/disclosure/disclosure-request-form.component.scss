@@ -1,0 +1,58 @@
+:host { display: block; }
+
+.disclosure-page {
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  color: #212121;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: #616161;
+  margin: 0;
+  max-width: 680px;
+  line-height: 1.5;
+}
+
+.form-card {
+  margin-bottom: 32px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.date-field {
+  flex: 1 1 200px;
+  min-width: 160px;
+}
+
+.date-error {
+  color: #C62828;
+  font-size: 13px;
+  margin: 0 0 12px;
+}
+
+.form-actions {
+  margin-top: 16px;
+}
+
+.btn-spinner {
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+}

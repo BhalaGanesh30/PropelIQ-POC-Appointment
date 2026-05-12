@@ -1,0 +1,98 @@
+<section aria-label="Generated compliance reports">
+  <h3 class="section-title">Generated Reports</h3>
+
+  <!-- Loading state -->
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading reports"></mat-progress-bar>
+  }
+
+  <!-- Error state -->
+  @if (!loading() && error()) {
+    <div class="error-banner" role="alert">
+      <p>Failed to load compliance reports.</p>
+      <button mat-button color="primary" (click)="loadReports()">Retry</button>
+    </div>
+  }
+
+  <!-- Empty state -->
+  @if (!loading() && !error() && reports().length === 0) {
+    <div class="empty-state" role="status">
+      <mat-icon aria-hidden="true">description</mat-icon>
+      <p>No reports generated yet.</p>
+      <p class="empty-hint">Use the form above to generate your first compliance report.</p>
+    </div>
+  }
+
+  <!-- Default / Validation state — report table -->
+  @if (!loading() && !error() && reports().length > 0) {
+    <div class="table-wrapper" role="region" aria-label="Compliance reports table">
+      <table mat-table [dataSource]="reports()" aria-label="Compliance reports">
+
+        <!-- Report Date -->
+        <ng-container matColumnDef="generatedAt">
+          <th mat-header-cell *matHeaderCellDef scope="col">Report Date</th>
+          <td mat-cell *matCellDef="let r">{{ r.generatedAtUtc | date:'short' }}</td>
+        </ng-container>
+
+        <!-- Period -->
+        <ng-container matColumnDef="period">
+          <th mat-header-cell *matHeaderCellDef scope="col">Period</th>
+          <td mat-cell *matCellDef="let r">
+            {{ r.periodStartUtc | date:'mediumDate' }} – {{ r.periodEndUtc | date:'mediumDate' }}
+          </td>
+        </ng-container>
+
+        <!-- Report Type -->
+        <ng-container matColumnDef="reportType">
+          <th mat-header-cell *matHeaderCellDef scope="col">Type</th>
+          <td mat-cell *matCellDef="let r">{{ r.reportType }}</td>
+        </ng-container>
+
+        <!-- Status chip -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef scope="col">Status</th>
+          <td mat-cell *matCellDef="let r">
+            <mat-chip [color]="statusColor(r.status)" highlighted>
+              {{ r.status }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Key metrics (AC-2: period, report date, metrics clearly labeled) -->
+        <ng-container matColumnDef="metrics">
+          <th mat-header-cell *matHeaderCellDef scope="col">Key Metrics</th>
+          <td mat-cell *matCellDef="let r">
+            {{ r.totalAuditEvents | number }} events ·
+            {{ r.uniqueActors | number }} actors ·
+            {{ r.anomalyCount | number }} anomalies
+          </td>
+        </ng-container>
+
+        <!-- Actions — download PDF when Completed (AC-2) -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef scope="col">Actions</th>
+          <td mat-cell *matCellDef="let r">
+            @if (r.status === 'Completed') {
+              <button mat-icon-button
+                      (click)="downloadPdf(r)"
+                      [attr.aria-label]="'Download PDF for report ' + (r.generatedAtUtc | date:'shortDate')">
+                <mat-icon>download</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="totalCount()"
+      [pageSize]="25"
+      [pageSizeOptions]="[10, 25, 50]"
+      (page)="onPageChange($event)"
+      aria-label="Navigate report pages">
+    </mat-paginator>
+  }
+</section>

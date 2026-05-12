@@ -402,11 +402,11 @@ dotnet run --project src/PropelIQ.Api
 
 ## Implementation Checklist
 
-- [ ] Define ConfigurationCategory enum and IConfigurationService contract with DTOs
-- [ ] Implement FluentValidation validators for all 4 configuration categories with descriptive errors
-- [ ] Implement ConfigurationService with versioned insert-only persistence and JSONB diff tracking
-- [ ] Implement optimistic concurrency control via ETag/If-Match with 409 Conflict response
-- [ ] Implement RestoreVersionAsync creating a new version from historical snapshot
-- [ ] Implement ConfigurationCacheService with startup population and write-through update
-- [ ] Create ConfigurationController with GET current, PUT update, GET history, POST restore endpoints
-- [ ] Register all services, validators, cache, and hosted service in Program.cs
+- [x] Define ConfigurationCategory enum and IConfigurationService contract with DTOs
+- [x] Implement FluentValidation validators for all 4 configuration categories with descriptive errors
+- [x] Implement ConfigurationService with versioned insert-only persistence and JSONB diff tracking
+- [x] Implement optimistic concurrency control via ETag/If-Match with 409 Conflict response
+- [x] Implement RestoreVersionAsync creating a new version from historical snapshot
+- [x] Implement ConfigurationCacheService with startup population and write-through update
+- [x] Create ConfigurationController with GET current, PUT update, GET history, POST restore endpoints
+- [x] Register all services, validators, cache, and hosted service in Program.cs

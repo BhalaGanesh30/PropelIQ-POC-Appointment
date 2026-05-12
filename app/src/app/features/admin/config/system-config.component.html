@@ -1,0 +1,108 @@
+<!-- SCR-019 System Configuration page — sidebar (desktop) / accordion (mobile) -->
+<div class="config-page">
+
+  <header class="page-header">
+    <h1 class="page-title">System Configuration</h1>
+    <p class="page-subtitle">Manage slot templates, reminder rules, session policy, and communication settings.</p>
+  </header>
+
+  <!-- ── Desktop layout (≥768px): mat-sidenav sidebar ── -->
+  <div class="desktop-layout">
+    <mat-sidenav-container class="sidenav-container">
+
+      <mat-sidenav mode="side" opened class="config-sidenav" role="navigation" aria-label="Configuration categories">
+        <mat-nav-list>
+          @for (cat of categories; track cat.key) {
+            <a
+              mat-list-item
+              [activated]="selectedCategory() === cat.key"
+              (click)="selectCategory(cat.key)"
+              (keydown.enter)="selectCategory(cat.key)"
+              [attr.aria-current]="selectedCategory() === cat.key ? 'page' : null"
+              tabindex="0"
+            >
+              <mat-icon matListItemIcon aria-hidden="true">{{ cat.icon }}</mat-icon>
+              <span matListItemTitle>{{ cat.label }}</span>
+            </a>
+          }
+        </mat-nav-list>
+      </mat-sidenav>
+
+      <mat-sidenav-content class="config-content" role="main">
+        <section [attr.aria-label]="selectedCategory() + ' configuration'">
+          <app-config-category
+            [category]="selectedCategory()"
+          ></app-config-category>
+
+          <button
+            mat-button
+            color="accent"
+            class="history-toggle-btn"
+            (click)="toggleHistory(selectedCategory())"
+            [attr.aria-expanded]="showHistory() && historyCategory() === selectedCategory()"
+            [attr.aria-controls]="'history-' + selectedCategory()"
+          >
+            <mat-icon aria-hidden="true">history</mat-icon>
+            @if (showHistory() && historyCategory() === selectedCategory()) {
+              Hide Version History
+            } @else {
+              View Version History
+            }
+          </button>
+
+          @if (showHistory() && historyCategory() === selectedCategory()) {
+            <div [id]="'history-' + selectedCategory()" class="history-panel">
+              <app-config-history
+                [category]="selectedCategory()"
+                (restored)="onRestored()"
+              ></app-config-history>
+            </div>
+          }
+        </section>
+      </mat-sidenav-content>
+
+    </mat-sidenav-container>
+  </div><!-- /.desktop-layout -->
+
+
+  <!-- ── Mobile layout (<768px): mat-accordion ── -->
+  <div class="mobile-layout">
+    <mat-accordion multi="false">
+      @for (cat of categories; track cat.key) {
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon class="accordion-icon" aria-hidden="true">{{ cat.icon }}</mat-icon>
+              {{ cat.label }}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <app-config-category [category]="cat.key"></app-config-category>
+
+          <button
+            mat-button
+            color="accent"
+            (click)="toggleHistory(cat.key)"
+            [attr.aria-expanded]="showHistory() && historyCategory() === cat.key"
+          >
+            <mat-icon aria-hidden="true">history</mat-icon>
+            @if (showHistory() && historyCategory() === cat.key) {
+              Hide History
+            } @else {
+              Version History
+            }
+          </button>
+
+          @if (showHistory() && historyCategory() === cat.key) {
+            <app-config-history
+              [category]="cat.key"
+              (restored)="onRestored()"
+            ></app-config-history>
+          }
+
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  </div><!-- /.mobile-layout -->
+
+</div><!-- /.config-page -->

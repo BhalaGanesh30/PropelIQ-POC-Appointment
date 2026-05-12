@@ -1,0 +1,83 @@
+<div class="filter-bar" role="search" aria-label="Audit log filters">
+
+  <!-- Event type dropdown -->
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>Event Type</mat-label>
+    <mat-select [ngModel]="selectedEventType()"
+                (ngModelChange)="selectedEventType.set($event)"
+                (selectionChange)="applyFilters()">
+      <mat-option value="">All</mat-option>
+      @for (type of eventTypes; track type) {
+        <mat-option [value]="type">{{ type }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Actor user ID / name -->
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>Actor (User ID)</mat-label>
+    <input matInput
+           [ngModel]="actorUserId()"
+           (ngModelChange)="actorUserId.set($event)"
+           placeholder="UUID or partial name"
+           (keyup.enter)="applyFilters()"
+           aria-label="Filter by actor user ID" />
+  </mat-form-field>
+
+  <!-- From date picker -->
+  <mat-form-field appearance="outline" class="filter-field filter-field--date">
+    <mat-label>From Date</mat-label>
+    <input matInput
+           [matDatepicker]="fromPicker"
+           [ngModel]="fromDate()"
+           (ngModelChange)="fromDate.set($event)"
+           aria-label="Filter from date" />
+    <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
+    <mat-datepicker #fromPicker></mat-datepicker>
+  </mat-form-field>
+
+  <!-- To date picker -->
+  <mat-form-field appearance="outline" class="filter-field filter-field--date">
+    <mat-label>To Date</mat-label>
+    <input matInput
+           [matDatepicker]="toPicker"
+           [ngModel]="toDate()"
+           (ngModelChange)="toDate.set($event)"
+           aria-label="Filter to date" />
+    <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
+    <mat-datepicker #toPicker></mat-datepicker>
+  </mat-form-field>
+
+  <!-- Resource / entity ID -->
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>Resource ID</mat-label>
+    <input matInput
+           [ngModel]="resourceId()"
+           (ngModelChange)="resourceId.set($event)"
+           placeholder="Entity UUID"
+           (keyup.enter)="applyFilters()"
+           aria-label="Filter by resource entity ID" />
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" (click)="applyFilters()" aria-label="Apply filters">
+    <mat-icon>search</mat-icon>
+    Search
+  </button>
+</div>
+
+<!-- SCR-021 Validation state: active filter chips -->
+@if (activeFilters().length > 0) {
+  <div class="active-chips" aria-label="Active filters">
+    <mat-chip-set>
+      @for (f of activeFilters(); track f.key) {
+        <mat-chip (removed)="removeFilter(f.key)" [removable]="true">
+          {{ f.label }}
+          <mat-icon matChipRemove aria-hidden="true">cancel</mat-icon>
+        </mat-chip>
+      }
+    </mat-chip-set>
+    <button mat-button (click)="clearAll()" class="clear-all-btn" aria-label="Clear all filters">
+      Clear All
+    </button>
+  </div>
+}

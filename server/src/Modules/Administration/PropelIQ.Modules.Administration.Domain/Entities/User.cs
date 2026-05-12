@@ -12,5 +12,12 @@ public sealed class User : BaseEntity
     public bool IsActive { get; set; } = true;
     public DateTimeOffset? LastLoginAt { get; set; }
 
+    /// <summary>
+    /// Structural user category used for role-assignment validation (US_061, edge case 2).
+    /// Allowed values: "Patient", "Staff", "Clinician", "Admin".
+    /// Defaults to "Staff" for existing rows via the migration column default.
+    /// </summary>
+    public string UserType { get; set; } = "Staff";
+
     public Patient? PatientProfile { get; set; }
 }

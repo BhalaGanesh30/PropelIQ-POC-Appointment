@@ -1,0 +1,86 @@
+<section aria-label="Report distribution list">
+  <h3 class="section-title">Distribution List</h3>
+  <p class="section-subtitle">
+    Email recipients who receive generated reports automatically (AC-3).
+  </p>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading recipients"></mat-progress-bar>
+  }
+
+  <!-- Error -->
+  @if (!loading() && error()) {
+    <div class="error-banner" role="alert">
+      <p>Failed to load distribution list.</p>
+      <button mat-button color="primary" (click)="loadRecipients()">Retry</button>
+    </div>
+  }
+
+  <!-- Add-recipient form -->
+  @if (!loading() && !error()) {
+    <div class="add-row" role="form" aria-label="Add recipient">
+      <mat-form-field appearance="outline" class="add-field">
+        <mat-label>Display Name</mat-label>
+        <input matInput
+               [ngModel]="newName()"
+               (ngModelChange)="newName.set($event)"
+               placeholder="Jane Smith"
+               aria-label="Recipient display name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="add-field">
+        <mat-label>Email Address</mat-label>
+        <input matInput
+               type="email"
+               [ngModel]="newEmail()"
+               (ngModelChange)="newEmail.set($event)"
+               placeholder="jane@example.com"
+               aria-label="Recipient email address" />
+      </mat-form-field>
+
+      <button mat-raised-button
+              color="primary"
+              (click)="addRecipient()"
+              [disabled]="!isNewEntryValid || saving()"
+              aria-label="Add recipient to distribution list">
+        <mat-icon>add</mat-icon> Add
+      </button>
+    </div>
+
+    <!-- Empty state -->
+    @if (recipients().length === 0) {
+      <div class="empty-state" role="status">
+        <mat-icon aria-hidden="true">group_off</mat-icon>
+        <p>No recipients configured. Add one above.</p>
+      </div>
+    }
+
+    <!-- Recipient list -->
+    @if (recipients().length > 0) {
+      <mat-list role="list" aria-label="Distribution list recipients">
+        @for (r of recipients(); track r.id) {
+          <mat-list-item role="listitem">
+            <span matListItemTitle>{{ r.name }}</span>
+            <span matListItemLine class="recipient-email">{{ r.email }}</span>
+
+            <div matListItemMeta class="recipient-actions">
+              <mat-slide-toggle
+                [checked]="r.isActive"
+                (change)="toggleRecipient(r)"
+                [attr.aria-label]="'Toggle active for ' + r.name">
+              </mat-slide-toggle>
+
+              <button mat-icon-button
+                      color="warn"
+                      (click)="removeRecipient(r)"
+                      [attr.aria-label]="'Remove ' + r.name + ' from distribution list'">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+          </mat-list-item>
+        }
+      </mat-list>
+    }
+  }
+</section>

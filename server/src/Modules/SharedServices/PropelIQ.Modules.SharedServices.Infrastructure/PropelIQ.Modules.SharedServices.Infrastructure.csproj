@@ -18,6 +18,10 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.*" />
     <PackageReference Include="Pgvector.EntityFrameworkCore" Version="0.3.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.*" />
+    <!-- US_058: Compliance report PDF rendering -->
+    <PackageReference Include="QuestPDF" Version="2024.*" />
+    <!-- US_058: Resilient email distribution retry policy -->
+    <PackageReference Include="Polly" Version="8.*" />
   </ItemGroup>
 
   <PropertyGroup>

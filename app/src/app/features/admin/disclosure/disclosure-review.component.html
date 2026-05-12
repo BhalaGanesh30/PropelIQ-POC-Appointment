@@ -1,0 +1,218 @@
+<div class="review-page">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <h1 class="page-title">Disclosure Request Review</h1>
+    <p class="page-subtitle">
+      Review compiled patient data access reports and approve or reject them.
+    </p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-bar">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Status Filter</mat-label>
+      <mat-select [ngModel]="filterStatus()"
+                  (ngModelChange)="filterStatus.set($event); applyFilter()"
+                  aria-label="Filter by status">
+        <mat-option [value]="null">All Statuses</mat-option>
+        @for (s of allStatuses; track s) {
+          <mat-option [value]="s">{{ s }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Loading bar -->
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading requests"></mat-progress-bar>
+  }
+
+  <!-- Error banner -->
+  @if (errorMessage()) {
+    <p class="error-banner" role="alert">{{ errorMessage() }}</p>
+  }
+
+  <!-- Empty state -->
+  @if (!loading() && !errorMessage() && requests().length === 0) {
+    <p class="empty-state" role="status">
+      <mat-icon>inbox</mat-icon>
+      No disclosure requests match the selected filter.
+    </p>
+  }
+
+  <!-- Desktop table (≥ 768 px) -->
+  @if (requests().length > 0) {
+    <div class="desktop-table" role="region" aria-label="Disclosure requests">
+      <table mat-table [dataSource]="requests()" multiTemplateDataRows aria-label="Disclosure review queue">
+
+        <!-- Requested At -->
+        <ng-container matColumnDef="requestedAt">
+          <th mat-header-cell *matHeaderCellDef>Requested</th>
+          <td mat-cell *matCellDef="let r">
+            {{ r.requestedAt | date:'yyyy-MM-dd HH:mm' : 'UTC' }}
+          </td>
+        </ng-container>
+
+        <!-- Patient ID -->
+        <ng-container matColumnDef="patientId">
+          <th mat-header-cell *matHeaderCellDef>Patient ID</th>
+          <td mat-cell *matCellDef="let r">
+            <code class="patient-id">{{ r.patientId }}</code>
+          </td>
+        </ng-container>
+
+        <!-- Date range -->
+        <ng-container matColumnDef="dateRange">
+          <th mat-header-cell *matHeaderCellDef>Date Range</th>
+          <td mat-cell *matCellDef="let r">
+            {{ r.fromDateUtc | date:'mediumDate' }} — {{ r.toDateUtc | date:'mediumDate' }}
+          </td>
+        </ng-container>
+
+        <!-- Status chip -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let r">
+            <mat-chip [color]="statusColor(r.status)" highlighted>{{ r.status }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let r">
+            <button mat-icon-button
+                    (click)="toggleRow(r)"
+                    [attr.aria-expanded]="isExpanded(r)"
+                    [attr.aria-label]="isExpanded(r) ? 'Collapse row' : 'Expand row'">
+              <mat-icon>{{ isExpanded(r) ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Expanded detail row -->
+        <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let r" [attr.colspan]="displayedColumns.length">
+            @if (isExpanded(r)) {
+              <div class="expanded-panel" role="region" [attr.aria-label]="'Details for request ' + r.id">
+
+                @if (reportLoading()) {
+                  <mat-progress-bar mode="indeterminate" aria-label="Loading report"></mat-progress-bar>
+                }
+
+                <!-- Report summary -->
+                @if (selectedReport()) {
+                  <div class="report-summary">
+                    <span class="report-meta">
+                      <strong>{{ selectedReport()!.accessEventCount }}</strong> access events &bull;
+                      Generated {{ selectedReport()!.generatedAt | date:'yyyy-MM-dd HH:mm' : 'UTC' }}
+                    </span>
+                    <details class="report-json-toggle">
+                      <summary>View raw report JSON</summary>
+                      <pre class="report-json"><code>{{ selectedReport()!.reportJson }}</code></pre>
+                    </details>
+                  </div>
+                }
+
+                <!-- Review notes + action buttons (PendingReview only) -->
+                @if (r.status === 'PendingReview') {
+                  <div class="review-actions">
+                    <mat-form-field appearance="outline" class="notes-field">
+                      <mat-label>Review Notes (required to reject)</mat-label>
+                      <textarea matInput
+                                rows="3"
+                                [ngModel]="reviewNotes()"
+                                (ngModelChange)="reviewNotes.set($event)"
+                                [attr.aria-label]="'Review notes for request ' + r.id"
+                                maxlength="1000">
+                      </textarea>
+                    </mat-form-field>
+
+                    <div class="action-buttons">
+                      <button mat-raised-button
+                              color="primary"
+                              (click)="approve(r)"
+                              [disabled]="actioningId() !== null">
+                        @if (actioningId() === r.id) {
+                          <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+                        }
+                        Approve
+                      </button>
+                      <button mat-stroked-button
+                              color="warn"
+                              (click)="reject(r)"
+                              [disabled]="actioningId() !== null">
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                }
+
+                <!-- Read-only review outcome for non-PendingReview rows -->
+                @if (r.status !== 'PendingReview' && r.status !== 'Submitted' && r.status !== 'Compiling') {
+                  <div class="review-outcome">
+                    @if (r.reviewNotes) {
+                      <p class="review-notes-ro"><strong>Notes:</strong> {{ r.reviewNotes }}</p>
+                    }
+                    @if (r.deliveredAt) {
+                      <p class="delivered-at">
+                        Delivered: {{ r.deliveredAt | date:'yyyy-MM-dd HH:mm' : 'UTC' }}
+                      </p>
+                    }
+                  </div>
+                }
+
+              </div>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"
+            class="data-row"
+            [class.expanded-row]="isExpanded(row)"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+      </table>
+    </div>
+
+    <!-- Mobile cards (< 768 px, UXR-303) -->
+    <div class="mobile-cards" aria-label="Disclosure review queue">
+      @for (r of requests(); track r.id) {
+        <div class="review-card">
+          <div class="card-row">
+            <mat-chip [color]="statusColor(r.status)" highlighted>{{ r.status }}</mat-chip>
+            <span class="card-date">{{ r.requestedAt | date:'yyyy-MM-dd' : 'UTC' }}</span>
+          </div>
+          <div class="card-patient"><code>{{ r.patientId }}</code></div>
+          <div class="card-range">{{ r.fromDateUtc | date:'mediumDate' }} — {{ r.toDateUtc | date:'mediumDate' }}</div>
+
+          @if (r.status === 'PendingReview') {
+            <mat-form-field appearance="outline" class="notes-field-mobile">
+              <mat-label>Notes</mat-label>
+              <textarea matInput rows="2"
+                        [ngModel]="reviewNotes()"
+                        (ngModelChange)="reviewNotes.set($event)"
+                        maxlength="1000">
+              </textarea>
+            </mat-form-field>
+            <div class="card-actions">
+              <button mat-raised-button color="primary" (click)="approve(r)" [disabled]="actioningId() !== null">Approve</button>
+              <button mat-stroked-button color="warn" (click)="reject(r)" [disabled]="actioningId() !== null">Reject</button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Paginator -->
+    <mat-paginator [length]="totalCount()"
+                   [pageSize]="pageSize()"
+                   [pageIndex]="page() - 1"
+                   [pageSizeOptions]="[10, 20, 50]"
+                   (page)="onPageChange($event)"
+                   aria-label="Disclosure requests paginator">
+    </mat-paginator>
+  }
+
+</div>

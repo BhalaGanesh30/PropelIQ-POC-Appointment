@@ -1,0 +1,97 @@
+<!-- SCR-023 KPI Card — individual metric widget (US_060, AC-1–AC-3) -->
+<mat-card class="kpi-card">
+
+  <!-- ── Header: icon, label, headline value, trend indicator ─────────────── -->
+  <mat-card-header>
+    <mat-icon
+      mat-card-avatar
+      class="metric-icon"
+      [style.color]="config()?.color"
+      aria-hidden="true">
+      {{ config()?.icon ?? 'bar_chart' }}
+    </mat-icon>
+
+    <mat-card-title>{{ config()?.label ?? card().metric }}</mat-card-title>
+
+    <mat-card-subtitle>
+      <span class="headline-value">
+        {{ card().value | number:'1.1-1' }}
+        @if (config()?.unit) {
+          <span class="unit">{{ config()!.unit }}</span>
+        }
+      </span>
+
+      @if (card().changePercent !== null) {
+        <span
+          class="trend-badge"
+          [class.trend-up]="changeIsPositive(card().changePercent)"
+          [class.trend-down]="!changeIsPositive(card().changePercent)"
+          [attr.aria-label]="
+            (changeIsPositive(card().changePercent) ? 'Up ' : 'Down ')
+            + (card().changePercent! | number:'1.1-1') + ' percent vs previous period'">
+          {{ changeIsPositive(card().changePercent) ? '▲' : '▼' }}
+          {{ card().changePercent! | number:'1.1-1' }}%
+        </span>
+      }
+    </mat-card-subtitle>
+
+    <!-- Export menu (AC-3) -->
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="exportMenu"
+      class="export-btn"
+      aria-label="Export chart">
+      <mat-icon>file_download</mat-icon>
+    </button>
+    <mat-menu #exportMenu="matMenu">
+      <button mat-menu-item (click)="exportChart('Png')">
+        <mat-icon>image</mat-icon>
+        Export as PNG
+      </button>
+      <button mat-menu-item (click)="exportChart('Pdf')">
+        <mat-icon>picture_as_pdf</mat-icon>
+        Export as PDF
+      </button>
+    </mat-menu>
+  </mat-card-header>
+
+  <!-- ── Chart area ───────────────────────────────────────────────────────── -->
+  <mat-card-content class="chart-area">
+
+    @if (chartLoading()) {
+      <!-- Loading skeleton (AC-1 — renders within 3 s) -->
+      <div class="skeleton-chart" aria-busy="true" aria-label="Loading chart data"></div>
+    } @else if (chartError()) {
+      <!-- Per-widget error state with retry (partial dashboard renders on partial failure) -->
+      <div class="chart-error" role="alert">
+        <mat-icon color="warn">error_outline</mat-icon>
+        <p>Failed to load chart data</p>
+        <button mat-button color="primary" (click)="loadChart()">
+          Retry
+        </button>
+      </div>
+    } @else if (isEmpty()) {
+      <!-- Empty state: "No data for the selected period" annotation (edge case 2) -->
+      <div class="chart-empty" role="status">
+        <mat-icon>bar_chart</mat-icon>
+        <p>No data for the selected period</p>
+      </div>
+    } @else {
+      <!-- Default state — ngx-charts line chart -->
+      <ngx-charts-line-chart
+        class="kpi-line-chart"
+        [results]="chartData()"
+        [scheme]="colorScheme()"
+        [xAxis]="true"
+        [yAxis]="true"
+        [showXAxisLabel]="false"
+        [showYAxisLabel]="false"
+        [autoScale]="true"
+        [timeline]="false"
+        [animations]="false"
+        aria-label="KPI time-series chart">
+      </ngx-charts-line-chart>
+    }
+
+  </mat-card-content>
+</mat-card>

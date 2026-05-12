@@ -951,11 +951,11 @@ ng serve
 
 ## Implementation Checklist
 
-- [ ] Create TypeScript interfaces for config snapshots, versions, categories, and update results
-- [ ] Implement ConfigApiService with ETag handling for GET, PUT, history, and restore operations
-- [ ] Build ConfigCategoryComponent with reactive form, inline validation, and save with spinner
-- [ ] Build ConfigHistoryComponent with version table, expandable diff view, and restore button
-- [ ] Build ConflictDialogComponent for OCC conflict resolution with confirm/cancel actions
-- [ ] Build SystemConfigComponent with sidebar navigation (desktop) and accordion (mobile)
-- [ ] Implement all 5 SCR-019 states (Default, Loading, Empty, Error, Validation)
-- [ ] Add lazy-loaded route with adminGuard and register in app.routes.ts
+- [x] Create TypeScript interfaces for config snapshots, versions, categories, and update results
+- [x] Implement ConfigApiService with ETag handling for GET, PUT, history, and restore operations
+- [x] Build ConfigCategoryComponent with reactive form, inline validation, and save with spinner
+- [x] Build ConfigHistoryComponent with version table, expandable diff view, and restore button
+- [x] Build ConflictDialogComponent for OCC conflict resolution with confirm/cancel actions
+- [x] Build SystemConfigComponent with sidebar navigation (desktop) and accordion (mobile)
+- [x] Implement all 5 SCR-019 states (Default, Loading, Empty, Error, Validation)
+- [x] Add lazy-loaded route with adminGuard and register in app.routes.ts

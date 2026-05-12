@@ -1,18 +1,20 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { EmptyProfileStateComponent } from '../shared/empty-profile-state.component';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { CodingSuggestionPanelComponent } from '../coding-suggestion-panel/coding-suggestion-panel.component';
 
-/** Coding tab stub — ICD-10/CPT coding suggestions post-MVP placeholder. */
+/**
+ * Coding tab wrapper for the 360° patient profile (SCR-017 / US_049).
+ * Passes the patient ID to CodingSuggestionPanelComponent which manages its own state.
+ */
 @Component({
   selector: 'app-profile-coding-tab',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [EmptyProfileStateComponent],
+  imports: [CodingSuggestionPanelComponent],
   template: `
-    <app-empty-profile-state
-      message="AI-assisted coding suggestions coming soon."
-      icon="code"
-    />
+    <app-coding-suggestion-panel [patientId]="patientId()" />
   `,
   styles: [`:host { display: block; padding: 8px 0; }`],
 })
-export class ProfileCodingTabComponent {}
+export class ProfileCodingTabComponent {
+  readonly patientId = input.required<string>();
+}

@@ -36,5 +36,12 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.CreatedAt)
             .HasDefaultValueSql("now()");
+
+        // US_061 task_002: user_type column for role-assignment validation (edge case 2).
+        // Defaults to "Staff" for rows created before this column existed.
+        builder.Property(u => u.UserType)
+            .HasMaxLength(50)
+            .IsRequired()
+            .HasDefaultValue("Staff");
     }
 }

@@ -15,4 +15,11 @@ public enum AppointmentStatus
     /// via one-click confirm link in reminder email/SMS.
     /// </summary>
     PatientConfirmed = 4,
+
+    /// <summary>
+    /// The encounter has been submitted for billing (US_051 Edge Case 1).
+    /// Coding decisions are locked once an encounter reaches this status;
+    /// any further changes require the amendment workflow.
+    /// </summary>
+    Submitted = 5,
 }

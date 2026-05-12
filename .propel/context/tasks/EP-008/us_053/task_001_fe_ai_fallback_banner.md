@@ -3,7 +3,7 @@ task_id: task_001
 user_story: us_053
 epic: EP-008
 layer: Frontend
-status: not-started
+status: completed
 effort_hours: 3
 ---
 
@@ -204,9 +204,9 @@ ng serve
 
 ## Implementation Checklist
 
-- [ ] Define `AiGatewayStatusDto` (`circuitState`, `fallbackActive`, `lastTripAt`)
-- [ ] Create `AiGatewayStatusService` with `getStatus()` and 30s polling stream that terminates on circuit close
-- [ ] Create `AiGatewayStatusFacade` with `fallbackActive` Signal; call `initialize()` on app startup
-- [ ] Create `AiFallbackBannerComponent`: amber `mat-card`; `role="status"`; `aria-live="polite"`; non-dismissable (Edge Case 2, AC-2)
-- [ ] Modify `CodingSuggestionPanelComponent`, `PatientProfileComponent`, `ClinicalTimelineComponent` to add `@if(fallbackActive)` banner
-- [ ] Register facade and service in root providers; call `initialize()` in `AppComponent.ngOnInit()`
+- [x] Define `AiGatewayStatusDto` (`circuitState`, `fallbackActive`, `lastTripAt`)
+- [x] Create `AiGatewayStatusService` with `getStatus()` and 30s polling stream that terminates on circuit close
+- [x] Create `AiGatewayStatusFacade` with `fallbackActive` Signal; call `initialize()` on app startup
+- [x] Create `AiFallbackBannerComponent`: amber `mat-card`; `role="status"`; `aria-live="polite"`; non-dismissable (Edge Case 2, AC-2)
+- [x] Modify `CodingSuggestionPanelComponent`, `PatientProfileComponent`, `ClinicalTimelineComponent` to add `@if(fallbackActive)` banner
+- [x] Register facade and service in root providers; call `initialize()` in `AppComponent.ngOnInit()`

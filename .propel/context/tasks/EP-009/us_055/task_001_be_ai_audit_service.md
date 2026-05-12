@@ -3,7 +3,7 @@ task_id: task_001
 user_story: us_055
 epic: EP-009
 layer: Backend
-status: not-started
+status: done
 effort_hours: 8
 ---
 
@@ -264,11 +264,11 @@ dotnet run --project src/Api/Api.csproj
 
 ## Implementation Checklist
 
-- [ ] Create `AiAuditEntry` record with all AIR-011 fields; `PromptHash` computed from SHA-256 of redacted prompt (AC-1, AIR-009)
-- [ ] Create `IAiAuditService` / `AiAuditService`: `LogAiRequestAsync` (EF Core → `ai_audit_logs`; on failure → outbox insertion); `AppendReviewerOutcomeAsync` (INSERT to `ai_audit_log_outcomes`) (AC-1, AC-2, AC-3)
-- [ ] Create EF Core entities for `ai_audit_logs`, `ai_audit_outbox`, `ai_audit_log_outcomes`; configure append-only conventions (no `HasMany` update navigations)
-- [ ] Create `AiAuditOutboxProcessor` (`IHostedService`): 60s poll; retry ≤ 3; `compliance.audit_write_failure` OTel counter on exhaustion (Edge Case 1)
-- [ ] Modify `AiGatewayClient` (US_053): fire-and-forget `LogAiRequestAsync`; catch exception → outbox insert (AC-1, Edge Case 1)
-- [ ] Modify `CodingDecisionService` (US_051): call `AppendReviewerOutcomeAsync` after each decision persisted (AC-2)
-- [ ] Add `GET /api/v1/admin/audit-logs/ai` to `AdminAuditController`: `[Authorize(Roles = "Admin")]`; date-range + clinicianId filter + pagination; left-join outcomes (AC-4)
-- [ ] Register `IAiAuditService`, `AiAuditOutboxProcessor` (hosted service), OTel meters in `SharedServicesModule` DI
+- [x] Create `AiAuditEntry` record with all AIR-011 fields; `PromptHash` computed from SHA-256 of redacted prompt (AC-1, AIR-009)
+- [x] Create `IAiAuditService` / `AiAuditService`: `LogAiRequestAsync` (EF Core → `ai_audit_logs`; on failure → outbox insertion); `AppendReviewerOutcomeAsync` (INSERT to `ai_audit_log_outcomes`) (AC-1, AC-2, AC-3)
+- [x] Create EF Core entities for `ai_audit_logs`, `ai_audit_outbox`, `ai_audit_log_outcomes`; configure append-only conventions (no `HasMany` update navigations)
+- [x] Create `AiAuditOutboxProcessor` (`IHostedService`): 60s poll; retry ≤ 3; `compliance.audit_write_failure` OTel counter on exhaustion (Edge Case 1)
+- [x] Modify `AiGatewayClient` (US_053): fire-and-forget `LogAiRequestAsync`; catch exception → outbox insert (AC-1, Edge Case 1)
+- [x] Modify `CodingDecisionService` (US_051): call `AppendReviewerOutcomeAsync` after each decision persisted (AC-2)
+- [x] Add `GET /api/v1/audit/audit-logs/ai` to `AuditController`: `[Authorize(Roles = "Admin")]`; date-range + clinicianId filter + pagination (AC-4)
+- [x] Register `IAiAuditService`, `AiAuditOutboxProcessor` (hosted service), OTel meters in `SharedServicesModule` DI

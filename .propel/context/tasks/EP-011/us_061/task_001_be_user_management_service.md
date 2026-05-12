@@ -611,22 +611,22 @@ dotnet run --project src/PropelIQ.Api
 
 ## Implementation Validation Strategy
 
-- [ ] User list endpoint returns paginated results with name, email, role, status, last active (AC-1)
-- [ ] Search by name/email filters results correctly (AC-1)
-- [ ] Bulk activate/deactivate applies to all selected users and writes audit records (AC-2)
-- [ ] Activity history returns login events, role changes, actions in reverse chronological order (AC-3)
-- [ ] Bulk deactivation returns summary with success count and failure details (AC-4)
-- [ ] Last-admin guard blocks deactivation of all admin accounts (edge case 1)
-- [ ] Role assignment validates against allowed role-user-type mappings (edge case 2)
-- [ ] Bulk action limited to 200 users per request
+- [x] User list endpoint returns paginated results with name, email, role, status, last active (AC-1)
+- [x] Search by name/email filters results correctly (AC-1)
+- [x] Bulk activate/deactivate applies to all selected users and writes audit records (AC-2)
+- [x] Activity history returns login events, role changes, actions in reverse chronological order (AC-3)
+- [x] Bulk deactivation returns summary with success count and failure details (AC-4)
+- [x] Last-admin guard blocks deactivation of all admin accounts (edge case 1)
+- [x] Role assignment validates against allowed role-user-type mappings (edge case 2)
+- [x] Bulk action limited to 200 users per request
 
 ## Implementation Checklist
 
-- [ ] Define IUserManagementService contract with ListAsync, GetByIdAsync, BulkActionAsync, GetActivityHistoryAsync
-- [ ] Create DTOs for user list query, list item, detail, bulk action request/result, activity entry
-- [ ] Implement paginated user listing with name/email search and role/status filters
-- [ ] Implement bulk action processing with per-user success/failure tracking and audit logging
-- [ ] Implement last-admin guard that blocks deactivation when it would leave zero active admins
-- [ ] Implement role-user-type mapping validation for AssignRole bulk action
-- [ ] Implement activity history query with reverse chronological ordering and pagination
-- [ ] Create UserManagementController with Admin-authorized endpoints (list, get, bulk, activity)
+- [x] Define IUserManagementService contract with ListAsync, GetByIdAsync, BulkActionAsync, GetActivityHistoryAsync
+- [x] Create DTOs for user list query, list item, detail, bulk action request/result, activity entry
+- [x] Implement paginated user listing with name/email search and role/status filters
+- [x] Implement bulk action processing with per-user success/failure tracking and audit logging
+- [x] Implement last-admin guard that blocks deactivation when it would leave zero active admins
+- [x] Implement role-user-type mapping validation for AssignRole bulk action
+- [x] Implement activity history query with reverse chronological ordering and pagination
+- [x] Create UserManagementController with Admin-authorized endpoints (list, get, bulk, activity)

@@ -15,6 +15,8 @@ import { DatePipe } from '@angular/common';
 
 import { PatientProfileFacade, TabId } from '../patient-profile.facade';
 import { ConflictAlertsFacade } from '../conflict-alerts.facade';
+import { AiGatewayStatusFacade } from '../../../shared/facades/ai-gateway-status.facade';
+import { AiFallbackBannerComponent } from '../../../shared/components/ai-fallback-banner/ai-fallback-banner.component';
 import { ProfileSummaryTabComponent } from './tabs/profile-summary-tab.component';
 import { ProfileTimelineTabComponent } from './tabs/profile-timeline-tab.component';
 import { ProfileDocumentsTabComponent } from './tabs/profile-documents-tab.component';
@@ -53,6 +55,7 @@ const CONFLICTS_TAB_INDEX = 5;
     MatProgressSpinnerModule,
     MatButtonModule,
     MatTooltipModule,
+    AiFallbackBannerComponent,
     ProfileSummaryTabComponent,
     ProfileTimelineTabComponent,
     ProfileDocumentsTabComponent,
@@ -66,6 +69,7 @@ const CONFLICTS_TAB_INDEX = 5;
 export class PatientProfileComponent implements OnInit {
   protected readonly facade = inject(PatientProfileFacade);
   protected readonly conflictsFacade = inject(ConflictAlertsFacade);
+  protected readonly aiStatusFacade = inject(AiGatewayStatusFacade);
   private readonly route = inject(ActivatedRoute);
 
   protected readonly tabs = TABS;

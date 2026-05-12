@@ -3,7 +3,7 @@ task_id: task_002
 user_story: us_052
 epic: EP-008
 layer: Backend
-status: not-started
+status: completed
 effort_hours: 6
 ---
 
@@ -228,10 +228,10 @@ dotnet run --project src/Api/Api.csproj
 
 ## Implementation Checklist
 
-- [ ] Create `CodeResultDto`, `CodeSearchResponseDto`, `AddFavoriteRequestDto`, `ManualCodeSelectionRequestDto` DTOs
-- [ ] Create `ICodeReferenceRepository` / `CodeReferenceRepository`: raw SQL UNION pg_trgm similarity; type filter; deprecated filter (Edge Case 2); GIN index dependency on task_003
-- [ ] Create `ICodeFavoriteRepository` / `CodeFavoriteRepository`: CRUD on `user_code_favorites`; code existence validation (HTTP 422 guard); join for descriptions
-- [ ] Create `ICodeSearchService` / `CodeSearchService`: UNION search, favorites merge (pinned first), Redis 60s cache; HTTP 200 on empty (Edge Case 1)
-- [ ] Create `CodeSearchController`: GET search (min q=2 validation), GET/POST/DELETE favorites (Clinician-only)
-- [ ] Modify `CodingDecisionController`: add POST /coding-decisions/manual with `reviewer_action = accepted` + `AuditService` write (AC-2)
-- [ ] Register all new services/repositories in DI; add OpenTelemetry metrics
+- [x] Create `CodeResultDto`, `CodeSearchResponseDto`, `AddFavoriteRequestDto`, `ManualCodeSelectionRequestDto` DTOs
+- [x] Create `ICodeReferenceRepository` / `CodeReferenceRepository`: raw SQL UNION pg_trgm similarity; type filter; deprecated filter (Edge Case 2); GIN index dependency on task_003
+- [x] Create `ICodeFavoriteRepository` / `CodeFavoriteRepository`: CRUD on `user_code_favorites`; code existence validation (HTTP 422 guard); join for descriptions
+- [x] Create `ICodeSearchService` / `CodeSearchService`: UNION search, favorites merge (pinned first), Redis 60s cache; HTTP 200 on empty (Edge Case 1)
+- [x] Create `CodeSearchController`: GET search (min q=2 validation), GET/POST/DELETE favorites (Clinician-only)
+- [x] Modify `CodingDecisionController`: add POST /coding-decisions/manual with `reviewer_action = accepted` + `AuditService` write (AC-2)
+- [x] Register all new services/repositories in DI; add OpenTelemetry metrics

@@ -1,0 +1,156 @@
+:host { display: block; }
+
+.access-log-page {
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  color: #212121;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: #616161;
+  margin: 0;
+}
+
+// ── Filter bar ────────────────────────────────────────────────────────────────
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.patient-id-field {
+  flex: 2 1 280px;
+  min-width: 240px;
+}
+
+.date-field {
+  flex: 1 1 160px;
+  min-width: 140px;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-top: 4px;
+}
+
+// ── States ────────────────────────────────────────────────────────────────────
+
+.error-banner {
+  background: #FFEBEE;
+  border: 1px solid #EF9A9A;
+  border-radius: 6px;
+  padding: 10px 14px;
+  color: #B71C1C;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.hint-state,
+.empty-state {
+  color: #757575;
+  font-size: 14px;
+  padding: 32px 0;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.result-count {
+  font-size: 13px;
+  color: #616161;
+  margin: 0 0 10px;
+}
+
+// ── Desktop table ─────────────────────────────────────────────────────────────
+
+.desktop-table {
+  overflow-x: auto;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  margin-bottom: 0;
+
+  table {
+    width: 100%;
+  }
+}
+
+.entity-id {
+  font-family: monospace;
+  font-size: 12px;
+  background: #F5F5F5;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.null-value {
+  color: #9E9E9E;
+}
+
+// ── Mobile cards (UXR-303) ────────────────────────────────────────────────────
+
+.mobile-cards {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .desktop-table {
+    display: none;
+  }
+
+  .mobile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .access-card {
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    padding: 14px 16px;
+    background: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .card-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-time {
+    font-size: 12px;
+    color: #757575;
+  }
+
+  .card-actor {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .card-resource {
+    font-size: 13px;
+    color: #616161;
+  }
+}

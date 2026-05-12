@@ -3,7 +3,7 @@ task_id: task_003
 user_story: us_051
 epic: EP-008
 layer: Database
-status: not-started
+status: completed
 effort_hours: 1
 ---
 
@@ -165,15 +165,15 @@ dotnet ef migrations list --project src/Modules/ClinicalIntelligence
 
 ## Implementation Validation Strategy
 
-- [ ] `original_icd10_code VARCHAR(20) NULL` column exists on `coding_decisions` (verified via `\d coding_decisions`)
-- [ ] `original_cpt_code VARCHAR(20) NULL` column exists on `coding_decisions`
-- [ ] Existing rows in `coding_decisions` retain `NULL` in both new columns after migration (no data disruption)
-- [ ] Migration contains only `AddColumn` operations — no `DropColumn`, `AlterColumn`, or table renames
-- [ ] `CodingDecisionEntity` properties `OriginalIcd10Code` and `OriginalCptCode` map correctly as nullable strings in EF Core scaffold
+- [X] `original_icd10_code VARCHAR(20) NULL` column exists on `coding_decisions` (verified via `\d coding_decisions`)
+- [X] `original_cpt_code VARCHAR(20) NULL` column exists on `coding_decisions`
+- [X] Existing rows in `coding_decisions` retain `NULL` in both new columns after migration (no data disruption)
+- [X] Migration contains only `AddColumn` operations — no `DropColumn`, `AlterColumn`, or table renames
+- [X] `CodingDecisionEntity` properties `OriginalIcd10Code` and `OriginalCptCode` map correctly as nullable strings in EF Core scaffold
 
 ---
 
 ## Implementation Checklist
 
-- [ ] Add `string? OriginalIcd10Code` and `string? OriginalCptCode` to `CodingDecisionEntity`
-- [ ] Generate EF Core migration `AddOriginalCodeColumnsToCodingDecisions` with two `AddColumn` (VARCHAR 20 NULL); verify no destructive operations in generated SQL
+- [X] Add `string? OriginalIcd10Code` and `string? OriginalCptCode` to `CodingDecisionEntity`
+- [X] Generate EF Core migration `AddOriginalCodeColumnsToCodingDecisions` with two `AddColumn` (VARCHAR 20 NULL); verify no destructive operations in generated SQL

@@ -1,0 +1,65 @@
+<!-- SCR-019 ConfigCategoryComponent � reactive form with loading skeleton and saving spinner -->
+
+@if (loading()) {
+  <div class="skeleton-wrap" aria-busy="true" aria-label="Loading configuration">
+    <div class="skeleton-field"></div>
+    <div class="skeleton-field"></div>
+    <div class="skeleton-field short"></div>
+  </div>
+} @else if (error()) {
+  <div class="error-banner" role="alert" aria-live="assertive">
+    <span>{{ error() }}</span>
+    <button mat-button color="warn" (click)="loadConfig()">Retry</button>
+  </div>
+} @else if (form()) {
+  <form [formGroup]="form()!" (ngSubmit)="save()" novalidate>
+
+    @for (entry of form()!.controls | keyvalue; track entry.key) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ entry.key }}</mat-label>
+        <input
+          matInput
+          [formControlName]="entry.key"
+          [id]="category() + '-' + entry.key"
+          [attr.aria-describedby]="
+            form()!.get(entry.key)?.invalid
+              ? category() + '-' + entry.key + '-error'
+              : null"
+        />
+        @if (form()!.get(entry.key)?.invalid && form()!.get(entry.key)?.touched) {
+          <mat-error [id]="category() + '-' + entry.key + '-error'">
+            Invalid value
+          </mat-error>
+        }
+      </mat-form-field>
+    }
+
+    <div class="form-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="saving()"
+        aria-label="Save configuration"
+      >
+        @if (saving()) {
+          <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+          Saving...
+        } @else {
+          Save Configuration
+        }
+      </button>
+
+      <button mat-button type="button" (click)="loadConfig()" [disabled]="saving()">
+        Reset
+      </button>
+    </div>
+  </form>
+
+  @if (snapshot()) {
+    <p class="version-meta">
+      Version {{ snapshot()!.versionNumber }} &mdash; last saved
+      {{ snapshot()!.updatedAtUtc | date: 'medium' }} by {{ snapshot()!.updatedByName }}
+    </p>
+  }
+}

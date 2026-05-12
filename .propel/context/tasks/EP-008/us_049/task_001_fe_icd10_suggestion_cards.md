@@ -3,7 +3,7 @@ task_id: task_001
 user_story: us_049
 epic: EP-008
 layer: Frontend
-status: not-started
+status: completed
 effort_hours: 8
 ---
 
@@ -215,24 +215,24 @@ ng serve
 
 ## Implementation Validation Strategy
 
-- [ ] `CodingSuggestionPanelComponent` renders up to 3 `SuggestionCardComponent` items in Default state (AC-1)
-- [ ] Each `SuggestionCardComponent` shows: ICD-10 code (monospace badge), description, confidence progress bar, rationale text, AI badge (UXR-405), "View Evidence" button (AC-2)
-- [ ] "View Evidence" opens `EvidenceBottomSheetComponent` listing correct citations for the selected suggestion (AC-2)
-- [ ] When `lowConfidence: true` — `LowConfidenceBannerComponent` renders above cards with `aria-live="polite"` (AC-3)
-- [ ] When `suggestions.length < 3` — `InsufficientEvidenceNoteComponent` renders below cards (Edge Case 1)
-- [ ] HTTP 422 response triggers Empty state: "No suggestions available — manual coding required" with SCR-018 link (Edge Case 2)
-- [ ] Loading state renders 3 skeleton cards; error state renders retry button; retry calls `facade.loadSuggestions(patientId)`
-- [ ] `cdkTrapFocus` active in `EvidenceBottomSheetComponent`; accessible close returns focus to trigger button
+- [X] `CodingSuggestionPanelComponent` renders up to 3 `SuggestionCardComponent` items in Default state (AC-1)
+- [X] Each `SuggestionCardComponent` shows: ICD-10 code (monospace badge), description, confidence progress bar, rationale text, AI badge (UXR-405), "View Evidence" button (AC-2)
+- [X] "View Evidence" opens `EvidenceBottomSheetComponent` listing correct citations for the selected suggestion (AC-2)
+- [X] When `lowConfidence: true` — `LowConfidenceBannerComponent` renders above cards with `aria-live="polite"` (AC-3)
+- [X] When `suggestions.length < 3` — `InsufficientEvidenceNoteComponent` renders below cards (Edge Case 1)
+- [X] HTTP 422 response triggers Empty state: "No suggestions available — manual coding required" with SCR-018 link (Edge Case 2)
+- [X] Loading state renders 3 skeleton cards; error state renders retry button; retry calls `facade.loadSuggestions(patientId)`
+- [X] `cdkTrapFocus` active in `EvidenceBottomSheetComponent`; accessible close returns focus to trigger button
 
 ---
 
 ## Implementation Checklist
 
-- [ ] Define `IcdSuggestionDto`, `ClinicalFactCitationDto`, `CodingSuggestionResponseDto` DTOs
-- [ ] Create `CodingSuggestionService` calling `GET /api/v1/patients/{id}/coding-suggestions`; map HTTP 422 to empty-state signal (Edge Case 2)
-- [ ] Create `CodingSuggestionFacade` with Signal state: `loadingState`, `suggestions`, `lowConfidence`
-- [ ] Create `SuggestionCardComponent` with code badge (monospace), confidence progress-bar, AI badge (UXR-405, AC-2), and `(viewEvidence)` output
-- [ ] Create `EvidenceBottomSheetComponent` with `MAT_BOTTOM_SHEET_DATA` citations list and `cdkTrapFocus` (AC-2)
-- [ ] Create `LowConfidenceBannerComponent` with `aria-live="polite"` amber banner (AC-3)
-- [ ] Create `CodingSuggestionPanelComponent` with `@switch` state routing, `InsufficientEvidenceNoteComponent` for < 3 cards, SCR-018 link for empty (Edge Case 1, Edge Case 2)
-- [ ] Register route under `ClinicalIntelligenceModule`; register facade and service in DI
+- [X] Define `IcdSuggestionDto`, `ClinicalFactCitationDto`, `CodingSuggestionResponseDto` DTOs
+- [X] Create `CodingSuggestionService` calling `GET /api/v1/patients/{id}/coding-suggestions`; map HTTP 422 to empty-state signal (Edge Case 2)
+- [X] Create `CodingSuggestionFacade` with Signal state: `loadingState`, `suggestions`, `lowConfidence`
+- [X] Create `SuggestionCardComponent` with code badge (monospace), confidence progress-bar, AI badge (UXR-405, AC-2), and `(viewEvidence)` output
+- [X] Create `EvidenceBottomSheetComponent` with `MAT_BOTTOM_SHEET_DATA` citations list and `cdkTrapFocus` (AC-2)
+- [X] Create `LowConfidenceBannerComponent` with `aria-live="polite"` amber banner (AC-3)
+- [X] Create `CodingSuggestionPanelComponent` with `@switch` state routing, `InsufficientEvidenceNoteComponent` for < 3 cards, SCR-018 link for empty (Edge Case 1, Edge Case 2)
+- [X] Register route under `ClinicalIntelligenceModule`; register facade and service in DI

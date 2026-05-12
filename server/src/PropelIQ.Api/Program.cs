@@ -64,6 +64,7 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<PropelIQ.Api.Validators.InviteStaffRequestValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<PropelIQ.Modules.Scheduling.Application.Intake.Validators.SaveDraftRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<PropelIQ.Modules.SharedServices.Application.Compliance.Validators.ReportRequestValidator>();
 
 // ── Rate Limiting (auth endpoints) ───────────────────────────────────────────
 // OWASP A07 / AC-4: cap auth requests per IP to prevent brute-force abuse.
@@ -270,6 +271,11 @@ builder.Services.AddHostedService<SessionCleanupService>();
 // Handles lockout events: invalidates sessions, revokes tokens, sends email (AC-3).
 builder.Services.AddScoped<PropelIQ.Api.AccountLockoutHandler>();
 
+// ── Patient Data Access Filter (us_057, AC-1) ─────────────────────────────────
+// Registered as scoped so it can be injected via [ServiceFilter(typeof(PatientDataAccessFilter))]
+// on patient-data controllers. Emits DataAccess audit events on successful reads.
+builder.Services.AddScoped<PropelIQ.Api.Filters.PatientDataAccessFilter>();
+
 // ─────────────────────────────────────────────────────────────────────────────
 var app = builder.Build();
 // ─────────────────────────────────────────────────────────────────────────────
@@ -305,6 +311,12 @@ app.UseExceptionHandler();
 app.UseStatusCodePages();
 // 2a. Correlation ID — runs early so every downstream log carries the ID (AC-4).
 app.UseMiddleware<CorrelationIdMiddleware>();
+
+// 2b. AI fallback envelope — injects "aiFallbackActive": true into JSON responses
+//     while the AI gateway circuit is open (US_053, Edge Case 2, AC-2).
+//     Must run BEFORE auth so unauthenticated 401 responses also carry the flag.
+//     Fast path: no-op (no buffering) when circuit is closed.
+app.UseMiddleware<AiFallbackEnvelopeMiddleware>();
 
 // ── Developer Tools ───────────────────────────────────────────────────────────
 if (app.Environment.IsDevelopment())

@@ -3,7 +3,7 @@ task_id: task_003
 user_story: us_050
 epic: EP-008
 layer: Database
-status: not-started
+status: completed
 effort_hours: 2
 ---
 
@@ -178,18 +178,18 @@ dotnet ef migrations list --project src/Modules/ClinicalIntelligence
 
 ## Implementation Validation Strategy
 
-- [ ] `cpt_codes` table created with all columns: `cpt_code` (string PK), `description`, `category`, `is_deprecated`, `effective_date`, `deprecation_date`, `last_updated_at`
-- [ ] `is_deprecated` defaults to `false`; `last_updated_at` defaults to `now()`
-- [ ] Partial index `ix_cpt_codes_active` exists on `cpt_code WHERE is_deprecated = false`
-- [ ] Index `ix_cpt_codes_last_updated` exists on `last_updated_at DESC` for freshness check performance
-- [ ] No FK constraints on `cpt_codes` — standalone reference table (verified via `\d cpt_codes`)
-- [ ] Migration is additive — no modifications to existing tables; `dotnet ef database update` succeeds without errors
-- [ ] A row with `is_deprecated = true` is NOT returned by `CptCodeRepository.ExistsAndActiveAsync()`
+- [X] `cpt_codes` table created with all columns: `cpt_code` (string PK), `description`, `category`, `is_deprecated`, `effective_date`, `deprecation_date`, `last_updated_at`
+- [X] `is_deprecated` defaults to `false`; `last_updated_at` defaults to `now()`
+- [X] Partial index `ix_cpt_codes_active` exists on `cpt_code WHERE is_deprecated = false`
+- [X] Index `ix_cpt_codes_last_updated` exists on `last_updated_at DESC` for freshness check performance
+- [X] No FK constraints on `cpt_codes` — standalone reference table (verified via `\d cpt_codes`)
+- [X] Migration is additive — no modifications to existing tables; `dotnet ef database update` succeeds without errors
+- [X] A row with `is_deprecated = true` is NOT returned by `CptCodeRepository.ExistsAndActiveAsync()`
 
 ---
 
 ## Implementation Checklist
 
-- [ ] Create `CptCodeEntity` with string natural PK (`cpt_code`), `IsDeprecated` bool, `DeprecationDate DateOnly?`, `EffectiveDate DateOnly?`, `LastUpdatedAt DateTimeOffset`; configure `HasKey(c => c.CptCode)` with no value generation
-- [ ] Create EF Core migration `AddCptCodesReferenceTable`: `cpt_codes` table, `ix_cpt_codes_active` partial index (`WHERE is_deprecated = false`), `ix_cpt_codes_last_updated` index on `last_updated_at DESC`
-- [ ] Verify no FK constraints; verify `is_deprecated DEFAULT false` and `last_updated_at DEFAULT now()` column defaults present in generated SQL
+- [X] Create `CptCodeEntity` with string natural PK (`cpt_code`), `IsDeprecated` bool, `DeprecationDate DateOnly?`, `EffectiveDate DateOnly?`, `LastUpdatedAt DateTimeOffset`; configure `HasKey(c => c.CptCode)` with no value generation
+- [X] Create EF Core migration `AddCptCodesReferenceTable`: `cpt_codes` table, `ix_cpt_codes_active` partial index (`WHERE is_deprecated = false`), `ix_cpt_codes_last_updated` index on `last_updated_at DESC`
+- [X] Verify no FK constraints; verify `is_deprecated DEFAULT false` and `last_updated_at DEFAULT now()` column defaults present in generated SQL

@@ -83,6 +83,17 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    // US_057/AC-2: Patient disclosure request form and history (PatientOnly).
+    path: 'settings/disclosure-requests',
+    loadComponent: () =>
+      import('./features/settings/disclosure/disclosure-request-form.component').then(
+        (m) => m.DisclosureRequestFormComponent,
+      ),
+    title: 'Data Access Records — PropelIQ',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Patient'] },
+  },
+  {
     // US_030/task_002: Slot claim page — opened from HMAC-signed email/SMS link.
     // Accepts ?token= query param; authGuard redirects to login then back.
     path: 'claim',
@@ -209,6 +220,19 @@ export const routes: Routes = [
     title: 'Patient Profile — PropelIQ',
     canActivate: [authGuard, roleGuard],
     data: { roles: ['Clinician', 'Staff'] },
+  },
+  {
+    // EP-008/US_052: Code search with autocomplete and favorites (SCR-018).
+    // Clinician-only route; navigated to from SCR-017 suggestion cards and
+    // the empty-state "Search Code" link when no AI suggestions are available.
+    path: 'coding/search',
+    loadComponent: () =>
+      import('./features/coding/code-search/code-search.component').then(
+        (m) => m.CodeSearchComponent,
+      ),
+    title: 'Code Search — PropelIQ',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Clinician'] },
   },
   {
     // 403 Forbidden — shown when an authenticated user lacks the required role.

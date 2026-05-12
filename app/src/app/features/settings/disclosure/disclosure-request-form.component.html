@@ -1,0 +1,77 @@
+<div class="disclosure-page">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <h1 class="page-title">Request My Data Access Records</h1>
+    <p class="page-subtitle">
+      Request a report showing who accessed your patient data within a specified date range.
+      Once compiled and reviewed by staff, you will receive a secure download link via email
+      that is valid for 48 hours.
+    </p>
+  </div>
+
+  <!-- Submission form card -->
+  <mat-card class="form-card" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>New Disclosure Request</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="form-row">
+        <!-- From date picker -->
+        <mat-form-field appearance="outline" class="date-field">
+          <mat-label>From Date</mat-label>
+          <input matInput
+                 [matDatepicker]="fromPicker"
+                 [max]="today"
+                 [ngModel]="fromDate()"
+                 (ngModelChange)="fromDate.set($event)"
+                 placeholder="MM/DD/YYYY"
+                 aria-label="Disclosure range from date" />
+          <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fromPicker></mat-datepicker>
+        </mat-form-field>
+
+        <!-- To date picker -->
+        <mat-form-field appearance="outline" class="date-field">
+          <mat-label>To Date</mat-label>
+          <input matInput
+                 [matDatepicker]="toPicker"
+                 [max]="today"
+                 [ngModel]="toDate()"
+                 (ngModelChange)="toDate.set($event)"
+                 placeholder="MM/DD/YYYY"
+                 aria-label="Disclosure range to date" />
+          <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
+          <mat-datepicker #toPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- Inline validation -->
+      @if (fromDate() && toDate() && !dateRangeValid) {
+        <p class="date-error" role="alert">
+          "To Date" must be after "From Date".
+        </p>
+      }
+
+      <div class="form-actions">
+        <button mat-raised-button
+                color="primary"
+                (click)="submit()"
+                [disabled]="submitting() || !dateRangeValid"
+                aria-label="Submit disclosure request">
+          @if (submitting()) {
+            <mat-spinner diameter="20" class="btn-spinner"></mat-spinner>
+            Submitting…
+          } @else {
+            Submit Request
+          }
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Request history list — refreshes when refreshToken changes -->
+  <app-disclosure-request-list [refreshToken]="refreshToken()" />
+
+</div>

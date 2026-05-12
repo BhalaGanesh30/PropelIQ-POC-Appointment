@@ -14,6 +14,11 @@ public sealed class AuditRecord
     public required DateTimeOffset OccurredAt { get; init; }
     public AuditDetails Details { get; init; } = new();
 
+    // ── Patient data access column (US_057, AC-1, AC-4) ─────────────────────────
+    // Populated only for DataAccess events; null for all other event types.
+    // Allows efficient per-patient access log queries without JSONB scanning.
+    public Guid? PatientId { get; init; }
+
     // ── Override-specific columns (EP-004 US_034, task_003) ─────────────────────
     // All nullable so pre-existing audit records retain NULL values (DR-007).
 

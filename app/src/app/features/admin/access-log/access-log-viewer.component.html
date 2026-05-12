@@ -1,0 +1,176 @@
+<div class="access-log-page">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <h1 class="page-title">Patient Access Log</h1>
+    <p class="page-subtitle">
+      Search for access events for a specific patient by their Patient ID.
+      Results are ordered chronologically (oldest first).
+    </p>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <mat-form-field appearance="outline" class="patient-id-field">
+      <mat-label>Patient ID (UUID)</mat-label>
+      <input matInput
+             [ngModel]="patientIdInput()"
+             (ngModelChange)="patientIdInput.set($event)"
+             placeholder="e.g. 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+             aria-label="Patient ID to search" />
+      <mat-icon matSuffix>person_search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="date-field">
+      <mat-label>From Date</mat-label>
+      <input matInput
+             [matDatepicker]="fromPicker"
+             [max]="today"
+             [ngModel]="fromDate()"
+             (ngModelChange)="fromDate.set($event)"
+             placeholder="MM/DD/YYYY"
+             aria-label="Filter from date" />
+      <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
+      <mat-datepicker #fromPicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="date-field">
+      <mat-label>To Date</mat-label>
+      <input matInput
+             [matDatepicker]="toPicker"
+             [max]="today"
+             [ngModel]="toDate()"
+             (ngModelChange)="toDate.set($event)"
+             placeholder="MM/DD/YYYY"
+             aria-label="Filter to date" />
+      <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
+      <mat-datepicker #toPicker></mat-datepicker>
+    </mat-form-field>
+
+    <div class="filter-actions">
+      <button mat-raised-button
+              color="primary"
+              (click)="search()"
+              [disabled]="!canSearch || loading()"
+              aria-label="Search access log">
+        <mat-icon>search</mat-icon>
+        Search
+      </button>
+      <button mat-button
+              (click)="clearFilters()"
+              [disabled]="loading()"
+              aria-label="Clear filters">
+        Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading bar -->
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading access log"></mat-progress-bar>
+  }
+
+  <!-- Error banner -->
+  @if (errorMessage()) {
+    <p class="error-banner" role="alert">{{ errorMessage() }}</p>
+  }
+
+  <!-- Pre-query placeholder -->
+  @if (!hasQueried() && !loading()) {
+    <p class="hint-state" role="status">
+      <mat-icon>info</mat-icon>
+      Enter a Patient ID above and click Search to view their access log.
+    </p>
+  }
+
+  <!-- Empty state (after a query returned nothing) -->
+  @if (hasQueried() && !loading() && !errorMessage() && entries().length === 0) {
+    <p class="empty-state" role="status">
+      <mat-icon>search_off</mat-icon>
+      No access events found for the specified criteria.
+    </p>
+  }
+
+  <!-- Results -->
+  @if (entries().length > 0) {
+
+    <p class="result-count" role="status">
+      Showing {{ entries().length }} of {{ totalCount() }} events
+    </p>
+
+    <!-- Desktop table (≥ 768 px) -->
+    <div class="desktop-table" role="region" aria-label="Access log entries">
+      <table mat-table [dataSource]="entries()" aria-label="Patient access log">
+
+        <ng-container matColumnDef="occurredAt">
+          <th mat-header-cell *matHeaderCellDef>Occurred (UTC)</th>
+          <td mat-cell *matCellDef="let e">
+            {{ e.occurredAt | date:'yyyy-MM-dd HH:mm:ss' : 'UTC' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actorName">
+          <th mat-header-cell *matHeaderCellDef>Staff Member</th>
+          <td mat-cell *matCellDef="let e">
+            {{ e.actorName ?? '—' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actorRole">
+          <th mat-header-cell *matHeaderCellDef>Role</th>
+          <td mat-cell *matCellDef="let e">
+            <mat-chip>{{ e.actorRole }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="resourceType">
+          <th mat-header-cell *matHeaderCellDef>Resource</th>
+          <td mat-cell *matCellDef="let e">{{ e.resourceType }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="entityId">
+          <th mat-header-cell *matHeaderCellDef>Entity ID</th>
+          <td mat-cell *matCellDef="let e">
+            @if (e.entityId) {
+              <code class="entity-id">{{ e.entityId }}</code>
+            } @else {
+              <span class="null-value">—</span>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+
+    <!-- Mobile cards (< 768 px, UXR-303) -->
+    <div class="mobile-cards" aria-label="Access log entries">
+      @for (e of entries(); track e.auditId) {
+        <div class="access-card">
+          <div class="card-row">
+            <mat-chip>{{ e.actorRole }}</mat-chip>
+            <span class="card-time">{{ e.occurredAt | date:'yyyy-MM-dd HH:mm' : 'UTC' }}</span>
+          </div>
+          <div class="card-actor">{{ e.actorName ?? e.actorUserId }}</div>
+          <div class="card-resource">
+            {{ e.resourceType }}
+            @if (e.entityId) {
+              &bull; <code class="entity-id">{{ e.entityId }}</code>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Paginator -->
+    <mat-paginator [length]="totalCount()"
+                   [pageSize]="pageSize()"
+                   [pageIndex]="page() - 1"
+                   [pageSizeOptions]="[10, 20, 50]"
+                   (page)="onPageChange($event)"
+                   aria-label="Access log paginator">
+    </mat-paginator>
+  }
+
+</div>

@@ -368,17 +368,17 @@ psql -d propeliq -c "\dt app.compliance_*"
 
 ## Implementation Validation Strategy
 
-- [ ] All 5 tables created with correct columns, types, and constraints
-- [ ] Foreign key relationships correctly reference parent tables
-- [ ] Composite and partial indexes created for schedule polling, report listing, and distribution log queries
-- [ ] Migration is reversible with proper rollback support
-- [ ] Default values applied for status, timestamps, and boolean fields
+- [x] All 5 tables created with correct columns, types, and constraints
+- [x] Foreign key relationships correctly reference parent tables
+- [x] Composite and partial indexes created for schedule polling, report listing, and distribution log queries
+- [x] Migration is reversible with proper rollback support
+- [x] Default values applied for status, timestamps, and boolean fields
 
 ## Implementation Checklist
 
-- [ ] Create ComplianceReport entity with status tracking, PDF content, and metric fields
-- [ ] Create ComplianceReportSchedule entity with recurrence pattern and next-run timestamp
-- [ ] Create DistributionListEntry entity linked to schedule with active/inactive status
-- [ ] Create DistributionLog entity with delivery status, retry count, and error details
-- [ ] Create ComplianceReportJob entity with progress percentage and status tracking
-- [ ] Create EF Core migration with all 5 tables, foreign keys, and composite/partial indexes
+- [x] Create ComplianceReport entity with status tracking, PDF content, and metric fields
+- [x] Create ComplianceReportSchedule entity with recurrence pattern and next-run timestamp
+- [x] Create DistributionListEntry entity linked to schedule with active/inactive status
+- [x] Create DistributionLog entity with delivery status, retry count, and error details
+- [x] Create ComplianceReportJob entity with progress percentage and status tracking
+- [x] Create EF Core migration with all 5 tables, foreign keys, and composite/partial indexes

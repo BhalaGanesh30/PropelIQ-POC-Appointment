@@ -621,11 +621,11 @@ dotnet run --project server/src/PropelIQ.Api
 
 ## Implementation Checklist
 
-- [ ] Create PatientDataAccessFilter emitting DataAccess audit events on successful patient data reads
-- [ ] Create DisclosureRequest and DisclosureReport domain entities with state machine
-- [ ] Create database migration for disclosure_requests and disclosure_reports tables with indexes
-- [ ] Implement DisclosureCompilationWorker BackgroundService compiling access logs into reports
-- [ ] Implement patient-facing endpoints: submit, status, list, and secure download
-- [ ] Implement staff review/approve endpoints with disclosure delivery (email + HMAC download link)
-- [ ] Implement AccessLogController with patient ID and date range filtering (AC-4)
-- [ ] Register filter, services, and background worker in Program.cs
+- [x] Create PatientDataAccessFilter emitting DataAccess audit events on successful patient data reads
+- [x] Create DisclosureRequest and DisclosureReport domain entities with state machine
+- [x] Create database migration for disclosure_requests and disclosure_reports tables with indexes
+- [x] Implement DisclosureCompilationWorker BackgroundService compiling access logs into reports
+- [x] Implement patient-facing endpoints: submit, status, list, and secure download
+- [x] Implement staff review/approve endpoints with disclosure delivery (email + HMAC download link)
+- [x] Implement AccessLogController with patient ID and date range filtering (AC-4)
+- [x] Register filter, services, and background worker in Program.cs

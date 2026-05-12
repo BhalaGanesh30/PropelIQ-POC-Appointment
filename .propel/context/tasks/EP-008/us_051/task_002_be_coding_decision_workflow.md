@@ -3,7 +3,7 @@ task_id: task_002
 user_story: us_051
 epic: EP-008
 layer: Backend
-status: not-started
+status: completed
 effort_hours: 7
 ---
 
@@ -214,22 +214,22 @@ dotnet run --project src/Api/Api.csproj
 
 ## Implementation Validation Strategy
 
-- [ ] `POST /{id}/accept` sets `reviewer_action = accepted`, `reviewer_id`, `decided_at`; audit record `coding_accepted` written with `final_code` (AC-1, NFR-010)
-- [ ] `PATCH /{id}/modify` sets `reviewer_action = modified`; `original_icd10_code`/`original_cpt_code` populated from pre-modification values; audit record `coding_modified` with `original_value` and `final_value` (AC-2, NFR-010, AIR-007)
-- [ ] `POST /{id}/reject` sets `reviewer_action = rejected`; audit record `coding_rejected` written (AC-3, NFR-010)
-- [ ] `UpdateReviewerActionAsync` atomically updates only rows where `reviewer_action = 'pending'`; returns 0 rows if already decided → HTTP 409
-- [ ] All three mutation endpoints return HTTP 409 when `encounter_status = submitted` (Edge Case 1)
-- [ ] `GET /patients/{patientId}/coding-decisions/pending` returns only `reviewer_action = 'pending'` rows for the given patient (AC-4)
-- [ ] OpenTelemetry counters `coding_decision.accept_count`, `coding_decision.modify_count`, `coding_decision.reject_count` emitted per action (AIR-007, Edge Case 2)
-- [ ] Redis cache invalidated on each successful mutation; subsequent FE requests fetch fresh suggestion/pending state
+- [X] `POST /{id}/accept` sets `reviewer_action = accepted`, `reviewer_id`, `decided_at`; audit record `coding_accepted` written with `final_code` (AC-1, NFR-010)
+- [X] `PATCH /{id}/modify` sets `reviewer_action = modified`; `original_icd10_code`/`original_cpt_code` populated from pre-modification values; audit record `coding_modified` with `original_value` and `final_value` (AC-2, NFR-010, AIR-007)
+- [X] `POST /{id}/reject` sets `reviewer_action = rejected`; audit record `coding_rejected` written (AC-3, NFR-010)
+- [X] `UpdateReviewerActionAsync` atomically updates only rows where `reviewer_action = 'pending'`; returns 0 rows if already decided → HTTP 409
+- [X] All three mutation endpoints return HTTP 409 when `encounter_status = submitted` (Edge Case 1)
+- [X] `GET /patients/{patientId}/coding-decisions/pending` returns only `reviewer_action = 'pending'` rows for the given patient (AC-4)
+- [X] OpenTelemetry counters `coding_decision.accept_count`, `coding_decision.modify_count`, `coding_decision.reject_count` emitted per action (AIR-007, Edge Case 2)
+- [X] Redis cache invalidated on each successful mutation; subsequent FE requests fetch fresh suggestion/pending state
 
 ---
 
 ## Implementation Checklist
 
-- [ ] Create `ModifyDecisionRequestDto` (FinalCode max 20 required, FinalDescription required); `PendingDecisionDto`
-- [ ] Extend `ICodingDecisionRepository` / `CodingDecisionRepository`: `UpdateReviewerActionAsync` (atomic UPDATE WHERE pending); `GetPendingByPatientAsync`
-- [ ] Create `CodingDecisionGuard`: encounter submission status check; throw `EncounterAlreadySubmittedException` → HTTP 409 (Edge Case 1)
-- [ ] Create `ICodingDecisionWorkflowService` / `CodingDecisionWorkflowService`: accept/modify/reject orchestration; original-value snapshot on modify (task_003 columns); AuditService writes per action (NFR-010)
-- [ ] Create `CodingDecisionController`: POST accept, PATCH modify, POST reject (Clinician-only); GET pending; HTTP 409 on guard or double-decision; register in DI
-- [ ] Add OpenTelemetry counters: `coding_decision.accept_count`, `coding_decision.modify_count`, `coding_decision.reject_count` (AIR-007); cache invalidation for suggestion and pending cache keys
+- [X] Create `ModifyDecisionRequestDto` (FinalCode max 20 required, FinalDescription required); `PendingDecisionDto`
+- [X] Extend `ICodingDecisionRepository` / `CodingDecisionRepository`: `UpdateReviewerActionAsync` (atomic UPDATE WHERE pending); `GetPendingByPatientAsync`
+- [X] Create `CodingDecisionGuard`: encounter submission status check; throw `EncounterAlreadySubmittedException` → HTTP 409 (Edge Case 1)
+- [X] Create `ICodingDecisionWorkflowService` / `CodingDecisionWorkflowService`: accept/modify/reject orchestration; original-value snapshot on modify (task_003 columns); AuditService writes per action (NFR-010)
+- [X] Create `CodingDecisionController`: POST accept, PATCH modify, POST reject (Clinician-only); GET pending; HTTP 409 on guard or double-decision; register in DI
+- [X] Add OpenTelemetry counters: `coding_decision.accept_count`, `coding_decision.modify_count`, `coding_decision.reject_count` (AIR-007); cache invalidation for suggestion and pending cache keys

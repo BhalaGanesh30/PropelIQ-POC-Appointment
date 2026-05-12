@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PropelIQ.Modules.SharedServices.Application.Audit;
+using PropelIQ.Modules.SharedServices.Application.AiAudit;
 
 namespace PropelIQ.Api.Controllers;
 
@@ -26,10 +27,12 @@ namespace PropelIQ.Api.Controllers;
 public sealed class AuditController : BaseApiController
 {
     private readonly IAuditService _auditService;
+    private readonly IAiAuditService _aiAuditService;
 
-    public AuditController(IAuditService auditService)
+    public AuditController(IAuditService auditService, IAiAuditService aiAuditService)
     {
-        _auditService = auditService;
+        _auditService   = auditService;
+        _aiAuditService = aiAuditService;
     }
 
     /// <summary>
@@ -73,6 +76,46 @@ public sealed class AuditController : BaseApiController
             pageSize:  pageSize,
             page:      page,
             ct:        ct);
+
+        return Ok(results);
+    }
+
+    /// <summary>
+    /// Returns paginated AI request audit log entries (US_055, AC-4).
+    ///
+    /// Restricted to the Admin role. Supports optional filtering by clinician and date range.
+    /// Results are ordered by <c>request_timestamp</c> descending.
+    ///
+    /// NFR-010: Records are append-only — this endpoint is strictly read-only.
+    /// </summary>
+    /// <param name="clinicianId">Filter by clinician user ID. Omit to return all clinicians.</param>
+    /// <param name="from">Inclusive start of the date range filter (ISO-8601 UTC).</param>
+    /// <param name="to">Inclusive end of the date range filter (ISO-8601 UTC).</param>
+    /// <param name="pageSize">Number of records per page (1–200, default 50).</param>
+    /// <param name="page">0-based page index (default 0).</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <response code="200">AI audit log entries returned (may be empty).</response>
+    /// <response code="401">JWT bearer token missing or invalid.</response>
+    /// <response code="403">Caller does not have the Admin role.</response>
+    [HttpGet("audit-logs/ai")]
+    [ProducesResponseType(typeof(IReadOnlyList<AiAuditLogDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> GetAiAuditLogs(
+        [FromQuery] Guid?            clinicianId,
+        [FromQuery] DateTimeOffset?  from,
+        [FromQuery] DateTimeOffset?  to,
+        [FromQuery] int              pageSize = 50,
+        [FromQuery] int              page     = 0,
+        CancellationToken            ct       = default)
+    {
+        var results = await _aiAuditService.QueryAsync(
+            clinicianId: clinicianId,
+            from:        from,
+            to:          to,
+            pageSize:    pageSize,
+            page:        page,
+            ct:          ct);
 
         return Ok(results);
     }

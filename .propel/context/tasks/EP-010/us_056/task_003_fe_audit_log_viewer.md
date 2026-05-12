@@ -1044,11 +1044,11 @@ ng serve
 
 ## Implementation Checklist
 
-- [ ] Create TypeScript interfaces for audit log entries, query params, and export models
-- [ ] Implement AuditLogApiService with query, export trigger, and export status polling
-- [ ] Build AuditLogFilterComponent with event type, actor, date range, resource ID controls
-- [ ] Implement removable filter chips for active filters (SCR-021 Validation state)
-- [ ] Build AuditLogViewerComponent with data table, inline expansion, and 5 states
-- [ ] Implement responsive card layout for screens below 768px (UXR-303)
-- [ ] Implement CSV export trigger with polling and secure download (edge case 2)
-- [ ] Add /admin/audit-logs lazy-loaded route with admin guard
+- [x] Create TypeScript interfaces for audit log entries, query params, and export models
+- [x] Implement AuditLogApiService with query, export trigger, and export status polling
+- [x] Build AuditLogFilterComponent with event type, actor, date range, resource ID controls
+- [x] Implement removable filter chips for active filters (SCR-021 Validation state)
+- [x] Build AuditLogViewerComponent with data table, inline expansion, and 5 states
+- [x] Implement responsive card layout for screens below 768px (UXR-303)
+- [x] Implement CSV export trigger with polling and secure download (edge case 2)
+- [x] Add /admin/audit-logs lazy-loaded route with admin guard

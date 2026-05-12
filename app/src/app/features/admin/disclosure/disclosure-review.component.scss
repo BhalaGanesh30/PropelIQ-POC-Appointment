@@ -1,0 +1,222 @@
+:host { display: block; }
+
+.review-page {
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  color: #212121;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: #616161;
+  margin: 0;
+}
+
+.filter-bar {
+  margin-bottom: 16px;
+}
+
+.filter-field {
+  width: 220px;
+}
+
+.error-banner {
+  background: #FFEBEE;
+  border: 1px solid #EF9A9A;
+  border-radius: 6px;
+  padding: 10px 14px;
+  color: #B71C1C;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.empty-state {
+  color: #757575;
+  font-size: 14px;
+  padding: 32px 0;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+// ── Desktop table ─────────────────────────────────────────────────────────────
+
+.desktop-table {
+  overflow-x: auto;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  margin-bottom: 0;
+
+  table {
+    width: 100%;
+  }
+}
+
+.data-row {
+  cursor: pointer;
+}
+
+.expanded-row {
+  background: #F5F5F5;
+}
+
+.detail-row td {
+  padding: 0;
+  border-bottom: none;
+}
+
+.expanded-panel {
+  padding: 16px;
+  border-top: 1px solid #E0E0E0;
+}
+
+.patient-id {
+  font-family: monospace;
+  font-size: 12px;
+  background: #F5F5F5;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+// ── Report preview ─────────────────────────────────────────────────────────
+
+.report-summary {
+  margin-bottom: 16px;
+}
+
+.report-meta {
+  font-size: 14px;
+  color: #424242;
+}
+
+.report-json-toggle {
+  margin-top: 10px;
+
+  summary {
+    cursor: pointer;
+    color: #1565C0;
+    font-size: 13px;
+  }
+}
+
+.report-json {
+  background: #F5F5F5;
+  border: 1px solid #E0E0E0;
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 12px;
+  overflow-x: auto;
+  max-height: 300px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+// ── Review action area ─────────────────────────────────────────────────────
+
+.review-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.notes-field {
+  width: 100%;
+  max-width: 560px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-spinner {
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.review-outcome {
+  font-size: 14px;
+  color: #424242;
+}
+
+.review-notes-ro {
+  margin: 0 0 6px;
+}
+
+.delivered-at {
+  margin: 0;
+  color: #2E7D32;
+}
+
+// ── Mobile cards (UXR-303) ────────────────────────────────────────────────────
+
+.mobile-cards {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .desktop-table {
+    display: none;
+  }
+
+  .mobile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .review-card {
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    padding: 14px 16px;
+    background: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .card-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-date {
+    font-size: 13px;
+    color: #757575;
+  }
+
+  .card-patient {
+    font-size: 12px;
+  }
+
+  .card-range {
+    font-size: 14px;
+    color: #424242;
+  }
+
+  .notes-field-mobile {
+    width: 100%;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 10px;
+  }
+}

@@ -3,7 +3,7 @@ task_id: task_001
 user_story: us_052
 epic: EP-008
 layer: Frontend
-status: not-started
+status: completed
 effort_hours: 7
 ---
 

@@ -3,7 +3,7 @@ task_id: task_002
 user_story: us_053
 epic: EP-008
 layer: Backend
-status: not-started
+status: completed
 effort_hours: 7
 ---
 
@@ -235,11 +235,11 @@ dotnet run --project src/Api/Api.csproj
 
 ## Implementation Checklist
 
-- [ ] Create `AiGatewayRequest`, `AiGatewayResult`, `AiGatewayStatusDto` shared DTOs
-- [ ] Create `IAiGatewayStateService` / `AiGatewayStateService`: Redis state; `RecordTrip` with hourly counter; `ai.circuit_rapid_cycling` alert (Edge Case 1)
-- [ ] Create `IAiGatewayClient` / `AiGatewayClient`: Polly timeout → retry → circuit-breaker pipeline; `OnOpened`/`OnClosed`/`OnHalfOpened` callbacks update Redis state; fallback on open or timeout (AC-2, AC-3, AC-4)
-- [ ] Create `AiFallbackEnvelopeMiddleware`: appends `aiFallbackActive` to JSON responses when circuit open (Edge Case 2)
-- [ ] Create `AiGatewayController`: GET /api/v1/ai-gateway/status (Clinician+Staff) (Edge Case 2)
-- [ ] Modify `CodingAiGatewayClient` (US_049): inject `IAiGatewayClient`; check `FallbackActive` flag
-- [ ] Register middleware + Polly `AddResilienceHandler` in Program.cs; register `IAiGatewayClient`, `IAiGatewayStateService` in SharedServices DI
-- [ ] Add OpenTelemetry metrics: `ai.circuit_trip_count`, `ai.request_duration_ms`, `ai.timeout_count`, `ai.circuit_rapid_cycling` (AIR-011)
+- [x] Create `AiGatewayRequest`, `AiGatewayResult`, `AiGatewayStatusDto` shared DTOs — `AiGatewayStatusDto` created at `SharedKernel/AiGateway/Models/`; `AiGatewayRequest`/`AiGatewayResult` already existed as `ChatCompletionRequest`/`ChatCompletionResponse` — no new types required
+- [x] Create `IAiGatewayStateService` / `AiGatewayStateService`: Redis state; `RecordTrip` with hourly counter; `ai.circuit_rapid_cycling` alert (Edge Case 1) — created at `SharedKernel/AiGateway/`
+- [x] Create `IAiGatewayClient` / `AiGatewayClient`: Polly timeout → retry → circuit-breaker pipeline; `OnOpened`/`OnClosed`/`OnHalfOpened` callbacks update Redis state; fallback on open or timeout (AC-2, AC-3, AC-4) — `IAiGatewayClient` + `LiteLlmGatewayClient` already existed; `AiGatewayServiceCollectionExtensions` modified to add `OnOpened`/`OnClosed`/`OnHalfOpened` async callbacks and register `IAiGatewayStateService`
+- [x] Create `AiFallbackEnvelopeMiddleware`: appends `aiFallbackActive` to JSON responses when circuit open (Edge Case 2) — created at `SharedKernel/AiGateway/AiFallbackEnvelopeMiddleware.cs`
+- [x] Create `AiGatewayController`: GET /api/v1/ai-gateway/status (Clinician+Staff) (Edge Case 2) — created at `PropelIQ.Api/Controllers/AiGatewayController.cs`
+- [x] Modify `CodingAiGatewayClient` (US_049): inject `IAiGatewayClient`; check `FallbackActive` flag — no changes needed; `CodingAiGatewayClient` already injects `IAiGatewayClient` and checks `IsCircuitBreakerOpen`
+- [x] Register middleware + Polly `AddResilienceHandler` in Program.cs; register `IAiGatewayClient`, `IAiGatewayStateService` in SharedServices DI — `app.UseMiddleware<AiFallbackEnvelopeMiddleware>()` added after `CorrelationIdMiddleware` in Program.cs; DI registered via `AddAiGateway()` extension
+- [x] Add OpenTelemetry metrics: `ai.circuit_trip_count`, `ai.request_duration_ms`, `ai.timeout_count`, `ai.circuit_rapid_cycling` (AIR-011) — added to `DiagnosticsConfig.cs`; counters/histograms emitted from `AiGatewayStateService` and Polly callbacks

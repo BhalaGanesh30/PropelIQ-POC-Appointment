@@ -68,5 +68,13 @@ public interface IClinicalFactRepository
         DateTimeOffset? from,
         DateTimeOffset? to,
         CancellationToken ct = default);
+
+    // ── US_049 additions ──────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Returns <c>true</c> when at least one clinical fact exists for the patient.
+    /// Used as a preflight check before invoking the AI pipeline (US_049 Edge Case 2).
+    /// </summary>
+    Task<bool> HasFactsAsync(Guid patientId, CancellationToken ct = default);
 }
 

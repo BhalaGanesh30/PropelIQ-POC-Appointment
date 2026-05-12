@@ -1,5 +1,10 @@
 <div class="profile-host">
 
+  <!-- ── AI fallback banner (US_053, AC-2, Edge Case 2) ─────────────────── -->
+  @if (aiStatusFacade.fallbackActive()) {
+    <app-ai-fallback-banner />
+  }
+
   <!-- ── Page header ─────────────────────────────────────────────────────── -->
   <header class="page-header">
     <div class="page-header__text">
@@ -95,14 +100,16 @@
       </div>
     </mat-tab>
 
-    <!-- Coding tab -->
+    <!-- Coding tab (SCR-017) -->
     <mat-tab>
       <ng-template mat-tab-label>
         <mat-icon class="tab-icon" aria-hidden="true">code</mat-icon>
         Coding
       </ng-template>
       <div class="tab-content">
-        <app-profile-coding-tab />
+        @if (facade.patientHeader()) {
+          <app-profile-coding-tab [patientId]="facade.patientHeader()!.id" />
+        }
       </div>
     </mat-tab>
 

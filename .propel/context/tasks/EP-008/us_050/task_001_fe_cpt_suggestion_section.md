@@ -3,7 +3,7 @@ task_id: task_001
 user_story: us_050
 epic: EP-008
 layer: Frontend
-status: not-started
+status: completed
 effort_hours: 7
 ---
 
@@ -215,23 +215,23 @@ ng serve
 
 ## Implementation Validation Strategy
 
-- [ ] CPT section renders below ICD-10 section in `CodingSuggestionPanelComponent` with Loading/Empty/Error/Default states independent of ICD-10 section
-- [ ] Each `CptSuggestionCardComponent` shows: CPT code (monospace badge), description, confidence bar, AI badge (UXR-405), "View Evidence" button opening `EvidenceBottomSheetComponent` (AC-2)
-- [ ] `EmLevelCardComponent` renders E/M level code, description, confidence bar, and collapsible complexity factors; UXR-204 tooltip shown on each factor (AC-3)
-- [ ] When `cptResponse.lowConfidence: true` — `LowConfidenceBannerComponent` rendered above CPT cards with "Manual coding recommended" text (AC-4)
-- [ ] When `staleDatabaseWarning: true` — `StaleCptDatabaseBannerComponent` renders above CPT section (Edge Case 2)
-- [ ] When `noSuggestionForAppointmentType: true` — CPT section Empty state renders with SCR-018 navigation link (Edge Case 1)
-- [ ] CPT facade signals update independently; retry in CPT error state calls `cptFacade.loadCptSuggestions()` only
+- [X] CPT section renders below ICD-10 section in `CodingSuggestionPanelComponent` with Loading/Empty/Error/Default states independent of ICD-10 section
+- [X] Each `CptSuggestionCardComponent` shows: CPT code (monospace badge), description, confidence bar, AI badge (UXR-405), "View Evidence" button opening `EvidenceBottomSheetComponent` (AC-2)
+- [X] `EmLevelCardComponent` renders E/M level code, description, confidence bar, and collapsible complexity factors; UXR-204 tooltip shown on each factor (AC-3)
+- [X] When `cptResponse.lowConfidence: true` — `LowConfidenceBannerComponent` rendered above CPT cards with "Manual coding recommended" text (AC-4)
+- [X] When `staleDatabaseWarning: true` — `StaleCptDatabaseBannerComponent` renders above CPT section (Edge Case 2)
+- [X] When `noSuggestionForAppointmentType: true` — CPT section Empty state renders with SCR-018 navigation link (Edge Case 1)
+- [X] CPT facade signals update independently; retry in CPT error state calls `cptFacade.loadCptSuggestions()` only
 
 ---
 
 ## Implementation Checklist
 
-- [ ] Define `CptSuggestionDto`, `EmSuggestionDto`, `CptSuggestionResponseDto` DTOs; reuse `ClinicalFactCitationDto` from US_049
-- [ ] Create `CptSuggestionService` calling `GET /api/v1/patients/{id}/coding-suggestions/cpt?appointmentId=`; map `noSuggestionForAppointmentType` to empty signal (Edge Case 1)
-- [ ] Create `CptSuggestionFacade` with independent Signal state for CPT section
-- [ ] Create `CptSuggestionCardComponent` with monospace code badge, confidence bar, AI badge (UXR-405), View Evidence output (AC-2)
-- [ ] Create `EmLevelCardComponent` with collapsible complexity factors and UXR-204 tooltips per factor (AC-3)
-- [ ] Create `StaleCptDatabaseBannerComponent` for stale DB warning (Edge Case 2)
-- [ ] Modify `CodingSuggestionPanelComponent` to add CPT section with `@switch` state routing; `LowConfidenceBannerComponent` scoped to CPT section (AC-4); CPT Empty state with SCR-018 link (Edge Case 1)
-- [ ] Register `CptSuggestionFacade` and `CptSuggestionService` in `ClinicalIntelligenceModule` providers
+- [X] Define `CptSuggestionDto`, `EmSuggestionDto`, `CptSuggestionResponseDto` DTOs; reuse `ClinicalFactCitationDto` from US_049
+- [X] Create `CptSuggestionService` calling `GET /api/v1/patients/{id}/coding-suggestions/cpt?appointmentId=`; map `noSuggestionForAppointmentType` to empty signal (Edge Case 1)
+- [X] Create `CptSuggestionFacade` with independent Signal state for CPT section
+- [X] Create `CptSuggestionCardComponent` with monospace code badge, confidence bar, AI badge (UXR-405), View Evidence output (AC-2)
+- [X] Create `EmLevelCardComponent` with collapsible complexity factors and UXR-204 tooltips per factor (AC-3)
+- [X] Create `StaleCptDatabaseBannerComponent` for stale DB warning (Edge Case 2)
+- [X] Modify `CodingSuggestionPanelComponent` to add CPT section with `@switch` state routing; `LowConfidenceBannerComponent` scoped to CPT section (AC-4); CPT Empty state with SCR-018 link (Edge Case 1)
+- [X] Register `CptSuggestionFacade` and `CptSuggestionService` in `ClinicalIntelligenceModule` providers

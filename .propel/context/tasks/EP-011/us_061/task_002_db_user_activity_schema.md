@@ -234,18 +234,18 @@ psql -d propeliq -c "\di ix_user_activity_log_*"
 
 ## Implementation Validation Strategy
 
-- [ ] `user_activity_log` table created with correct columns and FK constraints
-- [ ] Composite index on (user_id, occurred_at_utc DESC) exists for reverse chronological queries
-- [ ] Partial index on login events exists for fast login history lookup
-- [ ] CASCADE delete on user_id FK removes activity logs when user is deleted
-- [ ] SET NULL on performed_by_user_id FK preserves logs when performing admin is deleted
-- [ ] Migration applies cleanly and rolls back without errors
+- [x] `user_activity_log` table created with correct columns and FK constraints
+- [x] Composite index on (user_id, occurred_at_utc DESC) exists for reverse chronological queries
+- [x] Partial index on login events exists for fast login history lookup
+- [x] CASCADE delete on user_id FK removes activity logs when user is deleted
+- [x] SET NULL on performed_by_user_id FK preserves logs when performing admin is deleted
+- [x] Migration applies cleanly and rolls back without errors
 
 ## Implementation Checklist
 
-- [ ] Create UserActivityLog entity with userId, eventType, description, occurredAtUtc, performedByUserId, performedByName
-- [ ] Add user_type column to users table if not already present
-- [ ] Register UserActivityLogs DbSet in AppDbContext
-- [ ] Configure Fluent API with FK constraints (CASCADE for user, SET NULL for performer)
-- [ ] Add composite descending index on (user_id, occurred_at_utc) for activity history queries
-- [ ] Generate and apply EF Core migration
+- [x] Create UserActivityLog entity with userId, eventType, description, occurredAtUtc, performedByUserId, performedByName
+- [x] Add user_type column to users table if not already present
+- [x] Register UserActivityLogs DbSet in AppDbContext
+- [x] Configure Fluent API with FK constraints (CASCADE for user, SET NULL for performer)
+- [x] Add composite descending index on (user_id, occurred_at_utc) for activity history queries
+- [x] Generate and apply EF Core migration

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Polly;
 using Polly.CircuitBreaker;
 using Polly.Retry;
+using PropelIQ.SharedKernel.Observability;
 
 namespace PropelIQ.SharedKernel.AiGateway;
 
@@ -39,6 +40,10 @@ public static class AiGatewayServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        // Redis-backed circuit state service (singleton — in-memory flag + Redis persistence).
+        // Registered before the HttpClient so the Polly handler can resolve it at runtime.
+        services.AddSingleton<IAiGatewayStateService, AiGatewayStateService>();
+
         // Typed HttpClient with Polly v8 resilience pipeline applied as delegating handler.
         services.AddHttpClient<IAiGatewayClient, LiteLlmGatewayClient>(
             (serviceProvider, httpClient) =>
@@ -59,6 +64,8 @@ public static class AiGatewayServiceCollectionExtensions
                     .GetRequiredService<IOptions<AiGatewayOptions>>().Value;
                 var logger = context.ServiceProvider
                     .GetRequiredService<ILogger<LiteLlmGatewayClient>>();
+                var stateService = context.ServiceProvider
+                    .GetRequiredService<IAiGatewayStateService>();
 
                 // AC-2/AC-4: circuit breaker is outermost — when open, throws
                 // BrokenCircuitException immediately without consuming retry budget.
@@ -73,18 +80,35 @@ public static class AiGatewayServiceCollectionExtensions
                         .Handle<HttpRequestException>()
                         .Handle<TaskCanceledException>()
                         .HandleResult(r => (int)r.StatusCode >= 500),
-                    OnOpened = args =>
+                    OnOpened = async args =>
                     {
                         logger.LogWarning(
                             "AI gateway circuit breaker OPENED for {Duration}s.",
                             args.BreakDuration.TotalSeconds);
-                        return ValueTask.CompletedTask;
+
+                        // Update Redis state + increment hourly trip counter (Edge Case 1).
+                        await stateService.RecordTripAsync();
+
+                        // OTel span event for distributed tracing linkage (AIR-011).
+                        DiagnosticsConfig.AiCircuitTripCounter.Add(
+                            1,
+                            new KeyValuePair<string, object?>("circuit.state", "open"));
                     },
-                    OnClosed = _ =>
+                    OnClosed = async _ =>
                     {
                         logger.LogInformation(
                             "AI gateway circuit breaker RESET — traffic restored.");
-                        return ValueTask.CompletedTask;
+
+                        // Restore circuit to closed state in Redis and in-memory flag (AC-3).
+                        await stateService.SetStateAsync("closed");
+                    },
+                    OnHalfOpened = async _ =>
+                    {
+                        logger.LogInformation(
+                            "AI gateway circuit breaker HALF-OPEN — sending probe request (AC-3).");
+
+                        // Update state so status endpoint reflects the half-open probe (Edge Case 2).
+                        await stateService.SetStateAsync("half-open");
                     },
                 });
 

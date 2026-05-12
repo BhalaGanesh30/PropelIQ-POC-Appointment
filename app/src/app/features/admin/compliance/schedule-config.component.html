@@ -1,0 +1,81 @@
+<section aria-label="Report schedule configuration">
+  <h3 class="section-title">Report Schedules</h3>
+  <p class="section-subtitle">
+    Manage automated report generation schedules (AC-1).
+    Toggle a schedule to enable or disable it.
+  </p>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading schedules"></mat-progress-bar>
+  }
+
+  <!-- Error -->
+  @if (!loading() && error()) {
+    <div class="error-banner" role="alert">
+      <p>Failed to load schedules.</p>
+      <button mat-button color="primary" (click)="loadSchedules()">Retry</button>
+    </div>
+  }
+
+  <!-- Empty -->
+  @if (!loading() && !error() && schedules().length === 0) {
+    <div class="empty-state" role="status">
+      <mat-icon aria-hidden="true">event_repeat</mat-icon>
+      <p>No schedules configured.</p>
+    </div>
+  }
+
+  <!-- Schedule table -->
+  @if (!loading() && !error() && schedules().length > 0) {
+    <table mat-table [dataSource]="schedules()" aria-label="Report schedules">
+
+      <!-- Name -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef scope="col">Name</th>
+        <td mat-cell *matCellDef="let s">{{ s.name }}</td>
+      </ng-container>
+
+      <!-- Report type -->
+      <ng-container matColumnDef="reportType">
+        <th mat-header-cell *matHeaderCellDef scope="col">Report Type</th>
+        <td mat-cell *matCellDef="let s">{{ s.reportType }}</td>
+      </ng-container>
+
+      <!-- Recurrence -->
+      <ng-container matColumnDef="recurrence">
+        <th mat-header-cell *matHeaderCellDef scope="col">Recurrence</th>
+        <td mat-cell *matCellDef="let s">{{ s.recurrence }}</td>
+      </ng-container>
+
+      <!-- Next run -->
+      <ng-container matColumnDef="nextRunAt">
+        <th mat-header-cell *matHeaderCellDef scope="col">Next Run</th>
+        <td mat-cell *matCellDef="let s">{{ s.nextRunAt | date:'short' }}</td>
+      </ng-container>
+
+      <!-- Last run -->
+      <ng-container matColumnDef="lastRunAt">
+        <th mat-header-cell *matHeaderCellDef scope="col">Last Run</th>
+        <td mat-cell *matCellDef="let s">
+          {{ s.lastRunAt ? (s.lastRunAt | date:'short') : '—' }}
+        </td>
+      </ng-container>
+
+      <!-- Active toggle -->
+      <ng-container matColumnDef="active">
+        <th mat-header-cell *matHeaderCellDef scope="col">Active</th>
+        <td mat-cell *matCellDef="let s">
+          <mat-slide-toggle
+            [checked]="s.isActive"
+            (change)="toggleActive(s)"
+            [attr.aria-label]="'Toggle schedule ' + s.name">
+          </mat-slide-toggle>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  }
+</section>

@@ -1,0 +1,174 @@
+/* ── Host ─────────────────────────────────────────────────────────────────── */
+:host {
+  display: block;
+}
+
+/* ── Page shell ───────────────────────────────────────────────────────────── */
+.compliance-page {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 4px;
+  /* WCAG AA: #212121 on white = 16:1 contrast ratio (UXR-201) */
+  color: #212121;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: #616161;
+  margin: 0;
+}
+
+/* ── Section titles (shared by child components via ::ng-deep is avoided;
+      use host-context or matching class name in each component) ─────────── */
+.section-title {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 0 4px;
+  color: #212121;
+}
+
+.section-subtitle {
+  font-size: 13px;
+  color: #616161;
+  margin: 0 0 16px;
+}
+
+/* ── Tab content padding ─────────────────────────────────────────────────── */
+.tab-content {
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Config row (type selector + date range + button) ────────────────────── */
+.config-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.type-field {
+  min-width: 200px;
+}
+
+.range-field {
+  min-width: 280px;
+}
+
+/* ── Async notice ─────────────────────────────────────────────────────────── */
+.async-notice {
+  font-size: 13px;
+  color: #5d4037;
+  background: #fff3e0;
+  border: 1px solid #ffe0b2;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 8px;
+}
+
+/* ── Error banner ────────────────────────────────────────────────────────── */
+.error-banner {
+  background: #ffebee;
+  border: 1px solid #ef9a9a;
+  border-radius: 6px;
+  padding: 10px 14px;
+  /* WCAG AA: #b71c1c on #ffebee = 5.3:1 (UXR-201) */
+  color: #b71c1c;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 0;
+  color: #757575;
+  font-size: 14px;
+  text-align: center;
+
+  mat-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+    margin-bottom: 12px;
+    color: #bdbdbd;
+  }
+}
+
+.empty-hint {
+  color: #9e9e9e;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+/* ── Table wrapper ────────────────────────────────────────────────────────── */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+/* ── Add row (distribution-list form) ────────────────────────────────────── */
+.add-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.add-field {
+  min-width: 200px;
+}
+
+/* ── Recipient actions (slide-toggle + delete) ────────────────────────────── */
+.recipient-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recipient-email {
+  font-size: 13px;
+  color: #616161;
+}
+
+/* ── Responsive — 375px (UXR-301) ────────────────────────────────────────── */
+@media (max-width: 599px) {
+  .compliance-page {
+    padding: 16px;
+  }
+
+  .config-row,
+  .add-row {
+    flex-direction: column;
+  }
+
+  .type-field,
+  .range-field,
+  .add-field {
+    width: 100%;
+    min-width: unset;
+  }
+}
+
+/* ── Responsive — 768px (UXR-301) ────────────────────────────────────────── */
+@media (min-width: 600px) and (max-width: 959px) {
+  .compliance-page {
+    padding: 20px;
+  }
+}

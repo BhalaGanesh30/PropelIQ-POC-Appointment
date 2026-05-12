@@ -310,9 +310,9 @@ psql -d propeliq -c \
 
 ## Implementation Checklist
 
-- [ ] Create ConfigurationVersion entity with JSONB values/diff, version number, and admin tracking
-- [ ] Configure Fluent API with table mapping, JSONB columns, row version, and self-referencing FK
-- [ ] Create unique composite index on (category, version_number)
-- [ ] Create descending history index on (category, updated_at_utc)
-- [ ] Seed version 1 for SlotTemplates, ReminderRules, SessionPolicy, CommunicationTemplates
-- [ ] Generate and apply EF Core migration with rollback support
+- [x] Create ConfigurationVersion entity with JSONB values/diff, version number, and admin tracking
+- [x] Configure Fluent API with table mapping, JSONB columns, row version, and self-referencing FK
+- [x] Create unique composite index on (category, version_number)
+- [x] Create descending history index on (category, updated_at_utc)
+- [x] Seed version 1 for SlotTemplates, ReminderRules, SessionPolicy, CommunicationTemplates
+- [x] Generate and apply EF Core migration with rollback support

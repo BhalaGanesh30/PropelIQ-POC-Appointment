@@ -53,12 +53,53 @@ public class AppDbContext : DbContext
     public DbSet<CodingDecision> CodingDecisions => Set<CodingDecision>();
     public DbSet<DeadLetterEntry> OcrDeadLetterQueue => Set<DeadLetterEntry>();
 
+    // EP-008 US_050: CPT code reference catalog (task_003).
+    public DbSet<CptCodeEntity> CptCodes => Set<CptCodeEntity>();
+
+    // EP-008 US_052: ICD-10 code reference catalog (task_003).
+    public DbSet<IcdCodeEntity> IcdCodes => Set<IcdCodeEntity>();
+
+    // EP-008 US_052: Clinician personal code favorites (task_003).
+    public DbSet<UserCodeFavorite> UserCodeFavorites => Set<UserCodeFavorite>();
+
     // EP-007 US_046: Conflict detection entities (conflict_alerts, conflict_rules).
     public DbSet<ConflictAlert> ConflictAlerts => Set<ConflictAlert>();
     public DbSet<ConflictRule> ConflictRules => Set<ConflictRule>();
 
     // SharedServices module entities
     public DbSet<AuditRecord> AuditRecords => Set<AuditRecord>();
+
+    // EP-009 US_055: AI audit trail — append-only log, outcomes, and outbox retry buffer.
+    public DbSet<AiAuditLogEntity> AiAuditLogs => Set<AiAuditLogEntity>();
+    public DbSet<AiAuditLogOutcomeEntity> AiAuditLogOutcomes => Set<AiAuditLogOutcomeEntity>();
+    public DbSet<AiAuditOutboxEntity> AiAuditOutbox => Set<AiAuditOutboxEntity>();
+
+    // EP-010 US_056: Audit record dead-letter store for failed channel writes.
+    public DbSet<AuditDeadLetter> AuditDeadLetters => Set<AuditDeadLetter>();
+
+    // EP-010 US_056 task_002: Tamper-attempt log — application-layer complement to pgaudit (AC-2).
+    public DbSet<AuditMutationAttempt> AuditMutationAttempts => Set<AuditMutationAttempt>();
+
+    // EP-010 US_057: Patient disclosure requests and compiled disclosure reports.
+    public DbSet<DisclosureRequest> DisclosureRequests => Set<DisclosureRequest>();
+    public DbSet<DisclosureReport> DisclosureReports  => Set<DisclosureReport>();
+
+    // EP-010 US_058: HIPAA compliance report records, schedules, distribution list, and logs.
+    public DbSet<ComplianceReportRecord>      ComplianceReports          => Set<ComplianceReportRecord>();
+    public DbSet<ComplianceReportSchedule>    ComplianceReportSchedules  => Set<ComplianceReportSchedule>();
+    public DbSet<ComplianceDistributionList>  ComplianceDistributionList => Set<ComplianceDistributionList>();
+    public DbSet<ComplianceDistributionLog>   ComplianceDistributionLogs => Set<ComplianceDistributionLog>();
+    public DbSet<ComplianceReportJob>         ComplianceReportJobs       => Set<ComplianceReportJob>();
+
+    // EP-011 US_059: Versioned, append-only configuration history log.
+    public DbSet<ConfigurationVersion> ConfigurationVersions => Set<ConfigurationVersion>();
+
+    // EP-011 US_060: Pre-computed daily KPI metrics and distribution audit log.
+    public DbSet<KpiDailyMetric>    KpiDailyMetrics      => Set<KpiDailyMetric>();
+    public DbSet<KpiDistributionLog> KpiDistributionLogs => Set<KpiDistributionLog>();
+
+    // EP-011 US_061: Per-user activity history (login events, role changes, bulk actions).
+    public DbSet<UserActivityLog> UserActivityLogs => Set<UserActivityLog>();
 
     // Scheduling audit
     public DbSet<AppointmentAuditEntry> AppointmentAuditEntries => Set<AppointmentAuditEntry>();

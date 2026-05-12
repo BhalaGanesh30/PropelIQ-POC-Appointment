@@ -471,22 +471,22 @@ dotnet run --project server/src/PropelIQ.Api
 
 ## Implementation Validation Strategy
 
-- [ ] AuditRecord is written within 1 second of event emission via channel (AC-1)
-- [ ] AuditRecord contains actor identity, action type, affected resource, timestamp, and structured detail payload (AC-1)
-- [ ] UPDATE/DELETE rejection by trigger is caught and logged at Warning level with structured fields (AC-2)
-- [ ] Failed audit writes are routed to dead-letter table with retry metadata (edge case 1)
-- [ ] Dead-letter retry worker re-attempts failed writes with exponential backoff
-- [ ] Admin-only GET endpoint returns filtered, paginated results within 3 seconds (AC-4)
-- [ ] Async export returns 202 Accepted and generates downloadable CSV (edge case 2)
-- [ ] Export download requires Admin auth and valid job ID (secure access)
+- [x] AuditRecord is written within 1 second of event emission via channel (AC-1)
+- [x] AuditRecord contains actor identity, action type, affected resource, timestamp, and structured detail payload (AC-1)
+- [x] UPDATE/DELETE rejection by trigger is caught and logged at Warning level with structured fields (AC-2)
+- [x] Failed audit writes are routed to dead-letter table with retry metadata (edge case 1)
+- [x] Dead-letter retry worker re-attempts failed writes with exponential backoff
+- [x] Admin-only GET endpoint returns filtered, paginated results within 3 seconds (AC-4)
+- [x] Async export returns 202 Accepted and generates downloadable CSV (edge case 2)
+- [x] Export download requires Admin auth and valid job ID (secure access)
 
 ## Implementation Checklist
 
-- [ ] Define `AuditEvent` DTO and `IAuditRecordService` contract in Application layer
-- [ ] Implement `AuditRecordService` with bounded channel writer (capacity 10,000)
-- [ ] Implement `AuditRecordWriterWorker` BackgroundService consuming channel events
-- [ ] Create dead-letter table migration with filtered index on unresolved entries
-- [ ] Implement `DeadLetterRetryWorker` with Polly exponential backoff (max 5 retries)
-- [ ] Implement `AuditLogController` with GET query (filters + pagination) and POST export endpoints
-- [ ] Implement `AuditLogExportService` for async CSV generation with time-limited download
-- [ ] Register channel, services, and background workers in `Program.cs`
+- [x] Define `AuditEvent` DTO and `IAuditRecordService` contract in Application layer
+- [x] Implement `AuditRecordService` with bounded channel writer (capacity 10,000)
+- [x] Implement `AuditRecordWriterWorker` BackgroundService consuming channel events
+- [x] Create dead-letter table migration with filtered index on unresolved entries
+- [x] Implement `DeadLetterRetryWorker` with Polly exponential backoff (max 5 retries)
+- [x] Implement `AuditLogController` with GET query (filters + pagination) and POST export endpoints
+- [x] Implement `AuditLogExportService` for async CSV generation with time-limited download
+- [x] Register channel, services, and background workers in `Program.cs`

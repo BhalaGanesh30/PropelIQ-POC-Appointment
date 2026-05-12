@@ -1,0 +1,96 @@
+<section class="request-list" aria-label="My disclosure requests">
+
+  <h2 class="list-heading">My Disclosure Requests</h2>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading requests"></mat-progress-bar>
+  }
+
+  @if (errorMessage()) {
+    <p class="error-banner" role="alert">{{ errorMessage() }}</p>
+  }
+
+  @if (!loading() && !errorMessage()) {
+
+    @if (requests().length === 0) {
+      <p class="empty-state" role="status">No disclosure requests submitted yet.</p>
+    } @else {
+
+      <!-- Desktop table (≥ 768 px) -->
+      <div class="desktop-table" role="region" aria-label="Disclosure request history">
+        <table mat-table [dataSource]="requests()" aria-label="Disclosure requests">
+
+          <ng-container matColumnDef="requestedAt">
+            <th mat-header-cell *matHeaderCellDef>Requested</th>
+            <td mat-cell *matCellDef="let r">
+              {{ r.requestedAt | date:'yyyy-MM-dd HH:mm' : 'UTC' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="dateRange">
+            <th mat-header-cell *matHeaderCellDef>Date Range</th>
+            <td mat-cell *matCellDef="let r">
+              {{ r.fromDateUtc | date:'mediumDate' }} — {{ r.toDateUtc | date:'mediumDate' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let r">
+              <mat-chip [color]="statusColor(r.status)" highlighted>
+                {{ r.status }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Download</th>
+            <td mat-cell *matCellDef="let r">
+              @if (canDownload(r)) {
+                <a mat-icon-button
+                   color="primary"
+                   [href]="getDownloadUrl(r)"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   [attr.aria-label]="'Download disclosure report from ' + (r.fromDateUtc | date:'mediumDate')">
+                  <mat-icon>download</mat-icon>
+                </a>
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+
+      <!-- Mobile cards (< 768 px, UXR-303) -->
+      <div class="mobile-cards" aria-label="Disclosure request history">
+        @for (r of requests(); track r.id) {
+          <div class="disclosure-card">
+            <div class="card-row">
+              <mat-chip [color]="statusColor(r.status)" highlighted>{{ r.status }}</mat-chip>
+              <span class="card-date">{{ r.requestedAt | date:'yyyy-MM-dd' : 'UTC' }}</span>
+            </div>
+            <div class="card-range">
+              {{ r.fromDateUtc | date:'mediumDate' }} — {{ r.toDateUtc | date:'mediumDate' }}
+            </div>
+            @if (canDownload(r)) {
+              <a mat-button
+                 color="primary"
+                 [href]="getDownloadUrl(r)"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 aria-label="Download report">
+                <mat-icon>download</mat-icon>
+                Download Report
+              </a>
+            }
+          </div>
+        }
+      </div>
+
+    }
+  }
+
+</section>

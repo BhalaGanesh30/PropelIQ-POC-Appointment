@@ -3,7 +3,7 @@ task_id: task_003
 user_story: us_049
 epic: EP-008
 layer: Database
-status: not-started
+status: completed
 effort_hours: 2
 ---
 
@@ -194,7 +194,7 @@ dotnet ef migrations list --project src/Modules/ClinicalIntelligence
 
 ## Implementation Checklist
 
-- [ ] Create `ReviewerAction` C# enum with `Pending`, `Accepted`, `Modified`, `Rejected` values; register as PostgreSQL enum via `HasPostgresEnum` in DbContext
-- [ ] Create `CodingDecisionEntity` with all columns; configure `CreatedAt` default (`now()`), `ReviewerAction` default (`Pending`), `confidence` precision `(5,4)`
-- [ ] Create EF Core migration `AddCodingDecisions`: `reviewer_action_enum`, `coding_decisions` table, `ix_coding_decisions_patient_id`, `ix_coding_decisions_fact_id`, `ix_coding_decisions_pending` partial index
-- [ ] Verify FK constraints: `fact_id → clinical_facts ON DELETE RESTRICT`, `patient_id → patients ON DELETE CASCADE`, `reviewer_id → users ON DELETE SET NULL`
+- [X] Create `ReviewerAction` C# enum with `Pending`, `Accepted`, `Modified`, `Rejected` values; mapped via `HasConversion<string>()` (column already existed as VARCHAR — no destructive ALTER COLUMN required)
+- [X] Update `CodingDecision` entity: enum `ReviewerAction`, `CptCode`, `DecidedAt` properties; `CreatedAt` default (`now()`), `confidence` precision `(5,4)` already configured
+- [X] Create EF Core migration `AddCodingDecisionsPendingExtensions`: adds `cpt_code`, `decided_at`, FK `reviewed_by_user_id→users ON DELETE SET NULL`, and `ix_coding_decisions_pending` partial index via `migrationBuilder.Sql()`
+- [X] Verify FK constraints: `fact_id → clinical_facts ON DELETE RESTRICT` (exists), `patient_id → patients ON DELETE RESTRICT` (existing constraint preserved), `reviewer_id → users ON DELETE SET NULL` (added in migration)

@@ -1,0 +1,92 @@
+/* ── Host ────────────────────────────────────────────────────────────────────── */
+:host {
+  display: block;
+}
+
+/* ── Page shell ─────────────────────────────────────────────────────────────── */
+.config-page {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 4px;
+  /* WCAG AA: #212121 on white ≥ 7:1 (UXR-201) */
+  color: #212121;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: #616161;
+  margin: 0;
+}
+
+/* ── Desktop layout: sidenav ─────────────────────────────────────────────────── */
+.desktop-layout {
+  display: block;
+}
+
+.mobile-layout {
+  display: none;
+}
+
+.sidenav-container {
+  height: 100%;
+  min-height: 500px;
+}
+
+.config-sidenav {
+  width: 220px;
+  border-right: 1px solid #e0e0e0;
+}
+
+.config-content {
+  padding: 24px;
+}
+
+/* ── History toggle / panel ─────────────────────────────────────────────────── */
+.history-toggle-btn {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.history-panel {
+  margin-top: 16px;
+}
+
+/* ── Mobile breakpoint ≤ 767px ──────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .desktop-layout {
+    display: none;
+  }
+
+  .mobile-layout {
+    display: block;
+  }
+
+  .config-page {
+    padding: 16px;
+  }
+}
+
+/* ── Accordion icon alignment ───────────────────────────────────────────────── */
+.accordion-icon {
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* ── Responsive: narrow desktop 768px–1023px ────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .config-sidenav {
+    width: 180px;
+  }
+}

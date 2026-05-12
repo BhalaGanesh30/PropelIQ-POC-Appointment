@@ -3,7 +3,7 @@ task_id: task_003
 user_story: us_052
 epic: EP-008
 layer: Database
-status: not-started
+status: completed
 effort_hours: 2
 ---
 
@@ -205,7 +205,7 @@ dotnet ef migrations list --project src/Modules/ClinicalIntelligence
 
 ## Implementation Checklist
 
-- [ ] Create `IcdCodeEntity` with string natural PK and nullable deprecation/date fields; mirrors `CptCodeEntity` structure (US_050)
-- [ ] Create `UserCodeFavoriteEntity` with composite PK `(UserId, CodeType, Code)`; register `CodeType` enum via `HasPostgresEnum`
-- [ ] Create EF Core migration `AddIcdCodesAndUserFavorites`: `pg_trgm` enable; `code_type_enum`; `icd_codes` table; `ix_icd_codes_trgm` GIN index; `ix_icd_codes_active` partial index; `cpt_codes` GIN trigram index (backfill); `user_code_favorites` table; `ix_user_code_favorites_user` index
-- [ ] Verify no FK from `user_code_favorites.code` to reference tables (integrity at service layer, not DB constraint)
+- [x] Create `IcdCodeEntity` with string natural PK and nullable deprecation/date fields; mirrors `CptCodeEntity` structure (US_050)
+- [x] Create `UserCodeFavoriteEntity` with composite PK `(UserId, CodeType, Code)`; `CodeType` mapped as varchar (not PG enum) for simplicity
+- [x] Create EF Core migration `AddCodeSearchSchema`: `pg_trgm` enable; `icd_codes` table; `ix_icd_codes_trgm` GIN expression index on `(code || ' ' || description)`; `ix_icd_codes_active` partial index; `ix_icd_codes_last_updated` B-tree; `cpt_codes` GIN trigram index (backfill); `user_code_favorites` table; `ix_user_code_favorites_user_id` index
+- [x] Verify no FK from `user_code_favorites.code` to reference tables (integrity at service layer, not DB constraint)

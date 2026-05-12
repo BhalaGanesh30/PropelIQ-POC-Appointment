@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PropelIQ.Modules.ClinicalIntelligence.Application.Abstractions;
 using PropelIQ.Modules.ClinicalIntelligence.Infrastructure.AI;
 using PropelIQ.Modules.ClinicalIntelligence.Infrastructure.Configuration;
+using PropelIQ.Modules.ClinicalIntelligence.Infrastructure.Options;
 using PropelIQ.Modules.ClinicalIntelligence.Infrastructure.Queues;
 using PropelIQ.Modules.ClinicalIntelligence.Infrastructure.Repositories;
 using PropelIQ.Modules.ClinicalIntelligence.Infrastructure.Services;
@@ -79,6 +80,35 @@ public static class ClinicalIntelligenceServiceRegistration
         // EP-007 US_048: Clinical timeline aggregation (FR-CA-005).
         services.AddScoped<ITimelineService, TimelineService>();
         services.AddScoped<ITimelineCacheService, TimelineCacheService>();
+
+        // EP-008 US_049: ICD-10 coding suggestion pipeline (FR-CA-006).
+        services.Configure<CodingSuggestionOptions>(configuration.GetSection("AI"));
+        services.AddScoped<ICodingAiGatewayClient, CodingAiGatewayClient>();
+        services.AddScoped<ICodingSchemaValidator, CodingSchemaValidator>();
+
+        // Named HttpClient for the embedding /embeddings call — uses the same LiteLLM base URL.
+        var liteLlmBaseUrl = configuration["AiGateway:BaseUrl"] ?? "http://localhost:4000";
+        services.AddHttpClient<EvidenceRetrievalService>(client =>
+            client.BaseAddress = new Uri(liteLlmBaseUrl));
+        services.AddScoped<IEvidenceRetrievalService, EvidenceRetrievalService>();
+
+        services.AddScoped<ICodingSuggestionOrchestrator, CodingSuggestionOrchestrator>();
+
+        // EP-008 US_050: CPT/E/M suggestion pipeline (FR-MC-002 Hybrid).
+        services.AddScoped<ICptCodeRepository, CptCodeRepository>();
+        services.AddScoped<IAppointmentTypeMapper, AppointmentTypeMapper>();
+        services.AddScoped<ICptCodeFreshnessService, CptCodeFreshnessService>();
+        services.AddScoped<ICptCodeValidationService, CptCodeValidationService>();
+        services.AddScoped<ICptCodingAiGatewayClient, CptCodingAiGatewayClient>();
+        services.AddScoped<ICptSuggestionOrchestrator, CptSuggestionOrchestrator>();
+
+        // EP-008 US_051: Accept/Modify/Reject coding decision workflow (FR-MC-003 Hybrid, AIR-005).
+        services.AddScoped<ICodingDecisionWorkflowService, CodingDecisionWorkflowService>();
+
+        // EP-008 US_052: Code search and favorites management (FR-MC-004 [DETERMINISTIC]).
+        services.AddScoped<ICodeReferenceRepository, CodeReferenceRepository>();
+        services.AddScoped<ICodeFavoriteRepository, CodeFavoriteRepository>();
+        services.AddScoped<ICodeSearchService, CodeSearchService>();
 
         // Background workers (TR-005)
         services.AddHostedService<MalwareScanRetryService>();

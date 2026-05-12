@@ -773,24 +773,24 @@ ng serve
 
 ## Implementation Validation Strategy
 
-- [ ] Report type selector and date range picker render correctly in Default state
-- [ ] Generate button triggers API call and shows progress bar during Loading state
-- [ ] Async jobs show determinate progress bar with percentage and email notification text (edge case 1)
-- [ ] Empty state shows "No reports generated yet" with generate CTA
-- [ ] Error state shows failure alert with retry button
-- [ ] Completed reports show download button and key metrics (AC-2)
-- [ ] Schedule configuration saves recurrence pattern and time (AC-1)
-- [ ] Distribution list management adds, removes, and toggles recipients (AC-3)
-- [ ] Text meets WCAG AA 4.5:1 contrast ratio (UXR-201)
-- [ ] Responsive layout at 375px, 768px, 1440px breakpoints (UXR-301)
+- [x] Report type selector and date range picker render correctly in Default state
+- [x] Generate button triggers API call and shows progress bar during Loading state
+- [x] Async jobs show determinate progress bar with percentage and email notification text (edge case 1)
+- [x] Empty state shows "No reports generated yet" with generate CTA
+- [x] Error state shows failure alert with retry button
+- [x] Completed reports show download button and key metrics (AC-2)
+- [x] Schedule configuration saves recurrence pattern and time (AC-1)
+- [x] Distribution list management adds, removes, and toggles recipients (AC-3)
+- [x] Text meets WCAG AA 4.5:1 contrast ratio (UXR-201)
+- [x] Responsive layout at 375px, 768px, 1440px breakpoints (UXR-301)
 
 ## Implementation Checklist
 
-- [ ] Create TypeScript interfaces for reports, schedules, distribution entries, and job status
-- [ ] Implement ComplianceApiService with generate, list, download, status, and schedule operations
-- [ ] Build ComplianceReportConfigComponent with report type select, date range picker, and async progress
-- [ ] Build ComplianceReportListComponent with paginated table, status chips, download buttons, and 5 states
-- [ ] Build ScheduleConfigComponent with recurrence pattern, day, time, and active toggle
-- [ ] Build DistributionListComponent with recipient add/remove/toggle controls
-- [ ] Create ComplianceReportsComponent page container with tab layout
-- [ ] Add lazy-loaded route with adminGuard and register in app.routes.ts
+- [x] Create TypeScript interfaces for reports, schedules, distribution entries, and job status
+- [x] Implement ComplianceApiService with generate, list, download, status, and schedule operations
+- [x] Build ComplianceReportConfigComponent with report type select, date range picker, and async progress
+- [x] Build ComplianceReportListComponent with paginated table, status chips, download buttons, and 5 states
+- [x] Build ScheduleConfigComponent with recurrence pattern, day, time, and active toggle
+- [x] Build DistributionListComponent with recipient add/remove/toggle controls
+- [x] Create ComplianceReportsComponent page container with tab layout
+- [x] Add lazy-loaded route with adminGuard and register in app.routes.ts

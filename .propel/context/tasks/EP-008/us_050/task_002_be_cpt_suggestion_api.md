@@ -3,7 +3,7 @@ task_id: task_002
 user_story: us_050
 epic: EP-008
 layer: Backend
-status: not-started
+status: completed
 effort_hours: 8
 ---
 
@@ -248,27 +248,27 @@ dotnet run --project src/Api/Api.csproj
 
 ## Implementation Validation Strategy
 
-- [ ] `GET /api/v1/patients/{id}/coding-suggestions/cpt?appointmentId=` returns HTTP 200 with CPT suggestions and E/M suggestion within 2.5s p95 (AC-1, AIR-006)
-- [ ] Each `CptSuggestionDto` contains `cptCode`, `description`, `confidence`, `rationale`, and `citations` (AC-2, AIR-004)
-- [ ] `EmSuggestionDto` contains `emLevel`, `description`, `confidence`, `rationale`, and `complexityFactors[]` (AC-3)
-- [ ] LLM-suggested deprecated CPT codes are excluded by `CptCodeValidationService` before response is returned (Edge Case 2)
-- [ ] When CPT DB `last_updated_at` > 90 days ago → `staleDatabaseWarning: true` in response (Edge Case 2)
-- [ ] Unmappable appointment type → HTTP 200 with `noSuggestionForAppointmentType: true` (Edge Case 1)
-- [ ] Min CPT suggestion confidence < threshold → `lowConfidence: true` in response (AC-4, AIR-005)
-- [ ] CPT schema validation failure triggers retry; `coding.cpt_schema_validation_fail` metric emitted (AIR-008)
-- [ ] PII redaction applied before prompt assembly; redaction logged to AuditService (AIR-009)
-- [ ] pgvector query uses `patient_id = :patientId` ACL filter (AIR-010)
-- [ ] Redis cache (90s TTL) serves second identical request; `coding.suggestion.duration_ms` histogram emitted
+- [X] `GET /api/v1/patients/{id}/coding-suggestions/cpt?appointmentId=` returns HTTP 200 with CPT suggestions and E/M suggestion within 2.5s p95 (AC-1, AIR-006)
+- [X] Each `CptSuggestionDto` contains `cptCode`, `description`, `confidence`, `rationale`, and `citations` (AC-2, AIR-004)
+- [X] `EmSuggestionDto` contains `emLevel`, `description`, `confidence`, `rationale`, and `complexityFactors[]` (AC-3)
+- [X] LLM-suggested deprecated CPT codes are excluded by `CptCodeValidationService` before response is returned (Edge Case 2)
+- [X] When CPT DB `last_updated_at` > 90 days ago → `staleDatabaseWarning: true` in response (Edge Case 2)
+- [X] Unmappable appointment type → HTTP 200 with `noSuggestionForAppointmentType: true` (Edge Case 1)
+- [X] Min CPT suggestion confidence < threshold → `lowConfidence: true` in response (AC-4, AIR-005)
+- [X] CPT schema validation failure triggers retry; `coding.cpt_schema_validation_fail` metric emitted (AIR-008)
+- [X] PII redaction applied before prompt assembly; redaction logged to AuditService (AIR-009)
+- [X] pgvector query uses `patient_id = :patientId` ACL filter (AIR-010)
+- [X] Redis cache (90s TTL) serves second identical request; `coding.suggestion.duration_ms` histogram emitted
 
 ---
 
 ## Implementation Checklist
 
-- [ ] Create `CptSuggestionDto`, `EmSuggestionDto`, `CptSuggestionResponseDto`, `LlmCptResponse` DTOs
-- [ ] Create `IAppointmentTypeMapper` / `AppointmentTypeMapper`: configuration-driven CPT candidacy check (Edge Case 1)
-- [ ] Create `ICptCodeRepository` / `CptCodeRepository`: `GetLastUpdatedAtAsync`, `ExistsAndActiveAsync` (Edge Case 2)
-- [ ] Create `ICptCodeFreshnessService` / `CptCodeFreshnessService`: 90-day threshold check with Redis 1h TTL for freshness result (Edge Case 2)
-- [ ] Create `ICptCodeValidationService` / `CptCodeValidationService`: deterministic post-LLM deprecated/non-existent code rejection
-- [ ] Create `ICptSuggestionOrchestrator` / `CptSuggestionOrchestrator`: full Hybrid pipeline; reuse `EvidenceRetrievalService`, `PiiRedactionService`, `CodingDecisionRepository` from US_049; confidence threshold → `lowConfidence` flag (AC-4)
-- [ ] Modify `CodingSchemaValidator` to add CPT+E/M output schema; emit `coding.cpt_schema_validation_pass/fail` metrics (AIR-008)
-- [ ] Create `CptSuggestionController`: always HTTP 200; Redis 90s TTL; register all new services in DI; OpenTelemetry span + `coding.suggestion.duration_ms` metric
+- [X] Create `CptSuggestionDto`, `EmSuggestionDto`, `CptSuggestionResponseDto`, `LlmCptResponse` DTOs
+- [X] Create `IAppointmentTypeMapper` / `AppointmentTypeMapper`: configuration-driven CPT candidacy check (Edge Case 1)
+- [X] Create `ICptCodeRepository` / `CptCodeRepository`: `GetLastUpdatedAtAsync`, `ExistsAndActiveAsync` (Edge Case 2)
+- [X] Create `ICptCodeFreshnessService` / `CptCodeFreshnessService`: 90-day threshold check with Redis 1h TTL for freshness result (Edge Case 2)
+- [X] Create `ICptCodeValidationService` / `CptCodeValidationService`: deterministic post-LLM deprecated/non-existent code rejection
+- [X] Create `ICptSuggestionOrchestrator` / `CptSuggestionOrchestrator`: full Hybrid pipeline; reuse `EvidenceRetrievalService`, `PiiRedactionService`, `CodingDecisionRepository` from US_049; confidence threshold → `lowConfidence` flag (AC-4)
+- [X] Modify `CodingSchemaValidator` to add CPT+E/M output schema; emit `coding.cpt_schema_validation_pass/fail` metrics (AIR-008)
+- [X] Create `CptSuggestionController`: always HTTP 200; Redis 90s TTL; register all new services in DI; OpenTelemetry span + `coding.suggestion.duration_ms` metric

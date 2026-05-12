@@ -379,22 +379,22 @@ docker exec propeliq-postgres psql -U app_user -d propeliq -c \
 
 ## Implementation Validation Strategy
 
-- [ ] `audit_records` is a partitioned table with yearly child partitions (AC-3)
-- [ ] Immutability trigger exists on each child partition and rejects UPDATE/DELETE (AC-2)
-- [ ] Composite indexes on `(created_at, event_type)` and `(user_id, created_at)` exist on partitions
-- [ ] `audit_records_archive` table exists with immutability trigger and SELECT-only GRANT
-- [ ] RetentionPolicyWorker archives partitions older than 7 years to cold storage (AC-3)
-- [ ] Archived records remain queryable via `audit_records_full` view (AC-3)
-- [ ] `audit_mutation_attempts` table logs rejected operations (AC-2)
-- [ ] New yearly partitions are pre-created with triggers and GRANTs applied
+- [x] `audit_records` is a partitioned table with yearly child partitions (AC-3)
+- [x] Immutability trigger exists on each child partition and rejects UPDATE/DELETE (AC-2)
+- [x] Composite indexes on `(created_at, event_type)` and `(user_id, created_at)` exist on partitions
+- [x] `audit_records_archive` table exists with immutability trigger and SELECT-only GRANT
+- [x] RetentionPolicyWorker archives partitions older than 7 years to cold storage (AC-3)
+- [x] Archived records remain queryable via `audit_records_full` view (AC-3)
+- [x] `audit_mutation_attempts` table logs rejected operations (AC-2)
+- [x] New yearly partitions are pre-created with triggers and GRANTs applied
 
 ## Implementation Checklist
 
-- [ ] Create partitioning migration converting `audit_records` to range-partitioned table by `created_at`
-- [ ] Create yearly child partitions (2026, 2027) with default overflow partition
-- [ ] Re-apply immutability triggers and GRANT restrictions on all child partitions
-- [ ] Add composite indexes for date-range, actor, and resource filtering
-- [ ] Create `audit_records_archive` cold storage table with immutability enforcement
-- [ ] Create `audit_mutation_attempts` log table for AC-2 tracking
-- [ ] Implement `RetentionPolicyWorker` daily job for 7-year archival evaluation
-- [ ] Implement `PartitionMaintenanceService` for yearly partition pre-creation with trigger/GRANT propagation
+- [x] Create partitioning migration converting `audit_records` to range-partitioned table by `created_at`
+- [x] Create yearly child partitions (2026, 2027) with default overflow partition
+- [x] Re-apply immutability triggers and GRANT restrictions on all child partitions
+- [x] Add composite indexes for date-range, actor, and resource filtering
+- [x] Create `audit_records_archive` cold storage table with immutability enforcement
+- [x] Create `audit_mutation_attempts` log table for AC-2 tracking
+- [x] Implement `RetentionPolicyWorker` daily job for 7-year archival evaluation
+- [x] Implement `PartitionMaintenanceService` for yearly partition pre-creation with trigger/GRANT propagation

@@ -1,0 +1,93 @@
+<!-- SCR-023 KPI Dashboard (US_060, AC-1–AC-4, edge cases 1–2) -->
+<div class="kpi-dashboard">
+
+  <!-- ── Page header ──────────────────────────────────────────────────────── -->
+  <header class="dashboard-header">
+    <h1>Operational KPI Dashboard</h1>
+
+    <div class="header-actions">
+      <!-- Date range selector — triggers chart updates within 1 second (AC-2) -->
+      <mat-form-field appearance="outline" class="date-range-field">
+        <mat-label>Date Range</mat-label>
+        <mat-date-range-input [formGroup]="dateRange" [rangePicker]="picker">
+          <input
+            matStartDate
+            formControlName="start"
+            placeholder="Start date"
+            aria-label="Report start date" />
+          <input
+            matEndDate
+            formControlName="end"
+            placeholder="End date"
+            aria-label="Report end date" />
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+
+      <!-- Schedule distribution button (AC-4) -->
+      <button
+        mat-raised-button
+        color="accent"
+        (click)="openDistributionConfig()"
+        aria-label="Configure scheduled KPI report distribution">
+        <mat-icon>email</mat-icon>
+        Schedule Distribution
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Staleness warning banner (edge case 1: data older than 1 hour) ───── -->
+  @if (isStale()) {
+    <div class="staleness-banner" role="alert" aria-live="polite">
+      <mat-icon aria-hidden="true">warning</mat-icon>
+      <span>
+        Data may be stale — last updated
+        <time [attr.datetime]="computedAt()">{{ computedAt() | date:'medium' }}</time>.
+      </span>
+      <button mat-button (click)="loadDashboard()">Refresh</button>
+    </div>
+  }
+
+  <!-- ── Loading state — 4 skeleton placeholder cards ────────────────────── -->
+  @if (loading()) {
+    <div class="kpi-grid" aria-busy="true" aria-label="Loading KPI data">
+      @for (i of skeletonItems; track i) {
+        <div class="skeleton-card" role="presentation"></div>
+      }
+    </div>
+
+  } @else if (!hasData()) {
+    <!-- ── Empty state (edge case 2: no appointments in selected period) ──── -->
+    <div class="empty-state" role="status">
+      <mat-icon aria-hidden="true">bar_chart</mat-icon>
+      <h2>Insufficient data for KPI calculation</h2>
+      <p>No appointment data was found for the selected period.<br />
+         Try selecting a wider date range or wait for appointment records to accumulate.</p>
+      <button mat-stroked-button color="primary" (click)="loadDashboard()">
+        Retry
+      </button>
+    </div>
+
+  } @else {
+    <!-- ── Default state — responsive grid of KPI cards (UXR-301, UXR-303) ─ -->
+    <div class="kpi-grid">
+      @for (card of cards(); track card.metric) {
+        <app-kpi-card
+          [card]="card"
+          [from]="fromDate()"
+          [to]="toDate()">
+        </app-kpi-card>
+      }
+    </div>
+
+    <!-- ── Validation state: applied date range indicator ────────────────── -->
+    <p class="range-indicator" aria-live="polite">
+      Showing data from
+      <time [attr.datetime]="fromDate()">{{ fromDate() | date:'mediumDate' }}</time>
+      to
+      <time [attr.datetime]="toDate()">{{ toDate() | date:'mediumDate' }}</time>
+    </p>
+  }
+
+</div>

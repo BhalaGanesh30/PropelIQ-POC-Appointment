@@ -1,0 +1,30 @@
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.filter-field {
+  flex: 1 1 200px;
+  min-width: 160px;
+
+  &--date {
+    flex: 1 1 160px;
+    min-width: 140px;
+  }
+}
+
+.active-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.clear-all-btn {
+  font-size: 13px;
+  color: #616161;
+}

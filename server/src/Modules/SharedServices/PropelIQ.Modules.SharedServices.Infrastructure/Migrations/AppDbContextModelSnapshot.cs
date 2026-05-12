@@ -454,6 +454,14 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
+                    b.Property<string>("UserType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasDefaultValue("Staff")
+                        .HasColumnName("user_type");
+
                     b.HasKey("Id")
                         .HasName("pk_users");
 
@@ -721,6 +729,10 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasColumnName("id")
                         .HasDefaultValueSql("gen_random_uuid()");
 
+                    b.Property<Guid?>("AiRequestId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ai_request_id");
+
                     b.Property<string>("CodeType")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -732,13 +744,22 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasColumnType("numeric(5,4)")
                         .HasColumnName("confidence_score");
 
+                    b.Property<string>("CptCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("cpt_code");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("now()");
 
-                    b.Property<Guid>("DocumentId")
+                    b.Property<DateTimeOffset?>("DecidedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("decided_at");
+
+                    b.Property<Guid?>("DocumentId")
                         .HasColumnType("uuid")
                         .HasColumnName("document_id");
 
@@ -750,6 +771,16 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("finalized_code");
+
+                    b.Property<string>("OriginalCptCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("original_cpt_code");
+
+                    b.Property<string>("OriginalIcd10Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("original_icd10code");
 
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uuid")
@@ -765,9 +796,16 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
 
                     b.Property<string>("ReviewerAction")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
+                        .HasDefaultValue("Pending")
                         .HasColumnName("reviewer_action");
+
+                    b.Property<string>("ReviewerNote")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("reviewer_note");
 
                     b.Property<string>("SuggestedCode")
                         .IsRequired()
@@ -789,7 +827,11 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasDatabaseName("ix_coding_decisions_fact_id");
 
                     b.HasIndex("PatientId")
-                        .HasDatabaseName("ix_coding_decisions_patient_id");
+                        .HasDatabaseName("ix_coding_decisions_pending")
+                        .HasFilter("reviewer_action = 'Pending'");
+
+                    b.HasIndex("ReviewedByUserId")
+                        .HasDatabaseName("ix_coding_decisions_reviewed_by_user_id");
 
                     b.ToTable("coding_decisions", "app");
                 });
@@ -977,6 +1019,56 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                     b.ToTable("conflict_rules", "app");
                 });
 
+            modelBuilder.Entity("PropelIQ.Modules.ClinicalIntelligence.Domain.Entities.CptCodeEntity", b =>
+                {
+                    b.Property<string>("CptCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("cpt_code");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("category");
+
+                    b.Property<DateOnly?>("DeprecationDate")
+                        .HasColumnType("date")
+                        .HasColumnName("deprecation_date");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<DateOnly?>("EffectiveDate")
+                        .HasColumnType("date")
+                        .HasColumnName("effective_date");
+
+                    b.Property<bool>("IsDeprecated")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deprecated");
+
+                    b.Property<DateTimeOffset>("LastUpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_updated_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.HasKey("CptCode")
+                        .HasName("pk_cpt_codes");
+
+                    b.HasIndex("CptCode")
+                        .HasDatabaseName("ix_cpt_codes_active")
+                        .HasFilter("is_deprecated = false");
+
+                    b.HasIndex("LastUpdatedAt")
+                        .HasDatabaseName("ix_cpt_codes_last_updated");
+
+                    b.ToTable("cpt_codes", "app");
+                });
+
             modelBuilder.Entity("PropelIQ.Modules.ClinicalIntelligence.Domain.Entities.DeadLetterEntry", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1020,6 +1112,87 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasDatabaseName("ix_ocr_dead_letter_queue_document_id");
 
                     b.ToTable("ocr_dead_letter_queue", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.ClinicalIntelligence.Domain.Entities.IcdCodeEntity", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("code");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("category");
+
+                    b.Property<DateOnly?>("DeprecationDate")
+                        .HasColumnType("date")
+                        .HasColumnName("deprecation_date");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<DateOnly?>("EffectiveDate")
+                        .HasColumnType("date")
+                        .HasColumnName("effective_date");
+
+                    b.Property<bool>("IsDeprecated")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deprecated");
+
+                    b.Property<DateTimeOffset>("LastUpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_updated_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.HasKey("Code")
+                        .HasName("pk_icd_codes");
+
+                    b.HasIndex("Code")
+                        .HasDatabaseName("ix_icd_codes_active")
+                        .HasFilter("is_deprecated = false");
+
+                    b.HasIndex("LastUpdatedAt")
+                        .HasDatabaseName("ix_icd_codes_last_updated");
+
+                    b.ToTable("icd_codes", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.ClinicalIntelligence.Domain.Entities.UserCodeFavorite", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<string>("CodeType")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("code_type");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.HasKey("UserId", "CodeType", "Code")
+                        .HasName("pk_user_code_favorites");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_user_code_favorites_user_id");
+
+                    b.ToTable("user_code_favorites", "app");
                 });
 
             modelBuilder.Entity("PropelIQ.Modules.Scheduling.Domain.Entities.Appointment", b =>
@@ -1831,6 +2004,262 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                     b.ToTable("walk_ins", "app");
                 });
 
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.AiAuditLogEntity", b =>
+                {
+                    b.Property<Guid>("AiRequestId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ai_request_id");
+
+                    b.Property<DateTimeOffset>("RequestTimestamp")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("request_timestamp");
+
+                    b.Property<Guid>("ClinicianId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("clinician_id");
+
+                    b.Property<string>("ConfidenceScores")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasDefaultValue("{}")
+                        .HasColumnName("confidence_scores");
+
+                    b.Property<string>("ContextRefs")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasDefaultValue("[]")
+                        .HasColumnName("context_refs");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("FallbackReason")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("fallback_reason");
+
+                    b.Property<int>("LatencyMs")
+                        .HasColumnType("integer")
+                        .HasColumnName("latency_ms");
+
+                    b.Property<string>("ModelName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("model_name");
+
+                    b.Property<string>("PromptHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("prompt_hash");
+
+                    b.Property<string>("ResponsePayload")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasDefaultValue("{}")
+                        .HasColumnName("response_payload");
+
+                    b.HasKey("AiRequestId", "RequestTimestamp")
+                        .HasName("pk_ai_audit_logs");
+
+                    b.HasIndex("RequestTimestamp")
+                        .IsDescending()
+                        .HasDatabaseName("ix_ai_audit_logs_timestamp");
+
+                    b.HasIndex("ClinicianId", "RequestTimestamp")
+                        .IsDescending(false, true)
+                        .HasDatabaseName("ix_ai_audit_logs_clinician_timestamp");
+
+                    b.ToTable("ai_audit_logs", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.AiAuditLogOutcomeEntity", b =>
+                {
+                    b.Property<Guid>("OutcomeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("outcome_id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<Guid>("AiRequestId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ai_request_id");
+
+                    b.Property<DateTimeOffset>("DecidedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("decided_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("ReviewerAction")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("reviewer_action");
+
+                    b.Property<string>("ReviewerNote")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("reviewer_note");
+
+                    b.HasKey("OutcomeId")
+                        .HasName("pk_ai_audit_log_outcomes");
+
+                    b.HasIndex("AiRequestId")
+                        .HasDatabaseName("ix_ai_audit_log_outcomes_request_id");
+
+                    b.ToTable("ai_audit_log_outcomes", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.AiAuditOutboxEntity", b =>
+                {
+                    b.Property<Guid>("OutboxId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("outbox_id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<Guid>("AiRequestId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ai_request_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<DateTimeOffset?>("LastAttemptAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_attempt_at");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("payload");
+
+                    b.Property<int>("RetryCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("retry_count");
+
+                    b.HasKey("OutboxId")
+                        .HasName("pk_ai_audit_outbox");
+
+                    b.HasIndex("RetryCount", "LastAttemptAt")
+                        .HasDatabaseName("ix_ai_audit_outbox_retry_due")
+                        .HasFilter("retry_count < 3");
+
+                    b.ToTable("ai_audit_outbox", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.AuditDeadLetter", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("ErrorMessage")
+                        .IsRequired()
+                        .HasColumnType("varchar(2000)")
+                        .HasColumnName("error_message");
+
+                    b.Property<DateTimeOffset?>("LastRetryAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_retry_at");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("payload");
+
+                    b.Property<DateTimeOffset?>("ResolvedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("resolved_at");
+
+                    b.Property<int>("RetryCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("retry_count");
+
+                    b.HasKey("Id")
+                        .HasName("pk_audit_dead_letters");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("ix_audit_dead_letters_unresolved")
+                        .HasFilter("resolved_at IS NULL");
+
+                    b.ToTable("audit_dead_letters", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.AuditMutationAttempt", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("AttemptedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("attempted_by");
+
+                    b.Property<string>("ErrorMessage")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("error_message");
+
+                    b.Property<DateTimeOffset>("OccurredAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("occurred_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("Operation")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("operation");
+
+                    b.Property<string>("SourceIp")
+                        .HasMaxLength(45)
+                        .HasColumnType("character varying(45)")
+                        .HasColumnName("source_ip");
+
+                    b.Property<Guid?>("TargetAuditId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("target_audit_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_audit_mutation_attempts");
+
+                    b.HasIndex("OccurredAt")
+                        .IsDescending()
+                        .HasDatabaseName("ix_audit_mutation_attempts_occurred_at");
+
+                    b.ToTable("audit_mutation_attempts", "app");
+                });
+
             modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.AuditRecord", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1868,6 +2297,10 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("override_reason");
 
+                    b.Property<Guid?>("PatientId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("patient_id");
+
                     b.Property<Guid?>("TargetEntityId")
                         .HasColumnType("uuid")
                         .HasColumnName("target_entity_id");
@@ -1895,6 +2328,518 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasDatabaseName("ix_audit_records_event_type_occurred_at");
 
                     b.ToTable("audit_records", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.ComplianceDistributionList", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("email");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.HasKey("Id")
+                        .HasName("pk_compliance_distribution_lists");
+
+                    b.HasIndex("Email")
+                        .HasDatabaseName("ix_compliance_distribution_lists_active_email")
+                        .HasFilter("is_active = TRUE");
+
+                    b.ToTable("compliance_distribution_lists", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.ComplianceDistributionLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<int>("AttemptNumber")
+                        .HasColumnType("integer")
+                        .HasColumnName("attempt_number");
+
+                    b.Property<DateTime>("AttemptedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("attempted_at_utc");
+
+                    b.Property<string>("ErrorDetail")
+                        .HasColumnType("text")
+                        .HasColumnName("error_detail");
+
+                    b.Property<string>("RecipientEmail")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("recipient_email");
+
+                    b.Property<Guid>("RecipientId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("recipient_id");
+
+                    b.Property<Guid>("ReportId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("report_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("status");
+
+                    b.HasKey("Id")
+                        .HasName("pk_compliance_distribution_log");
+
+                    b.HasIndex("ReportId", "AttemptedAtUtc")
+                        .IsDescending(false, true)
+                        .HasDatabaseName("ix_compliance_distribution_log_report_attempted");
+
+                    b.ToTable("compliance_distribution_log", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.ComplianceReportJob", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTime?>("CompletedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("completed_at_utc");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("text")
+                        .HasColumnName("error_message");
+
+                    b.Property<Guid>("ReportId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("report_id");
+
+                    b.Property<string>("RequestJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("request_json");
+
+                    b.Property<Guid>("RequestedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("requested_by");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("Queued")
+                        .HasColumnName("status");
+
+                    b.HasKey("Id")
+                        .HasName("pk_compliance_report_jobs");
+
+                    b.HasIndex("ReportId")
+                        .HasDatabaseName("ix_compliance_report_jobs_report_id");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("ix_compliance_report_jobs_inflight")
+                        .HasFilter("status IN ('Queued', 'Generating')");
+
+                    b.ToTable("compliance_report_jobs", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.ComplianceReportRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<int>("AnomalyCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("anomaly_count");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<int>("FailedAccessAttempts")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("failed_access_attempts");
+
+                    b.Property<DateTime>("GeneratedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("generated_at_utc")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<bool>("IsAsync")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_async");
+
+                    b.Property<Guid?>("JobId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("job_id");
+
+                    b.Property<byte[]>("PdfContent")
+                        .HasColumnType("bytea")
+                        .HasColumnName("pdf_content");
+
+                    b.Property<DateTime>("PeriodEndUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("period_end_utc");
+
+                    b.Property<DateTime>("PeriodStartUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("period_start_utc");
+
+                    b.Property<string>("ReportType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("report_type");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("Generating")
+                        .HasColumnName("status");
+
+                    b.Property<int>("TotalAuditEvents")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("total_audit_events");
+
+                    b.Property<int>("UniqueActors")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("unique_actors");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.HasKey("Id")
+                        .HasName("pk_compliance_reports");
+
+                    b.HasIndex("GeneratedAtUtc")
+                        .IsDescending()
+                        .HasDatabaseName("ix_compliance_reports_generated_at");
+
+                    b.HasIndex("Status", "GeneratedAtUtc")
+                        .IsDescending(false, true)
+                        .HasDatabaseName("ix_compliance_reports_status_generated");
+
+                    b.ToTable("compliance_reports", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.ComplianceReportSchedule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<DateTime?>("LastRunAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_run_at");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
+
+                    b.Property<DateTime>("NextRunAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("next_run_at");
+
+                    b.Property<string>("Recurrence")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("Monthly")
+                        .HasColumnName("recurrence");
+
+                    b.Property<string>("ReportType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("report_type");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.HasKey("Id")
+                        .HasName("pk_compliance_report_schedules");
+
+                    b.HasIndex("NextRunAt")
+                        .HasDatabaseName("ix_compliance_report_schedules_next_run")
+                        .HasFilter("is_active = TRUE");
+
+                    b.ToTable("compliance_report_schedules", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.ConfigurationVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("category");
+
+                    b.Property<DateTime>("ChangedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("changed_at_utc");
+
+                    b.Property<Guid>("ChangedByAdminId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("changed_by_admin_id");
+
+                    b.Property<string>("ChangedByName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("changed_by_name");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("PreviousValuesJson")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("previous_values_json");
+
+                    b.Property<Guid?>("RestoredFromVersionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("restored_from_version_id");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("ValuesJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("values_json");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("integer")
+                        .HasColumnName("version_number");
+
+                    b.HasKey("Id")
+                        .HasName("pk_configuration_versions");
+
+                    b.HasIndex("Category")
+                        .HasDatabaseName("ix_configuration_versions_category");
+
+                    b.HasIndex("Category", "VersionNumber")
+                        .IsUnique()
+                        .HasDatabaseName("ix_configuration_versions_category_version");
+
+                    b.ToTable("configuration_versions", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.DisclosureReport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<int>("AccessEventCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("access_event_count");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("DisclosureRequestId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("disclosure_request_id");
+
+                    b.Property<DateTimeOffset?>("DownloadExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("download_expires_at");
+
+                    b.Property<string>("DownloadToken")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("download_token");
+
+                    b.Property<string>("ReportJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("report_json");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_disclosure_reports");
+
+                    b.HasIndex("DisclosureRequestId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_disclosure_reports_request_id");
+
+                    b.ToTable("disclosure_reports", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.DisclosureRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset?>("CompiledAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("compiled_at");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset?>("DeliveredAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("delivered_at");
+
+                    b.Property<string>("DeliveryMethod")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("delivery_method");
+
+                    b.Property<DateTimeOffset>("FromDateUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("from_date_utc");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("patient_id");
+
+                    b.Property<Guid?>("ReportId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("report_id");
+
+                    b.Property<string>("ReviewNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("review_notes");
+
+                    b.Property<DateTimeOffset?>("ReviewedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("reviewed_at");
+
+                    b.Property<Guid?>("ReviewedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("reviewed_by");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTimeOffset>("ToDateUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("to_date_utc");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_disclosure_requests");
+
+                    b.HasIndex("ReportId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_disclosure_requests_report_id");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("ix_disclosure_requests_active_status")
+                        .HasFilter("status NOT IN ('Delivered','Rejected')");
+
+                    b.HasIndex("PatientId", "CreatedAt")
+                        .IsDescending(false, true)
+                        .HasDatabaseName("ix_disclosure_requests_patient_created");
+
+                    b.ToTable("disclosure_requests", "app");
                 });
 
             modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.EmbeddingSample", b =>
@@ -1932,6 +2877,148 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                     NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("Embedding"), new[] { "vector_cosine_ops" });
 
                     b.ToTable("embedding_samples", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.KpiDailyMetric", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<int>("AvailableSlots")
+                        .HasColumnType("integer")
+                        .HasColumnName("available_slots");
+
+                    b.Property<decimal>("AverageWaitMinutes")
+                        .HasColumnType("numeric(8,2)")
+                        .HasColumnName("average_wait_minutes");
+
+                    b.Property<int>("BookedSlots")
+                        .HasColumnType("integer")
+                        .HasColumnName("booked_slots");
+
+                    b.Property<int>("BookingCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("booking_count");
+
+                    b.Property<DateTime>("ComputedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("computed_at_utc");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date")
+                        .HasColumnName("date");
+
+                    b.Property<decimal>("NoShowRate")
+                        .HasColumnType("numeric(5,2)")
+                        .HasColumnName("no_show_rate");
+
+                    b.Property<decimal>("UtilizationRate")
+                        .HasColumnType("numeric(5,2)")
+                        .HasColumnName("utilization_rate");
+
+                    b.HasKey("Id")
+                        .HasName("pk_kpi_daily_metrics");
+
+                    b.HasIndex("Date")
+                        .IsUnique()
+                        .HasDatabaseName("ix_kpi_daily_metrics_date");
+
+                    b.ToTable("kpi_daily_metrics", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.KpiDistributionLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("ErrorDetail")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("error_detail");
+
+                    b.Property<DateOnly>("PeriodFrom")
+                        .HasColumnType("date")
+                        .HasColumnName("period_from");
+
+                    b.Property<DateOnly>("PeriodTo")
+                        .HasColumnType("date")
+                        .HasColumnName("period_to");
+
+                    b.Property<string>("RecipientEmails")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("recipient_emails");
+
+                    b.Property<DateTime>("SentAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("sent_at_utc");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("status");
+
+                    b.HasKey("Id")
+                        .HasName("pk_kpi_distribution_logs");
+
+                    b.HasIndex("PeriodFrom", "Status")
+                        .HasDatabaseName("ix_kpi_distribution_logs_period_status");
+
+                    b.ToTable("kpi_distribution_logs", "app");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.UserActivityLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("")
+                        .HasColumnName("description");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("event_type");
+
+                    b.Property<DateTimeOffset>("OccurredAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("occurred_at");
+
+                    b.Property<Guid?>("PerformedByUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("performed_by_user_id");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_user_activity_logs");
+
+                    b.HasIndex("PerformedByUserId")
+                        .HasDatabaseName("ix_user_activity_logs_performed_by_user_id");
+
+                    b.HasIndex("UserId", "OccurredAt")
+                        .IsDescending(false, true)
+                        .HasDatabaseName("ix_user_activity_logs_user_occurred");
+
+                    b.ToTable("user_activity_logs", "app");
                 });
 
             modelBuilder.Entity("PropelIQ.Modules.Administration.Domain.Entities.InsuranceProfile", b =>
@@ -2038,7 +3125,6 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("DocumentId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
                         .HasConstraintName("fk_coding_decisions_clinical_documents_document_id");
 
                     b.HasOne("PropelIQ.Modules.ClinicalIntelligence.Domain.Entities.ClinicalFact", null)
@@ -2053,6 +3139,12 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_coding_decisions_patients_patient_id");
+
+                    b.HasOne("PropelIQ.Modules.Administration.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("ReviewedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_coding_decisions_users_reviewed_by_user_id");
 
                     b.Navigation("Document");
                 });
@@ -2091,6 +3183,16 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_conflict_alerts_conflict_rules_rule_id");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.ClinicalIntelligence.Domain.Entities.UserCodeFavorite", b =>
+                {
+                    b.HasOne("PropelIQ.Modules.Administration.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_code_favorites_users_user_id");
                 });
 
             modelBuilder.Entity("PropelIQ.Modules.Scheduling.Domain.Entities.Appointment", b =>
@@ -2204,6 +3306,33 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.DisclosureRequest", b =>
+                {
+                    b.HasOne("PropelIQ.Modules.SharedServices.Domain.Entities.DisclosureReport", "Report")
+                        .WithOne("Request")
+                        .HasForeignKey("PropelIQ.Modules.SharedServices.Domain.Entities.DisclosureRequest", "ReportId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_disclosure_requests_disclosure_reports_report_id");
+
+                    b.Navigation("Report");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.UserActivityLog", b =>
+                {
+                    b.HasOne("PropelIQ.Modules.Administration.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("PerformedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_user_activity_logs_users_performed_by_user_id");
+
+                    b.HasOne("PropelIQ.Modules.Administration.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_activity_logs_users_user_id");
+                });
+
             modelBuilder.Entity("PropelIQ.Modules.Administration.Domain.Entities.Patient", b =>
                 {
                     b.Navigation("InsuranceProfiles");
@@ -2224,6 +3353,11 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                     b.Navigation("ReminderEvents");
 
                     b.Navigation("WaitlistEntry");
+                });
+
+            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.DisclosureReport", b =>
+                {
+                    b.Navigation("Request");
                 });
 #pragma warning restore 612, 618
         }

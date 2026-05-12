@@ -3,7 +3,7 @@ task_id: task_002
 user_story: us_049
 epic: EP-008
 layer: Backend
-status: not-started
+status: completed
 effort_hours: 8
 ---
 
@@ -269,12 +269,12 @@ dotnet run --project src/Api/Api.csproj
 
 ## Implementation Checklist
 
-- [ ] Create `IcdSuggestionDto`, `ClinicalFactCitationDto`, `CodingSuggestionResponseDto`, `LlmCodingResponse` DTOs
-- [ ] Extend `IClinicalFactRepository` / `ClinicalFactRepository` with `HasFactsAsync` for HTTP 422 preflight (Edge Case 2)
-- [ ] Create `IEvidenceRetrievalService` / `EvidenceRetrievalService`: embed query, HNSW ACL-filtered retrieval, return ranked evidence (AIR-010)
-- [ ] Create `IPiiRedactionService` / `PiiRedactionService`: regex redaction + audit log (AIR-009)
-- [ ] Create `ICodingAiGatewayClient` / `CodingAiGatewayClient`: GPT-4.1 structured output, Polly circuit-breaker ≤ 2.5s p95 (AIR-006)
-- [ ] Create `ICodingSchemaValidator` / `CodingSchemaValidator`: required field check, single retry, `coding.schema_validation_pass/fail` metrics (AIR-008)
-- [ ] Create `ICodingDecisionRepository` / `CodingDecisionRepository`: bulk insert `reviewer_action = pending` rows (task_003 dependency)
-- [ ] Create `ICodingSuggestionOrchestrator` / `CodingSuggestionOrchestrator`: full pipeline coordination, confidence threshold check, citation attachment, InsufficientEvidence flag (Edge Case 1), `lowConfidence` flag (AC-3)
-- [ ] Create `CodingSuggestionController`: Clinician-only, Redis 90s TTL, HTTP 422 on `InsufficientClinicalDataException`; OpenTelemetry span + `coding.suggestion.duration_ms` metric
+- [X] Create `IcdSuggestionDto`, `ClinicalFactCitationDto`, `CodingSuggestionResponseDto`, `LlmCodingResponse` DTOs
+- [X] Extend `IClinicalFactRepository` / `ClinicalFactRepository` with `HasFactsAsync` for HTTP 422 preflight (Edge Case 2)
+- [X] Create `IEvidenceRetrievalService` / `EvidenceRetrievalService`: embed query, HNSW ACL-filtered retrieval, return ranked evidence (AIR-010)
+- [X] Create `IPiiRedactionService` / `PiiRedactionService`: regex redaction + audit log (AIR-009)
+- [X] Create `ICodingAiGatewayClient` / `CodingAiGatewayClient`: GPT-4.1 structured output, Polly circuit-breaker ≤ 2.5s p95 (AIR-006)
+- [X] Create `ICodingSchemaValidator` / `CodingSchemaValidator`: required field check, single retry, `coding.schema_validation_pass/fail` metrics (AIR-008)
+- [X] Create `ICodingDecisionRepository` / `CodingDecisionRepository`: bulk insert `reviewer_action = pending` rows (task_003 dependency)
+- [X] Create `ICodingSuggestionOrchestrator` / `CodingSuggestionOrchestrator`: full pipeline coordination, confidence threshold check, citation attachment, InsufficientEvidence flag (Edge Case 1), `lowConfidence` flag (AC-3)
+- [X] Create `CodingSuggestionController`: Clinician-only, Redis 90s TTL, HTTP 422 on `InsufficientClinicalDataException`; OpenTelemetry span + `coding.suggestion.duration_ms` metric

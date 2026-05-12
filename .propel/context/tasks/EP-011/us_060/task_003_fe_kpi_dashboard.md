@@ -964,25 +964,25 @@ ng serve
 
 ## Implementation Validation Strategy
 
-- [ ] 4 KPI cards render with correct metric values and charts within 3 seconds (AC-1)
-- [ ] Date range change updates all charts within 1 second (AC-2)
-- [ ] Export button downloads PNG and PDF files correctly (AC-3)
-- [ ] Distribution config dialog saves schedule with valid recipients (AC-4)
-- [ ] Staleness banner appears when API returns IsStale = true with timestamp (edge case 1)
-- [ ] Empty date range shows "No data for the selected period" annotation (edge case 2)
-- [ ] Per-widget error state with retry button, partial dashboard renders on partial failure
-- [ ] Responsive grid: 4 columns at 1440px, 2 columns at 768px, 1 column at 375px (UXR-301)
-- [ ] Text meets WCAG AA 4.5:1 contrast ratio (UXR-201)
-- [ ] All interactive elements keyboard navigable (UXR-202)
-- [ ] Status colors use semantic palette: green/amber/red/blue (UXR-404)
+- [x] 4 KPI cards render with correct metric values and charts within 3 seconds (AC-1)
+- [x] Date range change updates all charts within 1 second (AC-2)
+- [x] Export button downloads PNG and PDF files correctly (AC-3)
+- [x] Distribution config dialog saves schedule with valid recipients (AC-4)
+- [x] Staleness banner appears when API returns IsStale = true with timestamp (edge case 1)
+- [x] Empty date range shows "No data for the selected period" annotation (edge case 2)
+- [x] Per-widget error state with retry button, partial dashboard renders on partial failure
+- [x] Responsive grid: 4 columns at 1440px, 2 columns at 768px, 1 column at 375px (UXR-301)
+- [x] Text meets WCAG AA 4.5:1 contrast ratio (UXR-201)
+- [x] All interactive elements keyboard navigable (UXR-202)
+- [x] Status colors use semantic palette: green/amber/red/blue (UXR-404)
 
 ## Implementation Checklist
 
-- [ ] Create TypeScript interfaces for KPI summaries, time series, export requests, and metric config
-- [ ] Implement KpiApiService with HttpClient for summary, timeseries, and blob export endpoints
-- [ ] Build KpiCardComponent with headline metric, trend indicator, ngx-charts line chart, and export menu
-- [ ] Build DistributionConfigDialogComponent with recurrence select and recipients input
-- [ ] Build KpiDashboardComponent with date range selector, staleness banner, and responsive KPI grid
-- [ ] Implement all 5 SCR-023 states (Default, Loading, Empty, Error, Validation)
-- [ ] Add responsive SCSS with CSS Grid (auto-fit 300px min, 4-col desktop, 1-col mobile)
-- [ ] Add lazy-loaded route with adminGuard and register in app.routes.ts
+- [x] Create TypeScript interfaces for KPI summaries, time series, export requests, and metric config
+- [x] Implement KpiApiService with HttpClient for summary, timeseries, and blob export endpoints
+- [x] Build KpiCardComponent with headline metric, trend indicator, ngx-charts line chart, and export menu
+- [x] Build DistributionConfigDialogComponent with recurrence select and recipients input
+- [x] Build KpiDashboardComponent with date range selector, staleness banner, and responsive KPI grid
+- [x] Implement all 5 SCR-023 states (Default, Loading, Empty, Error, Validation)
+- [x] Add responsive SCSS with CSS Grid (auto-fit 300px min, 4-col desktop, 1-col mobile)
+- [x] Add lazy-loaded route with adminGuard and register in app.routes.ts

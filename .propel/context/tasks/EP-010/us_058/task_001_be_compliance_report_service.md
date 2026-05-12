@@ -402,11 +402,11 @@ dotnet run --project src/PropelIQ.Api
 
 ## Implementation Checklist
 
-- [ ] Define ComplianceReportData, ReportRequest, ReportSummary DTOs and IComplianceReportService contract
-- [ ] Implement ComplianceReportGenerator aggregating access logs, event counts, and anomalies from audit_records
-- [ ] Implement ComplianceReportPdfRenderer using QuestPDF with branded cover page, metrics summary, and tables
-- [ ] Implement ComplianceReportScheduleWorker BackgroundService with daily/weekly/monthly recurrence
-- [ ] Implement ComplianceReportDistributor with email delivery, retry, and failure notification
-- [ ] Implement ComplianceReportJobWorker for async generation via bounded channel
-- [ ] Create ComplianceReportController with POST generate, GET list, GET download, GET status endpoints
-- [ ] Register all services and background workers in Program.cs with FluentValidation
+- [x] Define ComplianceReportData, ReportRequest, ReportSummary DTOs and IComplianceReportService contract
+- [x] Implement ComplianceReportGenerator aggregating access logs, event counts, and anomalies from audit_records
+- [x] Implement ComplianceReportPdfRenderer using QuestPDF with branded cover page, metrics summary, and tables
+- [x] Implement ComplianceReportScheduleWorker BackgroundService with daily/weekly/monthly recurrence
+- [x] Implement ComplianceReportDistributor with email delivery, retry, and failure notification
+- [x] Implement ComplianceReportJobWorker for async generation via bounded channel
+- [x] Create ComplianceReportController with POST generate, GET list, GET download, GET status endpoints
+- [x] Register all services and background workers in Program.cs with FluentValidation

@@ -154,6 +154,10 @@ public sealed class ClinicalFactRepository : IClinicalFactRepository
             .ToListAsync(ct);
     }
 
+    /// <inheritdoc />
+    public Task<bool> HasFactsAsync(Guid patientId, CancellationToken ct = default)
+        => _db.ClinicalFacts.AnyAsync(f => f.PatientId == patientId, ct);
+
     /// <summary>
     /// Maps the storage <paramref name="factType"/> string to a human-readable display category.
     /// Unknown types fall back to "Findings" rather than exposing raw DB values.
