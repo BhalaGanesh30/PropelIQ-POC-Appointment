@@ -1,0 +1,178 @@
+<div class="template-editor">
+
+  <!-- ── Page header ────────────────────────────────────────────────────── -->
+  <header class="page-header">
+    <h1 class="page-title">Template Editor</h1>
+
+    <div class="header-controls">
+      <!-- Template selector -->
+      <mat-form-field appearance="outline" class="template-selector">
+        <mat-label>Select Template</mat-label>
+        <mat-select
+          (selectionChange)="onTemplateSelect($event.value)"
+          aria-label="Select notification template"
+        >
+          @if (loadingTemplates()) {
+            <mat-option disabled>Loading templates…</mat-option>
+          } @else {
+            @for (t of templates(); track t.id) {
+              <mat-option [value]="t.id">
+                {{ t.name }} <span class="type-chip">{{ t.type }}</span>
+              </mat-option>
+            }
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Version history toggle -->
+      <button
+        mat-icon-button
+        (click)="toggleVersionHistory()"
+        [matTooltip]="showVersionHistory() ? 'Hide version history' : 'Show version history'"
+        aria-label="Toggle version history panel"
+      >
+        <mat-icon>history</mat-icon>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Loading: template list or detail ───────────────────────────────── -->
+  @if (loadingTemplates() || loadingDetail()) {
+    <div class="skeleton-area" aria-busy="true" aria-label="Loading template">
+      <div class="skeleton-pane shimmer"></div>
+      <div class="skeleton-pane shimmer"></div>
+    </div>
+  } @else if (!selectedTemplate()) {
+
+    <!-- ── Empty state ───────────────────────────────────────────────────── -->
+    <div class="empty-state" role="region" aria-label="No template selected">
+      <mat-icon class="empty-icon">description</mat-icon>
+      <h2>Select a template to begin editing</h2>
+      <p>Choose a notification template from the dropdown above.</p>
+    </div>
+
+  } @else {
+
+    <!-- ── Subject line (HTML templates only) ────────────────────────────── -->
+    @if (!isSms()) {
+      <mat-form-field appearance="outline" class="subject-field">
+        <mat-label>Subject Line</mat-label>
+        <input
+          matInput
+          [ngModel]="editorSubject()"
+          (ngModelChange)="editorSubject.set($event); refreshPreview()"
+          [placeholder]="'e.g. Your appointment reminder from {{clinic_name}}'"
+          aria-label="Email subject line"
+        />
+      </mat-form-field>
+    }
+
+    <!-- ── Validation banner (AC-4, edge case 2) ─────────────────────────── -->
+    @if (validationErrors(); as v) {
+      <div
+        class="validation-banner"
+        [id]="validationErrorId"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        @if (v.invalidPlaceholders.length > 0) {
+          <div class="validation-row">
+            <mat-icon class="warn-icon" aria-hidden="true">error</mat-icon>
+            <span>
+              <strong>Invalid merge fields:</strong>
+              {{ v.invalidPlaceholders.join(', ') }}
+            </span>
+          </div>
+        }
+        @if (v.orphanedPlaceholders.length > 0) {
+          <div class="validation-row">
+            <mat-icon class="warn-icon warning" aria-hidden="true">warning</mat-icon>
+            <span>
+              <strong>Orphaned merge fields (deactivated):</strong>
+              {{ v.orphanedPlaceholders.join(', ') }}
+            </span>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ── Desktop: split editor / preview ───────────────────────────────── -->
+    <div class="editor-layout desktop-only">
+
+      <div class="editor-pane">
+        <app-code-editor
+          [content]="editorContent()"
+          [templateType]="selectedTemplate()!.type"
+          [errorDescribedBy]="validationErrors() ? validationErrorId : null"
+          (contentChange)="onContentChange($event)"
+        ></app-code-editor>
+
+        @if (isSms()) {
+          <app-sms-counter [content]="editorContent()"></app-sms-counter>
+        }
+      </div>
+
+      <div class="preview-pane">
+        <app-template-preview
+          [html]="previewHtml()"
+          [templateType]="selectedTemplate()!.type"
+        ></app-template-preview>
+      </div>
+    </div>
+
+    <!-- ── Mobile: tabbed editor / preview (UXR-301) ─────────────────────── -->
+    <mat-tab-group class="mobile-only" animationDuration="200ms">
+      <mat-tab label="Editor">
+        <div class="tab-content">
+          <app-code-editor
+            [content]="editorContent()"
+            [templateType]="selectedTemplate()!.type"
+            [errorDescribedBy]="validationErrors() ? validationErrorId : null"
+            (contentChange)="onContentChange($event)"
+          ></app-code-editor>
+
+          @if (isSms()) {
+            <app-sms-counter [content]="editorContent()"></app-sms-counter>
+          }
+        </div>
+      </mat-tab>
+      <mat-tab label="Preview">
+        <div class="tab-content">
+          <app-template-preview
+            [html]="previewHtml()"
+            [templateType]="selectedTemplate()!.type"
+          ></app-template-preview>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+    <!-- ── Action bar ─────────────────────────────────────────────────────── -->
+    <div class="action-bar">
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="saving()"
+        (click)="save()"
+        aria-label="Save template as new version"
+      >
+        @if (saving()) {
+          <mat-spinner diameter="20" class="save-spinner"></mat-spinner>
+          Saving…
+        } @else {
+          <mat-icon>save</mat-icon>
+          Save Version
+        }
+      </button>
+    </div>
+
+    <!-- ── Version history sidebar (AC-1, AC-3) ──────────────────────────── -->
+    @if (showVersionHistory()) {
+      <app-version-history-sidebar
+        [templateId]="selectedTemplate()!.id"
+        (versionRestored)="onVersionRestored()"
+      ></app-version-history-sidebar>
+    }
+  }
+
+</div>

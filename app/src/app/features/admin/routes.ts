@@ -9,6 +9,8 @@ export default [
         (m) => m.UserManagementComponent,
       ),
     title: 'User Management — PropelIQ',
+    canActivate: [roleGuard],
+    data: { roles: ['Admin'] },
   },
   {
     path: 'audit-logs',
@@ -75,6 +77,18 @@ export default [
         (m) => m.KpiDashboardComponent,
       ),
     title: 'KPI Dashboard — PropelIQ',
+    canActivate: [roleGuard],
+    data: { roles: ['Admin'] },
+  },
+  {
+    // US_062: SCR-024 Template Editor — versioned HTML/SMS notification template
+    // management with split-view editor, live preview, and version history. Admin only.
+    path: 'templates',
+    loadComponent: () =>
+      import('./templates/template-editor.component').then(
+        (m) => m.TemplateEditorComponent,
+      ),
+    title: 'Template Editor — PropelIQ',
     canActivate: [roleGuard],
     data: { roles: ['Admin'] },
   },

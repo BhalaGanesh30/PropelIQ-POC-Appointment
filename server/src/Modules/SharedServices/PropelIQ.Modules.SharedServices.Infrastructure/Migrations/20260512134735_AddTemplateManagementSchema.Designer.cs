@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pgvector;
@@ -14,9 +15,11 @@ using PropelIQ.Modules.SharedServices.Infrastructure.Data;
 namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260512134735_AddTemplateManagementSchema")]
+    partial class AddTemplateManagementSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2973,48 +2976,6 @@ namespace PropelIQ.Modules.SharedServices.Infrastructure.Migrations
                         .HasDatabaseName("ix_kpi_distribution_logs_period_status");
 
                     b.ToTable("kpi_distribution_logs", "app");
-                });
-
-            modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.MergeFieldRegistryEntry", b =>
-                {
-                    b.Property<string>("FieldName")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("field_name");
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasDefaultValue("General")
-                        .HasColumnName("category");
-
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("display_name");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("is_active");
-
-                    b.Property<string>("SampleValue")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("sample_value");
-
-                    b.HasKey("FieldName")
-                        .HasName("pk_merge_field_registry");
-
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("ix_merge_field_registry_is_active");
-
-                    b.ToTable("merge_field_registry", "app");
                 });
 
             modelBuilder.Entity("PropelIQ.Modules.SharedServices.Domain.Entities.NotificationTemplate", b =>

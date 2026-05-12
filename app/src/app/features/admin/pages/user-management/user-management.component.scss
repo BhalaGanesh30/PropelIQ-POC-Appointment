@@ -131,6 +131,192 @@
   }
 }
 
+// ── Bulk action toolbar (AC-2) ────────────────────────────────────────────────
+.bulk-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+
+  .selection-count {
+    font-weight: 500;
+    font-size: 0.875rem;
+    flex: 1;
+    min-width: 80px;
+  }
+
+  button {
+    // UXR-304: minimum 44×44px touch target on mobile
+    min-height: 44px;
+  }
+}
+
+// ── Skeleton loading rows ─────────────────────────────────────────────────────
+.skeleton-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.skeleton-row {
+  height: 48px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ── Content area: table + side panel ─────────────────────────────────────────
+.content-area {
+  display: flex;
+  gap: 0;
+  align-items: flex-start;
+
+  &.panel-open {
+    .table-container {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+  }
+}
+
+// ── Table container ───────────────────────────────────────────────────────────
+.table-container {
+  flex: 1 1 auto;
+  overflow-x: auto;
+  min-width: 0;
+}
+
+.user-table {
+  width: 100%;
+  min-width: 640px;
+}
+
+.clickable-row {
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  &.row-selected {
+    background-color: #e3f2fd;
+  }
+}
+
+// ── Side panel ────────────────────────────────────────────────────────────────
+app-user-detail-panel {
+  display: block;
+  width: 360px;
+  flex: 0 0 360px;
+  border-left: 1px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+  height: 100%;
+  overflow-y: auto;
+}
+
+// ── Mobile: card layout (< 768px, UXR-303) ───────────────────────────────────
+@media (max-width: 767px) {
+  .table-container {
+    display: none;
+  }
+
+  .mobile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+  }
+
+  app-user-detail-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    z-index: 100;
+    border-left: none;
+    box-shadow: -4px 0 16px rgba(0, 0, 0, 0.2);
+  }
+}
+
+// Desktop: hide mobile cards
+@media (min-width: 768px) {
+  .mobile-cards {
+    display: none;
+  }
+}
+
+.user-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  min-height: 44px; // UXR-304
+
+  &:hover,
+  &:focus {
+    background-color: rgba(0, 0, 0, 0.04);
+    outline: 2px solid #1976d2;
+    outline-offset: 2px;
+  }
+
+  &.card-selected {
+    background-color: #e3f2fd;
+    border-color: #1976d2;
+  }
+
+  .card-checkbox {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .card-name {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .card-email {
+    font-size: 0.875rem;
+    color: rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+}
+
 // ── Responsive breakpoints (UXR-301) ─────────────────────────────────────────
 @media (max-width: 768px) {
   .page-header {

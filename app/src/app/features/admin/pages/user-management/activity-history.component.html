@@ -1,0 +1,30 @@
+<h3 class="activity-title">Activity History</h3>
+
+@if (entries().length === 0 && !loading()) {
+  <p class="no-activity">No activity recorded.</p>
+} @else {
+  <mat-list>
+    @for (entry of entries(); track entry.id) {
+      <mat-list-item>
+        <mat-icon matListItemIcon>{{ getEventIcon(entry.eventType) }}</mat-icon>
+        <span matListItemTitle>{{ entry.description }}</span>
+        <span matListItemLine>
+          {{ entry.occurredAt | date: 'medium' }}
+          @if (entry.performedByUserId) {
+            &mdash; by {{ entry.performedByUserId }}
+          }
+        </span>
+      </mat-list-item>
+    }
+  </mat-list>
+
+  @if (hasMore() && !loading()) {
+    <button mat-button class="load-more-btn" (click)="loadMore()">Load More</button>
+  }
+}
+
+@if (loading()) {
+  <div class="spinner-row">
+    <mat-spinner diameter="24" aria-label="Loading activity history"></mat-spinner>
+  </div>
+}

@@ -1,0 +1,56 @@
+<aside class="version-sidebar" aria-label="Version history">
+  <h3 class="sidebar-title">Version History</h3>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading versions"></mat-progress-bar>
+  }
+
+  @if (loadError()) {
+    <div class="sidebar-error" role="alert">
+      <mat-icon color="warn">error</mat-icon>
+      <span>Failed to load versions.</span>
+      <button mat-button (click)="loadVersions()">Retry</button>
+    </div>
+  }
+
+  @if (!loading() && !loadError() && versions().length === 0) {
+    <p class="no-versions">No versions yet.</p>
+  }
+
+  @if (!loadError() && versions().length > 0) {
+    <mat-list class="version-list">
+      @for (v of versions(); track v.id) {
+        <mat-list-item class="version-item" [class.active-version]="v.isActive">
+          <mat-icon matListItemIcon [color]="v.isActive ? 'primary' : ''">
+            {{ v.isActive ? 'check_circle' : 'history' }}
+          </mat-icon>
+
+          <span matListItemTitle>
+            Version {{ v.versionNumber }}
+            @if (v.isActive) {
+              <span class="active-badge" aria-label="Currently active">Active</span>
+            }
+            @if (v.restoredFromVersionId) {
+              <span class="restored-badge" aria-label="Restored from a prior version">Restored</span>
+            }
+          </span>
+
+          <span matListItemLine class="version-meta">
+            {{ v.createdAtUtc | date: 'MMM d, y h:mm a' }} — {{ v.createdByName }}
+          </span>
+
+          @if (!v.isActive) {
+            <button
+              mat-icon-button
+              matListItemMeta
+              (click)="restore(v)"
+              [attr.aria-label]="'Restore version ' + v.versionNumber"
+            >
+              <mat-icon>restore</mat-icon>
+            </button>
+          }
+        </mat-list-item>
+      }
+    </mat-list>
+  }
+</aside>

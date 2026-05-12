@@ -1,0 +1,52 @@
+<aside class="detail-panel" role="complementary" aria-label="User details">
+  <div class="panel-header">
+    <h2 class="panel-title">User Details</h2>
+    <button mat-icon-button (click)="closed.emit()" aria-label="Close user detail panel">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="skeleton-profile" aria-busy="true" aria-label="Loading user details">
+      <div class="skeleton-line wide"></div>
+      <div class="skeleton-line medium"></div>
+      <div class="skeleton-line medium"></div>
+      <div class="skeleton-line narrow"></div>
+    </div>
+  } @else if (loadError()) {
+    <div class="error-notice" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>Failed to load user details.</span>
+    </div>
+  } @else {
+    @if (user(); as u) {
+      <dl class="profile-list">
+        <dt>Name</dt>
+        <dd>{{ u.name }}</dd>
+
+        <dt>Email</dt>
+        <dd>{{ u.email }}</dd>
+
+        <dt>Role</dt>
+        <dd><span class="role-badge">{{ u.role }}</span></dd>
+
+        <dt>Status</dt>
+        <dd>
+          <span class="status-badge" [class.active]="u.isActive" [class.inactive]="!u.isActive">
+            {{ statusLabel(u.isActive) }}
+          </span>
+        </dd>
+
+        <dt>Last Active</dt>
+        <dd>{{ u.lastLoginAt ? (u.lastLoginAt | date: 'medium') : 'Never' }}</dd>
+
+        <dt>Created</dt>
+        <dd>{{ u.createdAt | date: 'mediumDate' }}</dd>
+      </dl>
+
+      <mat-divider></mat-divider>
+
+      <app-activity-history [userId]="userId()"></app-activity-history>
+    }
+  }
+</aside>

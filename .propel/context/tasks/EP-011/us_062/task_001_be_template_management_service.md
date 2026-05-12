@@ -546,11 +546,11 @@ dotnet run
 
 ## Implementation Checklist
 
-- [ ] Define NotificationTemplate and TemplateVersion domain entities
-- [ ] Create request/response DTOs for all template operations
-- [ ] Implement MergeFieldRegistry with allowed fields, sample values, and substitution logic
-- [ ] Implement ITemplateManagementService with Save (new version per edit), Preview, Restore, and Validate
-- [ ] Add FluentValidation rules for SaveTemplateRequest (non-empty content, subject required for HTML)
-- [ ] Create TemplatesController with Admin-authorized REST endpoints
-- [ ] Wire audit logging via IAuditRecordService for save, restore mutations
-- [ ] Implement SMS character counting with multi-part segment estimation (ceil(count/153) for concatenated SMS)
+- [x] Define NotificationTemplate and TemplateVersion domain entities
+- [x] Create request/response DTOs for all template operations
+- [x] Implement MergeFieldRegistry with allowed fields, sample values, and substitution logic
+- [x] Implement ITemplateManagementService with Save (new version per edit), Preview, Restore, and Validate
+- [x] Add FluentValidation rules for SaveTemplateRequest (non-empty content, subject required for HTML)
+- [x] Create TemplatesController with Admin-authorized REST endpoints
+- [x] Wire audit logging via IAuditRecordService for save, restore mutations
+- [x] Implement SMS character counting with multi-part segment estimation (ceil(count/153) for concatenated SMS)

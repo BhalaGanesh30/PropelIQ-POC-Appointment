@@ -256,19 +256,19 @@ dotnet ef database update \
 
 ## Implementation Validation Strategy
 
-- [ ] notification_templates table created with name, type, description, current_version_id columns
-- [ ] template_versions table created with immutable version rows (content, subject, version_number, identity)
-- [ ] Unique composite index on (template_id, version_number) prevents duplicate versions
-- [ ] Partial unique index on (template_id) WHERE is_active = true ensures single active version
-- [ ] FK from current_version_id to template_versions enables active version navigation
-- [ ] merge_field_registry table seeded with 8 merge fields across 4 categories
-- [ ] CASCADE delete on template_versions when parent template is removed
+- [x] notification_templates table created with name, type, description, current_version_id columns
+- [x] template_versions table created with immutable version rows (content, subject, version_number, identity)
+- [x] Unique composite index on (template_id, version_number) prevents duplicate versions
+- [x] Partial unique index on (template_id) WHERE is_active = true ensures single active version
+- [x] FK from current_version_id to template_versions enables active version navigation
+- [x] merge_field_registry table seeded with 8 merge fields across 4 categories
+- [x] CASCADE delete on template_versions when parent template is removed
 
 ## Implementation Checklist
 
-- [ ] Create notification_templates table with name/type unique index and type CHECK constraint
-- [ ] Create template_versions table with FK to notification_templates (CASCADE) and FK to users (SET NULL)
-- [ ] Add unique composite index on (template_id, version_number) for version ordering
-- [ ] Add partial unique index on (template_id) WHERE is_active = true for single active version guarantee
-- [ ] Add deferred FK from notification_templates.current_version_id to template_versions
-- [ ] Create merge_field_registry table and seed with 8 initial merge fields
+- [x] Create notification_templates table with name/type unique index and type CHECK constraint
+- [x] Create template_versions table with FK to notification_templates (CASCADE) and FK to users (SET NULL)
+- [x] Add unique composite index on (template_id, version_number) for version ordering
+- [x] Add partial unique index on (template_id) WHERE is_active = true for single active version guarantee
+- [x] Add deferred FK from notification_templates.current_version_id to template_versions
+- [x] Create merge_field_registry table and seed with 8 initial merge fields

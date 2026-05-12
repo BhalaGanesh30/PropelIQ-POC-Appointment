@@ -1,14 +1,16 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   inject,
+  OnInit,
   signal,
   ViewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { SelectionModel } from '@angular/cdk/collections';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,32 +24,37 @@ import {
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import {
-  DeactivateConfirmDialogComponent,
-} from '../../components/deactivate-confirm-dialog/deactivate-confirm-dialog.component';
 import {
   InviteStaffDialogComponent,
 } from '../../components/invite-staff-dialog/invite-staff-dialog.component';
+import { UserDetailPanelComponent } from './user-detail-panel.component';
 import {
-  StaffListItem,
-  StaffManagementService,
-} from '../../services/staff-management.service';
+  BulkActionConfirmDialogComponent,
+  BulkActionConfirmResult,
+} from './bulk-action-confirm-dialog.component';
+import { BulkActionResultDialogComponent } from './bulk-action-result-dialog.component';
+import { UserApiService } from './user-api.service';
+import { UserListItem, BulkActionTypeName } from './models/user.models';
 
 /**
- * SCR-020: Admin User Management page.
- * Provides a full-width data table of staff accounts with search, status
- * filter, pagination, and actions: Invite (AC-1), Deactivate (AC-3),
- * Resend invitation (Edge-2).
+ * SCR-020: Admin User Management page (US_061).
+ * Full-width data table with checkbox bulk-selection, role/status filters,
+ * server-side pagination, user detail side panel, and activity history.
+ *
+ * AC-1: Paginated user list with search (name/email), role, and status filters.
+ * AC-2: Bulk activate / deactivate / assign-role with confirmation dialog.
+ * AC-3: User detail side panel with reverse-chronological activity history.
+ * AC-4: Bulk result summary dialog showing success count + per-user failures.
  */
 @Component({
   selector: 'app-user-management',
   standalone: true,
   imports: [
-    CommonModule,
+    DatePipe,
     FormsModule,
     MatButtonModule,
+    MatCheckboxModule,
     MatChipsModule,
     MatDialogModule,
     MatFormFieldModule,
@@ -57,82 +64,139 @@ import {
     MatProgressBarModule,
     MatSelectModule,
     MatSnackBarModule,
-    MatSortModule,
     MatTableModule,
+    UserDetailPanelComponent,
   ],
   templateUrl: './user-management.component.html',
   styleUrl: './user-management.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UserManagementComponent implements AfterViewInit {
-  private readonly staffService = inject(StaffManagementService);
+export class UserManagementComponent implements OnInit {
+  private readonly api = inject(UserApiService);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
 
-  readonly displayedColumns = [
-    'fullName',
-    'email',
-    'role',
-    'accountStatus',
-    'invitedAt',
-    'actions',
-  ];
+  readonly displayedColumns = ['select', 'name', 'email', 'role', 'status', 'lastLoginAt'];
 
-  readonly staffList = signal<StaffListItem[]>([]);
+  readonly users = signal<UserListItem[]>([]);
   readonly totalCount = signal(0);
   readonly isLoading = signal(false);
   readonly loadError = signal<string | null>(null);
+  readonly selectedUser = signal<UserListItem | null>(null);
+
+  readonly selection = new SelectionModel<UserListItem>(true, []);
 
   searchTerm = '';
+  roleFilter = '';
   statusFilter = '';
   pageSize = 25;
   pageIndex = 0;
 
-  ngAfterViewInit(): void {
-    this.loadStaff();
+  ngOnInit(): void {
+    this.loadUsers();
   }
 
-  loadStaff(): void {
+  loadUsers(): void {
     this.isLoading.set(true);
     this.loadError.set(null);
-
-    this.staffService
-      .getStaffList(
+    this.api
+      .list(
+        this.searchTerm || undefined,
+        this.roleFilter || undefined,
+        this.statusFilter || undefined,
         this.pageIndex + 1,
         this.pageSize,
-        this.statusFilter || undefined,
-        this.searchTerm || undefined,
       )
       .subscribe({
-        next: (response) => {
-          this.staffList.set(response.items);
-          this.totalCount.set(response.totalCount);
+        next: (result) => {
+          this.users.set(result.items);
+          this.totalCount.set(result.totalCount);
           this.isLoading.set(false);
+          this.selection.clear();
         },
         error: () => {
-          this.loadError.set('Failed to load staff list. Please try again.');
+          this.loadError.set('Failed to load users. Please try again.');
           this.isLoading.set(false);
         },
       });
   }
 
+  onSearch(): void {
+    this.pageIndex = 0;
+    this.loadUsers();
+  }
+
+  onFilterChange(): void {
+    this.pageIndex = 0;
+    this.loadUsers();
+  }
+
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.loadStaff();
+    this.loadUsers();
   }
 
-  onSearch(): void {
-    this.pageIndex = 0;
-    this.loadStaff();
+  onRowClick(user: UserListItem): void {
+    this.selectedUser.set(user);
   }
 
-  onStatusFilterChange(): void {
-    this.pageIndex = 0;
-    this.loadStaff();
+  closePanel(): void {
+    this.selectedUser.set(null);
+  }
+
+  isAllSelected(): boolean {
+    return (
+      this.users().length > 0 &&
+      this.selection.selected.length === this.users().length
+    );
+  }
+
+  toggleAllRows(): void {
+    if (this.isAllSelected()) {
+      this.selection.clear();
+    } else {
+      this.selection.select(...this.users());
+    }
+  }
+
+  statusLabel(isActive: boolean): string {
+    return isActive ? 'Active' : 'Inactive';
+  }
+
+  /** Opens confirmation dialog then executes bulk action (AC-2, AC-4). */
+  executeBulkAction(action: BulkActionTypeName): void {
+    const confirmRef = this.dialog.open(BulkActionConfirmDialogComponent, {
+      data: { action, count: this.selection.selected.length },
+      width: '420px',
+      disableClose: true,
+    });
+
+    confirmRef.afterClosed().subscribe((result: BulkActionConfirmResult | null) => {
+      if (result === null) return; // cancelled
+
+      this.api
+        .bulkAction({
+          userIds: this.selection.selected.map((u) => u.userId),
+          action,
+          targetRole: result.targetRole,
+        })
+        .subscribe({
+          next: (bulkResult) => {
+            this.dialog.open(BulkActionResultDialogComponent, {
+              data: { result: bulkResult, action },
+              width: '500px',
+            });
+            this.loadUsers();
+          },
+          error: (err: { error?: { message?: string } }) => {
+            const msg = err.error?.message ?? 'Bulk action failed. Please try again.';
+            this.snackBar.open(msg, 'Dismiss', { duration: 6000 });
+          },
+        });
+    });
   }
 
   openInviteDialog(): void {
@@ -143,51 +207,9 @@ export class UserManagementComponent implements AfterViewInit {
 
     ref.afterClosed().subscribe((sent: boolean) => {
       if (sent) {
-        this.snackBar.open('Invitation sent successfully', 'Close', {
-          duration: 4000,
-        });
-        this.loadStaff();
+        this.snackBar.open('Invitation sent successfully', 'Close', { duration: 4000 });
+        this.loadUsers();
       }
-    });
-  }
-
-  /** Resend invitation for Pending accounts (Edge-2 — extends expiry). */
-  resendInvitation(user: StaffListItem): void {
-    const ref = this.dialog.open(InviteStaffDialogComponent, {
-      width: '480px',
-      disableClose: true,
-      data: { prefillEmail: user.email, prefillName: user.fullName },
-    });
-
-    ref.afterClosed().subscribe((sent: boolean) => {
-      if (sent) {
-        this.snackBar.open('Invitation resent successfully', 'Close', {
-          duration: 4000,
-        });
-        this.loadStaff();
-      }
-    });
-  }
-
-  confirmDeactivate(user: StaffListItem): void {
-    const ref = this.dialog.open(DeactivateConfirmDialogComponent, {
-      width: '420px',
-      data: { userName: user.fullName, userId: user.id },
-    });
-
-    ref.afterClosed().subscribe((confirmed: boolean) => {
-      if (!confirmed) return;
-
-      this.staffService.deactivateStaff(user.id).subscribe({
-        next: () => {
-          this.snackBar.open('Account deactivated', 'Close', { duration: 4000 });
-          this.loadStaff();
-        },
-        error: (err: { error?: { detail?: string } }) => {
-          const msg = err.error?.detail ?? 'Failed to deactivate account.';
-          this.snackBar.open(msg, 'Close', { duration: 5000 });
-        },
-      });
     });
   }
 }

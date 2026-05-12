@@ -14,7 +14,7 @@
     </button>
   </header>
 
-  <!-- Search + status filter toolbar -->
+  <!-- Search + filter toolbar (AC-1) -->
   <div class="toolbar" role="search">
     <mat-form-field appearance="outline" class="search-field">
       <mat-label>Search by name or email</mat-label>
@@ -22,17 +22,27 @@
         matInput
         [(ngModel)]="searchTerm"
         (keyup.enter)="onSearch()"
-        aria-label="Search staff members"
+        aria-label="Search users"
       />
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Role</mat-label>
+      <mat-select [(ngModel)]="roleFilter" (selectionChange)="onFilterChange()">
+        <mat-option value="">All Roles</mat-option>
+        <mat-option value="Admin">Admin</mat-option>
+        <mat-option value="Staff">Staff</mat-option>
+        <mat-option value="Clinician">Clinician</mat-option>
+        <mat-option value="Patient">Patient</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
       <mat-label>Status</mat-label>
-      <mat-select [(ngModel)]="statusFilter" (selectionChange)="onStatusFilterChange()">
-        <mat-option value="">All</mat-option>
+      <mat-select [(ngModel)]="statusFilter" (selectionChange)="onFilterChange()">
+        <mat-option value="">All Statuses</mat-option>
         <mat-option value="Active">Active</mat-option>
-        <mat-option value="Pending">Pending</mat-option>
         <mat-option value="Inactive">Inactive</mat-option>
       </mat-select>
     </mat-form-field>
@@ -42,9 +52,33 @@
     </button>
   </div>
 
+  <!-- Bulk action toolbar — visible when rows selected (AC-2) -->
+  @if (selection.hasValue()) {
+    <div class="bulk-toolbar" role="toolbar" aria-label="Bulk actions for selected users">
+      <span class="selection-count">{{ selection.selected.length }} selected</span>
+      <button mat-button (click)="executeBulkAction('Activate')" aria-label="Activate selected users">
+        <mat-icon>check_circle</mat-icon>
+        Activate
+      </button>
+      <button mat-button color="warn" (click)="executeBulkAction('Deactivate')" aria-label="Deactivate selected users">
+        <mat-icon>block</mat-icon>
+        Deactivate
+      </button>
+      <button mat-button (click)="executeBulkAction('AssignRole')" aria-label="Assign role to selected users">
+        <mat-icon>assignment_ind</mat-icon>
+        Assign Role
+      </button>
+    </div>
+  }
+
   <!-- Loading state -->
   @if (isLoading()) {
-    <mat-progress-bar mode="indeterminate" aria-label="Loading staff list" />
+    <mat-progress-bar mode="indeterminate" aria-label="Loading users" />
+    <div class="skeleton-table" aria-busy="true">
+      @for (n of [1, 2, 3, 4, 5]; track n) {
+        <div class="skeleton-row"></div>
+      }
+    </div>
   }
 
   <!-- Error state -->
@@ -52,118 +86,163 @@
     <div class="error-banner" role="alert" aria-live="polite">
       <mat-icon>error_outline</mat-icon>
       <span>{{ loadError() }}</span>
-      <button mat-button color="primary" (click)="loadStaff()">Retry</button>
+      <button mat-button color="primary" (click)="loadUsers()">Retry</button>
     </div>
   }
 
   <!-- Empty state -->
-  @if (!isLoading() && !loadError() && staffList().length === 0) {
+  @if (!isLoading() && !loadError() && users().length === 0) {
     <div class="empty-state" role="status">
       <mat-icon class="empty-icon">group_off</mat-icon>
-      <p>No staff accounts found.</p>
+      <h2>No users found</h2>
+      <p>Try adjusting your filters or invite new users.</p>
       <button mat-raised-button color="primary" (click)="openInviteDialog()">
-        Invite Your First Staff Member
+        <mat-icon>person_add</mat-icon>
+        Invite Staff
       </button>
     </div>
   }
 
-  <!-- Default state: data table -->
-  @if (!isLoading() && !loadError() && staffList().length > 0) {
-    <div class="table-container">
-      <table
-        mat-table
-        [dataSource]="staffList()"
-        matSort
-        class="staff-table"
-        aria-label="Staff accounts"
-      >
+  <!-- Default state: data table (AC-1) + side panel (AC-3) -->
+  @if (!isLoading() && !loadError() && users().length > 0) {
+    <div class="content-area" [class.panel-open]="selectedUser()">
 
-        <!-- Name column -->
-        <ng-container matColumnDef="fullName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">Name</th>
-          <td mat-cell *matCellDef="let row">{{ row.fullName }}</td>
-        </ng-container>
+      <!-- Desktop data table -->
+      <div class="table-container">
+        <table
+          mat-table
+          [dataSource]="users()"
+          class="user-table"
+          aria-label="User accounts"
+        >
+          <!-- Checkbox column -->
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox
+                (change)="toggleAllRows()"
+                [checked]="isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()"
+                aria-label="Select all users"
+              ></mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <mat-checkbox
+                (click)="$event.stopPropagation()"
+                (change)="selection.toggle(row)"
+                [checked]="selection.isSelected(row)"
+                [attr.aria-label]="'Select ' + row.name"
+              ></mat-checkbox>
+            </td>
+          </ng-container>
 
-        <!-- Email column -->
-        <ng-container matColumnDef="email">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">Email</th>
-          <td mat-cell *matCellDef="let row">{{ row.email }}</td>
-        </ng-container>
+          <!-- Name column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef scope="col">Name</th>
+            <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+          </ng-container>
 
-        <!-- Role column -->
-        <ng-container matColumnDef="role">
-          <th mat-header-cell *matHeaderCellDef scope="col">Role</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="role-badge">{{ row.role || '—' }}</span>
-          </td>
-        </ng-container>
+          <!-- Email column -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef scope="col">Email</th>
+            <td mat-cell *matCellDef="let row">{{ row.email }}</td>
+          </ng-container>
 
-        <!-- Status column -->
-        <ng-container matColumnDef="accountStatus">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">Status</th>
-          <td mat-cell *matCellDef="let row">
-            <span
-              class="status-badge"
-              [class.active]="row.accountStatus === 'Active'"
-              [class.pending]="row.accountStatus === 'Pending'"
-              [class.inactive]="row.accountStatus === 'Inactive'"
-            >
-              {{ row.accountStatus }}
-            </span>
-          </td>
-        </ng-container>
+          <!-- Role column -->
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef scope="col">Role</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="role-badge">{{ row.role || '—' }}</span>
+            </td>
+          </ng-container>
 
-        <!-- Invited At column -->
-        <ng-container matColumnDef="invitedAt">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">Invited</th>
-          <td mat-cell *matCellDef="let row">
-            {{ row.invitedAt ? (row.invitedAt | date: 'mediumDate') : '—' }}
-          </td>
-        </ng-container>
-
-        <!-- Actions column -->
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef scope="col">Actions</th>
-          <td mat-cell *matCellDef="let row">
-            @if (row.accountStatus === 'Active') {
-              <button
-                mat-icon-button
-                color="warn"
-                (click)="confirmDeactivate(row)"
-                [attr.aria-label]="'Deactivate ' + row.fullName"
-                matTooltip="Deactivate account"
+          <!-- Status column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef scope="col">Status</th>
+            <td mat-cell *matCellDef="let row">
+              <span
+                class="status-badge"
+                [class.active]="row.isActive"
+                [class.inactive]="!row.isActive"
               >
-                <mat-icon>block</mat-icon>
-              </button>
-            }
-            @if (row.accountStatus === 'Pending') {
-              <button
-                mat-icon-button
-                color="primary"
-                (click)="resendInvitation(row)"
-                [attr.aria-label]="'Resend invitation to ' + row.fullName"
-                matTooltip="Resend invitation"
-              >
-                <mat-icon>send</mat-icon>
-              </button>
-            }
-          </td>
-        </ng-container>
+                {{ statusLabel(row.isActive) }}
+              </span>
+            </td>
+          </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
+          <!-- Last Active column -->
+          <ng-container matColumnDef="lastLoginAt">
+            <th mat-header-cell *matHeaderCellDef scope="col">Last Active</th>
+            <td mat-cell *matCellDef="let row">
+              {{ row.lastLoginAt ? (row.lastLoginAt | date: 'mediumDate') : 'Never' }}
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            (click)="onRowClick(row)"
+            [class.row-selected]="selectedUser()?.userId === row.userId"
+            class="clickable-row"
+          ></tr>
+        </table>
+
+        <mat-paginator
+          [length]="totalCount()"
+          [pageSize]="pageSize"
+          [pageIndex]="pageIndex"
+          [pageSizeOptions]="[10, 25, 50]"
+          (page)="onPageChange($event)"
+          showFirstLastButtons
+          aria-label="User list pagination"
+        ></mat-paginator>
+      </div>
+
+      <!-- Mobile: card layout (< 768px, UXR-303) -->
+      <div class="mobile-cards" aria-label="User cards">
+        @for (user of users(); track user.userId) {
+          <div
+            class="user-card"
+            (click)="onRowClick(user)"
+            (keyup.enter)="onRowClick(user)"
+            role="button"
+            tabindex="0"
+            [attr.aria-label]="user.name + ', ' + user.role"
+            [class.card-selected]="selectedUser()?.userId === user.userId"
+          >
+            <mat-checkbox
+              (click)="$event.stopPropagation()"
+              (change)="selection.toggle(user)"
+              [checked]="selection.isSelected(user)"
+              [attr.aria-label]="'Select ' + user.name"
+              class="card-checkbox"
+            ></mat-checkbox>
+            <div class="card-body">
+              <strong class="card-name">{{ user.name }}</strong>
+              <span class="card-email">{{ user.email }}</span>
+              <div class="card-meta">
+                <span class="role-badge">{{ user.role }}</span>
+                <span
+                  class="status-badge"
+                  [class.active]="user.isActive"
+                  [class.inactive]="!user.isActive"
+                >
+                  {{ statusLabel(user.isActive) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- User detail side panel (AC-3) -->
+      @if (selectedUser(); as user) {
+        <app-user-detail-panel
+          [userId]="user.userId"
+          (closed)="closePanel()"
+        ></app-user-detail-panel>
+      }
     </div>
-
-    <mat-paginator
-      [length]="totalCount()"
-      [pageSize]="pageSize"
-      [pageIndex]="pageIndex"
-      [pageSizeOptions]="[10, 25, 50]"
-      (page)="onPageChange($event)"
-      showFirstLastButtons
-      aria-label="Staff list pagination"
-    />
   }
 
 </div>

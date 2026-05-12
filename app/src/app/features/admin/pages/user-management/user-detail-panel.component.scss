@@ -1,0 +1,95 @@
+.detail-panel {
+  padding: 16px;
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .panel-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  // Skeleton lines for loading state
+  .skeleton-profile {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .skeleton-line {
+    height: 18px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+
+    &.wide   { width: 90%; }
+    &.medium { width: 70%; }
+    &.narrow { width: 50%; }
+  }
+
+  @keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .error-notice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #c62828;
+    padding: 12px 0;
+  }
+
+  // Definition list for profile fields
+  .profile-list {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 8px 16px;
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+
+    dt {
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.6);
+      font-size: 0.875rem;
+    }
+
+    dd {
+      margin: 0;
+      font-size: 0.875rem;
+    }
+  }
+
+  mat-divider {
+    margin: 16px 0;
+  }
+}
+
+// Badges reused from page
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  &.active  { background-color: #e8f5e9; color: #2e7d32; }
+  &.inactive { background-color: #fbe9e7; color: #c62828; }
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  background-color: #e3f2fd;
+  color: #1565c0;
+}

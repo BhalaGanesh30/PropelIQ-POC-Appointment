@@ -14,8 +14,11 @@ using FluentValidation;
 using PropelIQ.Modules.SharedServices.Application.Administration;
 using PropelIQ.Modules.SharedServices.Application.Administration.Validators;
 using PropelIQ.Modules.SharedServices.Application.Kpi;
+using PropelIQ.Modules.SharedServices.Application.Templates;
+using PropelIQ.Modules.SharedServices.Application.Templates.Validators;
 using PropelIQ.Modules.SharedServices.Infrastructure.Administration;
 using PropelIQ.Modules.SharedServices.Infrastructure.Kpi;
+using PropelIQ.Modules.SharedServices.Infrastructure.Templates;
 using PropelIQ.Modules.SharedServices.Infrastructure.AI;
 using PropelIQ.Modules.SharedServices.Infrastructure.AiAudit;
 using PropelIQ.Modules.SharedServices.Infrastructure.Audit;
@@ -246,6 +249,14 @@ public static class SharedServicesServiceRegistration
         // BulkActionValidator is transient (FluentValidation default lifetime).
         services.AddScoped<IUserManagementService, UserManagementService>();
         services.AddTransient<IValidator<BulkActionRequest>, BulkActionValidator>();
+
+        // ── Template management service (US_062, AC-1–AC-4) ──────────────────
+        // MergeFieldRegistry is stateless — safe to register as singleton.
+        // TemplateManagementService is scoped (depends on AppDbContext).
+        // SaveTemplateRequestValidator is transient (FluentValidation default).
+        services.AddSingleton<MergeFieldRegistry>();
+        services.AddScoped<ITemplateManagementService, TemplateManagementService>();
+        services.AddTransient<IValidator<SaveTemplateRequest>, SaveTemplateRequestValidator>();
 
         return services;
     }

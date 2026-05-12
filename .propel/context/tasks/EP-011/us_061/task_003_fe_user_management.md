@@ -1166,26 +1166,26 @@ ng serve
 
 ## Implementation Validation Strategy
 
-- [ ] User table renders with name, email, role, status badge, last active and pagination (AC-1)
-- [ ] Search by name/email filters table results (AC-1)
-- [ ] Checkbox selection enables bulk toolbar with Activate, Deactivate, Assign Role buttons (AC-2)
-- [ ] Confirmation dialog appears before bulk action execution (AC-2)
-- [ ] Result dialog shows "{N} users {action}d" with failure details (AC-4)
-- [ ] Activity history lists login, role change, status change events in reverse chronological order (AC-3)
-- [ ] Last-admin guard error displayed when trying to deactivate all admins (edge case 1)
-- [ ] Invalid role assignment errors displayed per-user in result dialog (edge case 2)
-- [ ] Table switches to card layout on screens below 768px (UXR-303)
-- [ ] Touch targets at least 44x44px on mobile (UXR-304)
-- [ ] Text meets WCAG AA 4.5:1 contrast ratio (UXR-201)
-- [ ] All interactive elements keyboard navigable (UXR-202)
+- [x] User table renders with name, email, role, status badge, last active and pagination (AC-1)
+- [x] Search by name/email filters table results (AC-1)
+- [x] Checkbox selection enables bulk toolbar with Activate, Deactivate, Assign Role buttons (AC-2)
+- [x] Confirmation dialog appears before bulk action execution (AC-2)
+- [x] Result dialog shows "{N} users {action}d" with failure details (AC-4)
+- [x] Activity history lists login, role change, status change events in reverse chronological order (AC-3)
+- [x] Last-admin guard error displayed when trying to deactivate all admins (edge case 1)
+- [x] Invalid role assignment errors displayed per-user in result dialog (edge case 2)
+- [x] Table switches to card layout on screens below 768px (UXR-303)
+- [x] Touch targets at least 44x44px on mobile (UXR-304)
+- [x] Text meets WCAG AA 4.5:1 contrast ratio (UXR-201)
+- [x] All interactive elements keyboard navigable (UXR-202)
 
 ## Implementation Checklist
 
-- [ ] Create TypeScript interfaces for user list items, detail, bulk actions, results, and activity entries
-- [ ] Implement UserApiService with HttpClient for list, get, bulk action, and activity history endpoints
-- [ ] Build UserManagementComponent with data table, search, role/status filters, pagination, and checkbox selection
-- [ ] Build bulk action toolbar with confirm dialog and result summary dialog
-- [ ] Build UserDetailPanelComponent side panel with profile fields and activity history
-- [ ] Build ActivityHistoryComponent with reverse chronological event list and load-more pagination
-- [ ] Implement responsive layout: data table on desktop, card layout on mobile (< 768px)
-- [ ] Add lazy-loaded route with adminGuard and register in app.routes.ts
+- [x] Create TypeScript interfaces for user list items, detail, bulk actions, results, and activity entries
+- [x] Implement UserApiService with HttpClient for list, get, bulk action, and activity history endpoints
+- [x] Build UserManagementComponent with data table, search, role/status filters, pagination, and checkbox selection
+- [x] Build bulk action toolbar with confirm dialog and result summary dialog
+- [x] Build UserDetailPanelComponent side panel with profile fields and activity history
+- [x] Build ActivityHistoryComponent with reverse chronological event list and load-more pagination
+- [x] Implement responsive layout: data table on desktop, card layout on mobile (< 768px)
+- [x] Add lazy-loaded route with adminGuard and register in app.routes.ts

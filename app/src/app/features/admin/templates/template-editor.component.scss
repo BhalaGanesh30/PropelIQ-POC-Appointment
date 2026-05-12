@@ -1,0 +1,240 @@
+// ── SCR-024 Template Editor styles ──────────────────────────────────────────
+// Responsive split-view / tabbed layout for HTML and SMS notification template
+// editing (US_062, UXR-201, UXR-202, UXR-301, UXR-501, UXR-502).
+
+.template-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+// ── Header ───────────────────────────────────────────────────────────────────
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: #212121;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.template-selector {
+  min-width: 280px;
+}
+
+.type-chip {
+  font-size: 11px;
+  background: #e8eaf6;
+  color: #3949ab;
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-left: 6px;
+}
+
+// ── Subject field ─────────────────────────────────────────────────────────────
+
+.subject-field {
+  width: 100%;
+}
+
+// ── Validation banner (AC-4, edge case 2) ─────────────────────────────────────
+
+.validation-banner {
+  border: 1px solid #ef9a9a;
+  border-radius: 4px;
+  background: #fff8f8;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.validation-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: #c62828;
+}
+
+.warn-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #c62828;
+
+  &.warning {
+    color: #e65100;
+  }
+}
+
+// ── Desktop split layout ──────────────────────────────────────────────────────
+
+.editor-layout {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.editor-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.preview-pane {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+// ── Skeleton loading (SCR-024 Loading state) ──────────────────────────────────
+
+.skeleton-area {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  min-height: 400px;
+}
+
+.skeleton-pane {
+  flex: 1;
+  border-radius: 4px;
+  background: #e0e0e0;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -800px 0;
+  }
+  100% {
+    background-position: 800px 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  color: #757575;
+  padding: 48px 24px;
+}
+
+.empty-icon {
+  font-size: 56px;
+  width: 56px;
+  height: 56px;
+  color: #bdbdbd;
+}
+
+.empty-state h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: #424242;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
+}
+
+// ── Action bar ────────────────────────────────────────────────────────────────
+
+.action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 8px 0;
+  border-top: 1px solid #e0e0e0;
+
+  button {
+    min-width: 140px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.save-spinner {
+  display: inline-flex;
+}
+
+// ── Mobile tab content ────────────────────────────────────────────────────────
+
+.tab-content {
+  padding: 16px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+// ── Responsive breakpoints (UXR-301) ─────────────────────────────────────────
+
+@media (min-width: 768px) {
+  .desktop-only {
+    display: flex;
+  }
+
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: block;
+  }
+
+  .template-editor {
+    padding: 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .template-selector {
+    min-width: unset;
+    width: 100%;
+  }
+}

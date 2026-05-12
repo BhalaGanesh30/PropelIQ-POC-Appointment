@@ -1125,26 +1125,26 @@ ng serve
 
 ## Implementation Validation Strategy
 
-- [ ] Split view renders editor on left and preview on right at 1440px (SCR-024 Default)
-- [ ] Template selector dropdown loads template list and populates editor (SCR-024 Default)
-- [ ] Save creates new version with admin name and timestamp in version list (AC-1)
-- [ ] Preview shows rendered HTML with sample data substituted for merge fields (AC-2)
-- [ ] Restore opens confirmation dialog and creates new active version from old content (AC-3)
-- [ ] Invalid merge field placeholder shows inline validation error and blocks save (AC-4)
-- [ ] SMS character counter shows count and multi-part warning above 160 characters (edge case 1)
-- [ ] Orphaned placeholder warning displayed before save (edge case 2)
-- [ ] Mobile view (< 768px) shows tabbed editor/preview layout (UXR-301)
-- [ ] Error messages associated with form fields via aria-describedby (UXR-205)
-- [ ] Success toast auto-dismisses at 5s, error toast persists (UXR-502)
-- [ ] All interactive elements keyboard navigable (UXR-202)
+- [x] Split view renders editor on left and preview on right at 1440px (SCR-024 Default)
+- [x] Template selector dropdown loads template list and populates editor (SCR-024 Default)
+- [x] Save creates new version with admin name and timestamp in version list (AC-1)
+- [x] Preview shows rendered HTML with sample data substituted for merge fields (AC-2)
+- [x] Restore opens confirmation dialog and creates new active version from old content (AC-3)
+- [x] Invalid merge field placeholder shows inline validation error and blocks save (AC-4)
+- [x] SMS character counter shows count and multi-part warning above 160 characters (edge case 1)
+- [x] Orphaned placeholder warning displayed before save (edge case 2)
+- [x] Mobile view (< 768px) shows tabbed editor/preview layout (UXR-301)
+- [x] Error messages associated with form fields via aria-describedby (UXR-205)
+- [x] Success toast auto-dismisses at 5s, error toast persists (UXR-502)
+- [x] All interactive elements keyboard navigable (UXR-202)
 
 ## Implementation Checklist
 
-- [ ] Create TypeScript interfaces for template list, detail, versions, preview, SMS info, and validation result
-- [ ] Implement TemplateApiService with HttpClient for all template API endpoints
-- [ ] Build TemplateEditorComponent with template selector, split view, validation banner, and save action
-- [ ] Build CodeEditorComponent with monospace textarea (JetBrains Mono) and content change output
-- [ ] Build TemplatePreviewComponent with HTML rendered preview and SMS bubble preview
-- [ ] Build VersionHistorySidebarComponent with version list, restore button, and RestoreConfirmDialogComponent
-- [ ] Build SmsCounterComponent with real-time character count and multi-part segment estimate
-- [ ] Add lazy-loaded route at /admin/templates with adminGuard in app.routes.ts
+- [x] Create TypeScript interfaces for template list, detail, versions, preview, SMS info, and validation result
+- [x] Implement TemplateApiService with HttpClient for all template API endpoints
+- [x] Build TemplateEditorComponent with template selector, split view, validation banner, and save action
+- [x] Build CodeEditorComponent with monospace textarea (JetBrains Mono) and content change output
+- [x] Build TemplatePreviewComponent with HTML rendered preview and SMS bubble preview
+- [x] Build VersionHistorySidebarComponent with version list, restore button, and RestoreConfirmDialogComponent
+- [x] Build SmsCounterComponent with real-time character count and multi-part segment estimate
+- [x] Add lazy-loaded route at /admin/templates with adminGuard in app.routes.ts

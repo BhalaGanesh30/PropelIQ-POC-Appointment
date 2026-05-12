@@ -101,6 +101,12 @@ public class AppDbContext : DbContext
     // EP-011 US_061: Per-user activity history (login events, role changes, bulk actions).
     public DbSet<UserActivityLog> UserActivityLogs => Set<UserActivityLog>();
 
+    // EP-011 US_062: Versioned notification templates for HTML and SMS channels.
+    public DbSet<NotificationTemplate>   NotificationTemplates   => Set<NotificationTemplate>();
+    public DbSet<TemplateVersion>        TemplateVersions        => Set<TemplateVersion>();
+    // EP-011 US_062: Canonical merge-field registry for orphan-placeholder detection (edge case 2).
+    public DbSet<MergeFieldRegistryEntry> MergeFieldRegistry     => Set<MergeFieldRegistryEntry>();
+
     // Scheduling audit
     public DbSet<AppointmentAuditEntry> AppointmentAuditEntries => Set<AppointmentAuditEntry>();
 
