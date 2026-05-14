@@ -167,7 +167,9 @@ public sealed class BookingRepository : IBookingRepository
 
         // No patient yet — auto-provision a minimal record from the domain user projection.
         var domainUser = await _context.Users
-            .FirstOrDefaultAsync(u => u.Id == userId, ct);
+            .Where(u => u.Id == userId)
+            .Select(u => new { u.FirstName, u.LastName })
+            .FirstOrDefaultAsync(ct);
 
         if (domainUser is null) return null;
 

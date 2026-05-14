@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 
 import { ScheduleAppointment } from '../../shared/models/schedule-appointment.model';
 import { RescheduleRequest } from '../../shared/models/reschedule-request.model';
@@ -23,9 +23,18 @@ export class DailyScheduleService {
    */
   getSchedule(date: string): Observable<ScheduleAppointment[]> {
     const params = new HttpParams().set('date', date);
-    return this.http.get<ScheduleAppointment[]>('/api/v1/schedule/daily', {
-      params,
-    });
+    return this.http
+      .get<ScheduleAppointment[]>('/api/v1/schedule/daily', { params })
+      .pipe(
+        // Backward-compatible fallback while older API route templates may still be running.
+        catchError((err: { status?: number }) => {
+          if (err?.status !== 404) return throwError(() => err);
+          return this.http.get<ScheduleAppointment[]>(
+            '/api/v1/schedule/api/v1/schedule/daily',
+            { params },
+          );
+        }),
+      );
   }
 
   /**
@@ -34,6 +43,16 @@ export class DailyScheduleService {
    * @param payload RescheduleRequest with new start time and override reason.
    */
   reschedule(payload: RescheduleRequest): Observable<void> {
-    return this.http.put<void>('/api/v1/schedule/reschedule', payload);
+    return this.http
+      .put<void>('/api/v1/schedule/reschedule', payload)
+      .pipe(
+        catchError((err: { status?: number }) => {
+          if (err?.status !== 404) return throwError(() => err);
+          return this.http.put<void>(
+            '/api/v1/schedule/api/v1/schedule/reschedule',
+            payload,
+          );
+        }),
+      );
   }
 }

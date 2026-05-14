@@ -50,7 +50,7 @@ public sealed class ScheduleController : BaseApiController
     /// <response code="400">Invalid or missing <c>date</c> query parameter.</response>
     /// <response code="401">JWT bearer token missing or invalid.</response>
     /// <response code="403">Caller does not have Staff or Admin role.</response>
-    [HttpGet("api/v1/schedule/daily")]
+    [HttpGet("/api/v1/schedule/daily")]
     [ProducesResponseType(typeof(DailyScheduleResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -85,7 +85,7 @@ public sealed class ScheduleController : BaseApiController
     /// Target time slot is occupied by another appointment (Edge Case 1).
     /// Response body contains the conflicting appointment's details.
     /// </response>
-    [HttpPut("api/v1/schedule/reschedule")]
+    [HttpPut("/api/v1/schedule/reschedule")]
     [ProducesResponseType(typeof(RescheduleResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

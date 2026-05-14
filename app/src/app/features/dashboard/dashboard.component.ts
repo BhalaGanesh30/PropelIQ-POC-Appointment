@@ -24,7 +24,7 @@ interface QuickAction {
       </header>
 
       <section class="quick-actions" aria-label="Quick actions">
-        @for (action of quickActions; track action.route) {
+        @for (action of quickActions(); track action.route) {
           <a
             class="action-card"
             [routerLink]="action.route"
@@ -154,30 +154,102 @@ export class DashboardComponent {
     return (decoded?.['given_name'] as string | undefined) || 'there';
   });
 
-  protected readonly quickActions: readonly QuickAction[] = [
-    {
-      label: 'Find an Appointment',
-      description: 'Search available slots and book with a provider.',
-      icon: 'calendar_today',
-      route: '/scheduling/search',
-      colorStart: '#1976d2',
-      colorEnd: '#1565c0',
-    },
-    {
-      label: 'My Appointments',
-      description: 'View, reschedule, or cancel upcoming visits.',
-      icon: 'event_note',
-      route: '/appointments',
-      colorStart: '#0288d1',
-      colorEnd: '#01579b',
-    },
-    {
-      label: 'My Waitlist',
-      description: 'Check your position and claim earlier slots.',
-      icon: 'queue',
-      route: '/waitlist',
-      colorStart: '#00897b',
-      colorEnd: '#00695c',
-    },
-  ];
+  /** Role-based quick actions derived from JWT role claim (US_015 AC-2). */
+  protected readonly quickActions = computed<readonly QuickAction[]>(() => {
+    const decoded = this.tokenStorage.getDecodedToken();
+    const role = (decoded?.['role'] as string | undefined) || 'Patient';
+
+    // Patient: personal appointment management
+    if (role === 'Patient') {
+      return [
+        {
+          label: 'Find an Appointment',
+          description: 'Search available slots and book with a provider.',
+          icon: 'calendar_today',
+          route: '/scheduling/search',
+          colorStart: '#1976d2',
+          colorEnd: '#1565c0',
+        },
+        {
+          label: 'My Appointments',
+          description: 'View, reschedule, or cancel upcoming visits.',
+          icon: 'event_note',
+          route: '/appointments',
+          colorStart: '#0288d1',
+          colorEnd: '#01579b',
+        },
+        {
+          label: 'My Waitlist',
+          description: 'Check your position and claim earlier slots.',
+          icon: 'queue',
+          route: '/waitlist',
+          colorStart: '#00897b',
+          colorEnd: '#00695c',
+        },
+      ];
+    }
+
+    // Clinician: clinical intelligence features
+    if (role === 'Clinician') {
+      return [
+        {
+          label: 'Find a Patient',
+          description: 'Look up patient profiles and clinical history.',
+          icon: 'person_search',
+          route: '/patients',
+          colorStart: '#d32f2f',
+          colorEnd: '#c62828',
+        },
+        {
+          label: 'Coding Review',
+          description: 'Review AI-suggested ICD-10 and CPT codes.',
+          icon: 'assignment_returned',
+          route: '/coding/search',
+          colorStart: '#7b1fa2',
+          colorEnd: '#6a1b9a',
+        },
+        {
+          label: 'Document Library',
+          description: 'Access and manage patient documents.',
+          icon: 'library_books',
+          route: '/documents/library',
+          colorStart: '#0097a7',
+          colorEnd: '#00838f',
+        },
+      ];
+    }
+
+    // Staff/Admin: operational features
+    if (role === 'Staff' || role === 'Admin') {
+      return [
+        {
+          label: 'Queue Dashboard',
+          description: 'Monitor real-time queue and AI risk scores.',
+          icon: 'dashboard',
+          route: '/staff/queue',
+          colorStart: '#f57c00',
+          colorEnd: '#e65100',
+        },
+        {
+          label: 'Daily Schedule',
+          description: 'View and manage appointment calendar.',
+          icon: 'event_repeat',
+          route: '/staff/schedule',
+          colorStart: '#1976d2',
+          colorEnd: '#1565c0',
+        },
+        {
+          label: 'Book for Patient',
+          description: 'Staff-assisted booking workflow.',
+          icon: 'add_event',
+          route: '/staff/booking',
+          colorStart: '#00897b',
+          colorEnd: '#00695c',
+        },
+      ];
+    }
+
+    // Fallback (should not reach here)
+    return [];
+  });
 }

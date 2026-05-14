@@ -1,8 +1,30 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { SlotResult, ConflictCheck } from '../../shared/models/slot-result.model';
+
+/** Interim type for backend API response structure. */
+interface BackendSlotGroup {
+  date: string;
+  slots: Array<{
+    id: string;
+    startTime: string;
+    endTime: string;
+    durationMinutes: number;
+    type: string;
+    providerName?: string;
+    location?: string;
+    availableCapacity: number;
+  }>;
+}
+
+interface BackendSlotResponse {
+  days: BackendSlotGroup[];
+  totalAvailableSlots: number;
+  hasResults: boolean;
+}
 
 /**
  * Slot availability and conflict-check service for EP-004 US_035 (SCR-027).
@@ -23,11 +45,39 @@ export class SlotSearchService {
    * @param type      Optional appointment type filter.
    */
   searchSlots(date: string, duration: number, type?: string): Observable<SlotResult[]> {
-    let params = new HttpParams().set('date', date).set('duration', String(duration));
+    // Parse date and create a date range for that full day (start of day to end of day).
+    const parsedDate = new Date(date + 'T00:00:00Z');
+    const dateFrom = parsedDate.toISOString();
+    const dateToDate = new Date(parsedDate);
+    dateToDate.setUTCHours(23, 59, 59, 999);
+    const dateTo = dateToDate.toISOString();
+
+    let params = new HttpParams()
+      .set('dateFrom', dateFrom)
+      .set('dateTo', dateTo)
+      .set('duration', String(duration));
     if (type) {
       params = params.set('type', type);
     }
-    return this.http.get<SlotResult[]>('/api/v1/appointments/slots', { params });
+    return this.http.get<BackendSlotResponse>('/api/v1/appointments/slots', { params })
+      .pipe(
+        map((response) => {
+          // Flatten the grouped response into a simple array of slots.
+          const flattened: SlotResult[] = [];
+          response.days.forEach((dayGroup) => {
+            dayGroup.slots.forEach((slot) => {
+              flattened.push({
+                slotId: slot.id,
+                dateTime: slot.startTime,
+                duration: slot.durationMinutes,
+                available: slot.availableCapacity > 0,
+                providerName: slot.providerName,
+              });
+            });
+          });
+          return flattened;
+        }),
+      );
   }
 
   /**

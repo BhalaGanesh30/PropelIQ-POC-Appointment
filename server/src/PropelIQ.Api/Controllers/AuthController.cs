@@ -22,6 +22,7 @@ namespace PropelIQ.Api.Controllers;
 public sealed class AuthController : BaseApiController
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RoleManager<IdentityRole<Guid>> _roleManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly IRefreshTokenRepository _refreshTokens;
@@ -36,6 +37,7 @@ public sealed class AuthController : BaseApiController
 
     public AuthController(
         UserManager<ApplicationUser> userManager,
+        RoleManager<IdentityRole<Guid>> roleManager,
         SignInManager<ApplicationUser> signInManager,
         IJwtTokenService jwtTokenService,
         IRefreshTokenRepository refreshTokens,
@@ -48,6 +50,7 @@ public sealed class AuthController : BaseApiController
         ILogger<AuthController> logger)
     {
         _userManager = userManager;
+        _roleManager = roleManager;
         _signInManager = signInManager;
         _jwtTokenService = jwtTokenService;
         _refreshTokens = refreshTokens;
@@ -101,6 +104,20 @@ public sealed class AuthController : BaseApiController
         {
             foreach (var error in result.Errors)
                 ModelState.AddModelError(error.Code, error.Description);
+            return ValidationProblem(ModelState);
+        }
+
+        // Keep ASP.NET Identity roles in sync so role claims are present in JWTs.
+        await EnsureRoleExistsAsync("Patient");
+
+        var roleResult = await _userManager.AddToRoleAsync(user, "Patient");
+        if (!roleResult.Succeeded)
+        {
+            foreach (var error in roleResult.Errors)
+                ModelState.AddModelError(error.Code, error.Description);
+
+            // Best-effort rollback to avoid half-created auth users without roles.
+            await _userManager.DeleteAsync(user);
             return ValidationProblem(ModelState);
         }
 
@@ -161,6 +178,24 @@ public sealed class AuthController : BaseApiController
         return Accepted(isDev
             ? new { message = "Registration successful. Confirm your account using the URL below (dev only).", confirmationUrl = callbackUrl }
             : (object)new { message = "Registration successful. Please check your email to confirm your account." });
+    }
+
+    private async Task EnsureRoleExistsAsync(string roleName)
+    {
+        if (await _roleManager.RoleExistsAsync(roleName))
+            return;
+
+        var createRoleResult = await _roleManager.CreateAsync(new IdentityRole<Guid>
+        {
+            Name = roleName,
+            NormalizedName = roleName.ToUpperInvariant()
+        });
+
+        if (!createRoleResult.Succeeded)
+        {
+            var errors = string.Join("; ", createRoleResult.Errors.Select(e => e.Description));
+            throw new InvalidOperationException($"Failed to ensure identity role '{roleName}': {errors}");
+        }
     }
 
     /// <summary>

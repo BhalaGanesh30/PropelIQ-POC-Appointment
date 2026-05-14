@@ -69,7 +69,9 @@ public sealed class QueueService : IQueueService
         }
 
         // ── 2. Database query ─────────────────────────────────────────────────
-        var today = DateTimeOffset.UtcNow.Date;
+        // Npgsql requires UTC DateTimeOffset values for timestamptz parameters.
+        // Build explicit UTC boundaries (offset 00:00) to avoid local-offset writes.
+        var today = new DateTimeOffset(DateTime.UtcNow.Date, TimeSpan.Zero);
         var tomorrow = today.AddDays(1);
 
         // Build a single query that joins Patients for PatientName.

@@ -2,6 +2,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Metrics;
@@ -302,6 +303,52 @@ using (var scope = app.Services.CreateScope())
             throw; // Fail fast in production
         }
     }
+}
+
+// ── Dev Identity Role Seed ────────────────────────────────────────────────────
+// Ensures all Identity roles exist and backfills any user whose auth.AspNetUserRoles
+// row is missing (e.g. accounts created before the registration role-sync patch).
+// The role source-of-truth is app.users.role; this block keeps auth in sync.
+// Runs in all environments: safe because it is fully idempotent (ON CONFLICT / skip).
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var appDb       = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // 1. Ensure all four Identity roles exist.
+    string[] allRoles = ["Admin", "Clinician", "Staff", "Patient"];
+    foreach (var role in allRoles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole<Guid> { Name = role, NormalizedName = role.ToUpperInvariant() });
+    }
+
+    // 2. For every auth user whose corresponding app.users row has a role set,
+    //    assign that role in Identity if not already assigned.
+    var appUsers = await appDb.Users
+        .Where(u => !string.IsNullOrEmpty(u.Role))
+        .Select(u => new { u.Id, u.Email, u.Role })
+        .ToListAsync();
+
+    foreach (var appUser in appUsers)
+    {
+        var identityUser = await userManager.FindByIdAsync(appUser.Id.ToString());
+        if (identityUser is null) continue;
+
+        var existingRoles = await userManager.GetRolesAsync(identityUser);
+
+        // Remove stale roles that no longer match app.users.role
+        var rolesToRemove = existingRoles.Where(r => r != appUser.Role).ToList();
+        if (rolesToRemove.Count > 0)
+            await userManager.RemoveFromRolesAsync(identityUser, rolesToRemove);
+
+        // Add the correct role if not already present
+        if (!existingRoles.Contains(appUser.Role))
+            await userManager.AddToRoleAsync(identityUser, appUser.Role);
+    }
+
+    app.Logger.LogInformation("Identity role seed completed: {Count} app users processed", appUsers.Count);
 }
 
 // ── Middleware Pipeline Order ─────────────────────────────────────────────────

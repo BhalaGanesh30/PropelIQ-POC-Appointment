@@ -54,7 +54,7 @@ public sealed class StaffBookingController : BaseApiController
     /// Scheduling conflict detected and no override reason supplied.
     /// Response body contains the conflicting appointment details.
     /// </response>
-    [HttpPost("api/v1/staff-bookings")]
+    [HttpPost("/api/v1/staff-bookings")]
     [ProducesResponseType(typeof(StaffBookingResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -111,7 +111,7 @@ public sealed class StaffBookingController : BaseApiController
     /// <response code="401">JWT bearer token missing or invalid.</response>
     /// <response code="403">Caller does not have Staff or Admin role.</response>
     /// <response code="404">Slot not found.</response>
-    [HttpGet("api/v1/appointments/conflict-check")]
+    [HttpGet("/api/v1/appointments/conflict-check")]
     [ProducesResponseType(typeof(ConflictCheckResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

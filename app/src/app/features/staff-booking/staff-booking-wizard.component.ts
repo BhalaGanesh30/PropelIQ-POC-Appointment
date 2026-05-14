@@ -102,6 +102,7 @@ export class StaffBookingWizardComponent implements OnInit, OnDestroy {
   readonly isSubmitting = signal(false);
   readonly isLoadingSlots = signal(false);
   readonly isCheckingConflict = signal(false);
+  readonly newPatientFormIsValid = signal(false);
 
   readonly searchResults = signal<PatientSearchResult[]>([]);
   readonly slots = signal<SlotResult[]>([]);
@@ -158,6 +159,7 @@ export class StaffBookingWizardComponent implements OnInit, OnDestroy {
   private searchSub?: Subscription;
   private slotsSub?: Subscription;
   private conflictSub?: Subscription;
+  private newPatientValiditySub?: Subscription;
 
   /** UUID of the logged-in staff user — excluded from search results (Edge Case 2). */
   private readonly currentUserId =
@@ -165,6 +167,11 @@ export class StaffBookingWizardComponent implements OnInit, OnDestroy {
 
   // ── Lifecycle ────────────────────────────────────────────────────────────────
   ngOnInit(): void {
+    this.newPatientFormIsValid.set(this.newPatientForm.valid);
+    this.newPatientValiditySub = this.newPatientForm.statusChanges.subscribe(() => {
+      this.newPatientFormIsValid.set(this.newPatientForm.valid);
+    });
+
     this.searchSub = this.patientSearch.results$(this.searchQuery$).subscribe({
       next: (results) => {
         // AC-1 / Edge Case 2: exclude own profile
@@ -184,6 +191,7 @@ export class StaffBookingWizardComponent implements OnInit, OnDestroy {
     this.searchSub?.unsubscribe();
     this.slotsSub?.unsubscribe();
     this.conflictSub?.unsubscribe();
+    this.newPatientValiditySub?.unsubscribe();
   }
 
   // ── Step 1: Patient search ────────────────────────────────────────────────────
@@ -319,7 +327,7 @@ export class StaffBookingWizardComponent implements OnInit, OnDestroy {
             lastName: newPatientRaw.lastName ?? '',
             phone: newPatientRaw.phone ?? '',
             dateOfBirth: newPatientRaw.dateOfBirth ?? '',
-            email: newPatientRaw.email ?? undefined,
+            email: newPatientRaw.email?.trim() ? newPatientRaw.email : undefined,
           } satisfies InlinePatientForm)
         : undefined,
     };
@@ -345,7 +353,7 @@ export class StaffBookingWizardComponent implements OnInit, OnDestroy {
   readonly canProceedFromStep1 = computed(
     () =>
       this.selectedPatient() !== null ||
-      (this.showNewPatientForm() && this.newPatientForm.valid),
+      (this.showNewPatientForm() && this.newPatientFormIsValid()),
   );
 
   /** Step 2 "Next" is enabled when a slot is selected and no unacknowledged conflict. */

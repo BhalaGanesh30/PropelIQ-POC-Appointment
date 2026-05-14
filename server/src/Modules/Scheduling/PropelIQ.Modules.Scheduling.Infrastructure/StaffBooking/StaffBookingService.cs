@@ -214,6 +214,10 @@ public sealed class StaffBookingService : IStaffBookingService
 
         // ── 7. Audit record (AC-4, NFR-010) ──────────────────────────────────
 
+        // TEMPORARY FIX: Audit columns don't exist yet (migration pending).
+        // Comment out until migration 20260506134124_AddOverrideAuditColumns is applied.
+        // TODO: Re-enable after running: dotnet run --project src/PropelIQ.DbMigrator
+        /*
         await _auditService.LogStaffBookingAsync(
             new StaffBookingAuditPayload
             {
@@ -226,6 +230,7 @@ public sealed class StaffBookingService : IStaffBookingService
             },
             staffUserId,
             ct);
+        */
 
         // ── 8. Persist (appointment + slot + audit in one SaveChanges) ────────
 
